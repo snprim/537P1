@@ -1,0 +1,229 @@
+---
+title: "Plots"
+author: "Kan Luo"
+date: "7/23/2020"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(tidyverse)
+library(ggplot2)
+library(httr)
+```
+
+```{r readin Data, echo=FALSE, message=FALSE}
+#Readin data from Github url address
+url1 <- 'https://github.com/luokan1227/537P1/raw/master/Data.xlsx'  # main data
+url2 <- 'https://github.com/luokan1227/537P1/raw/master/MonkeyID.xlsx'  # Monkey ID
+GET(url1, write_disk(tf1 <- tempfile(fileext = ".xlsx")))
+GET(url2, write_disk(tf2 <- tempfile(fileext = ".xlsx")))
+Rawdata <- read_excel(tf1)
+MonkeyID <-  read_excel(tf2)
+#Add Monkey ID to raw data
+Rawdata <- inner_join(Rawdata, MonkeyID, by = "H_ID")
+colnames(Rawdata)[2] <- "Time_Point"
+#-----------------------
+#Adjust or add variables
+#-----------------------
+
+# Final data set for all following analysis
+Data <- Rawdata
+
+```
+
+
+```{r Ig Isotype Plot/Table, echo=FALSE}
+
+
+# Histogram 
+Iso.order <- c("G", "M", "A", "D", "E") 
+g1 <- ggplot(Data, aes(x=factor(Isotype, levels = Iso.order))) 
+  g1 + geom_bar(stat = "count", width = 0.5, fill = "#012169") + # his plot
+    ggtitle("Ig Isotype") +  #Plot title
+    xlab("Ig Isotype") + ylab("Number of abs") +# X axis and y axis title
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),  #remove background grid
+          panel.background = element_blank(),  #remove background color
+          axis.text.x = element_text(size = 10), # x axis 
+          axis.text.y = element_text(size = 10), # y axis 
+          axis.title.x = element_text(size = 15), # x title 
+          axis.title.y = element_text(size = 15), # y title
+          plot.title = element_text(hjust = 0.5, size = 20) #Title
+          #legend.text = element_text(size=20), #Legend text
+          #legend.title = element_text(size = 20) # Legend title
+          )
+  
+
+g1.1 <- ggplot(Data, aes(x=factor(Isotype, levels = Iso.order))) 
+  g1.1 + geom_bar(stat = "count", width = 0.5, fill = "#012169", aes(x=factor(Isotype, levels = Iso.order), y=..prop.., group=1)) + # his plot
+    facet_wrap( ~ Time_Point) + #by subgroups
+    ggtitle("Ig Isotype") +  #Plot title
+    xlab("Ig Isotype") + ylab("% of abs") +# X axis and y axis title
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),  #remove background grid
+          panel.background = element_blank(),  #remove background color
+          axis.text.x = element_text(size = 10), # x axis 
+          axis.text.y = element_text(size = 10), # y axis 
+          axis.title.x = element_text(size = 15), # x title 
+          axis.title.y = element_text(size = 15), # y title
+          plot.title = element_text(hjust = 0.5, size = 20) #Title
+          #legend.text = element_text(size=20), #Legend text
+          #legend.title = element_text(size = 20) # Legend title
+          )
+
+# Donut Chart
+# Count ab number, create relative new data frame
+IsoData_donut <- data.frame(
+  Isotype = c("G", "M", "A", "D", "E"),
+  count = c(as.numeric(count(filter(Data, Isotype == "G"))), as.numeric(count(filter(Data, Isotype == "M"))), as.numeric(count(filter(Data, Isotype == "A"))), as.numeric(count(filter(Data, Isotype == "D"))), as.numeric(count(filter(Data, Isotype == "E")))))
+#Reorder Isotype
+IsoData_donut <- IsoData_donut %>% mutate(Isotype = factor(x=Isotype, levels = Iso.order))
+
+#Set color code
+Donut_col <- c("#87CEFA", "#00BFFF", "#1E90FF", "#4682B4", "#0000CD")
+
+# Calculate fractions of each isotype
+IsoData_donut$fraction <- round(IsoData_donut$count / sum(IsoData_donut$count) *100, digits = 1)
+
+
+g2 <- ggplot(IsoData_donut, aes(x = 2, y = fraction, fill = Isotype)) 
+  g2 + geom_bar(stat = "identity", color = "black", size=0.8) + #make the bar 
+    coord_polar(theta = "y", start = 0)+  #circle the bar to make a pie chart
+    ggtitle("Ig Isotype") +  #Title name
+    geom_text(inherit.aes = F, x=0.5, y=0, data = IsoData_donut, aes(label=paste0(sum(count))), size=12)+  #Middle number of antibody value
+    scale_fill_manual(values = Donut_col) +  #customize color
+    theme_void()+  #remove background
+    xlim(0.5, 2.5) +  #determine the size of hole
+    theme(plot.title = element_text(hjust = 0.5, size = 20),  # Middle title, and size
+      axis.ticks=element_blank(), axis.text=element_blank(), axis.title=element_blank()
+      )
+
+#Table summery of lambda chain V gene
+Isotable <- data.frame(table(Data$Isotype))
+Isotable$per <- Isotable$Freq / sum(Isotable$Freq) *100
+Isotable[,3] <- round(Isotable[,3], digits = 1)
+colnames(Isotable) <- c("Isotype", "Ab #", "Ab %")
+Isotable
+
+```
+
+
+```{r CDR3 Plot/Table, echo=FALSE}
+g3 <- ggplot(Data, aes(H_CDR3))
+  g3 + geom_bar(stat = "count", width = 0.7, fill = "#012169") +
+    ggtitle("HCDR3") +  #Plot title
+    xlab("HCDR3 Length (aa)") + ylab("Number of abs") +# X axis and y axis title
+    scale_x_continuous(breaks = round(seq(min(Data$H_CDR3), max(Data$H_CDR3), by = 1),1)) + 
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),  #remove background grid
+          panel.background = element_blank(),  #remove background color
+          axis.text.x = element_text(size = 10), # x axis 
+          axis.text.y = element_text(size = 10), # y axis 
+          axis.title.x = element_text(size = 15), # x title 
+          axis.title.y = element_text(size = 15), # y title
+          plot.title = element_text(hjust = 0.5, size = 18) #Title
+          )
+
+g3.1 <- ggplot(Data, aes(H_CDR3))
+  g3.1 + geom_bar(stat = "count", width = 0.7, fill = "#012169") +
+    facet_wrap(~Time_Point) + #by subgroups
+    ggtitle("HCDR3") +  #Plot title
+    xlab("HCDR3 Length (aa)") + ylab("Number of abs") +# X axis and y axis title
+    scale_x_continuous(breaks = round(seq(min(Data$H_CDR3), max(Data$H_CDR3), by = 1),1)) + 
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),  #remove background grid
+          panel.background = element_blank(),  #remove background color
+          axis.text.x = element_text(size = 10), # x axis 
+          axis.text.y = element_text(size = 10), # y axis 
+          axis.title.x = element_text(size = 15), # x title 
+          axis.title.y = element_text(size = 15), # y title
+          plot.title = element_text(hjust = 0.5, size = 18) #Title
+          )
+
+g4 <- ggplot(Data, aes(L_CDR3))
+  g4 + geom_bar(stat = "count", width = 0.7, fill = "#012169") +
+    ggtitle("L_CDR3") +  #Plot title
+    xlab("LCDR2 Length (aa)") + ylab("Number of abs") +# X axis and y axis title
+    scale_x_continuous(breaks = round(seq(min(Data$L_CDR3), max(Data$L_CDR3), by = 1),1)) + 
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),  #remove background grid
+          panel.background = element_blank(),  #remove background color
+          axis.text.x = element_text(size = 10), # x axis 
+          axis.text.y = element_text(size = 10), # y axis 
+          axis.title.x = element_text(size = 15), # x title 
+          axis.title.y = element_text(size = 15), # y title
+          plot.title = element_text(hjust = 0.5, size = 18) #Title
+          )
+
+par(mfrow = c(2,2))
+qqnorm(Data$HMuFreq, main = "Q-Q Plot of HMuFreq", pch = 19, cex = 1)
+qqnorm(Data$H_CDR3, main = "Q-Q Plot of H_CDR3", pch = 19, cex = 1)
+qqnorm(Data$LMuFreq, main = "Q-Q Plot of LMuFreq", pch = 19, cex = 1)
+qqnorm(Data$L_CDR3, main = "Q-Q Plot of L_CDR3", pch = 19, cex = 1)
+
+```
+
+Notice may have outlier in LCDR3 variable: 
+
+```{r outlier}
+summary(Data$L_CDR3)
+
+
+```
+
+
+```{r mutation rate, echo=FALSE, warning=FALSE}
+#Mutation rate sub data
+MutSubData <- Data %>% select(Time_Point, Isotype, H_ID, H_CDR3, HMuFreq, L_ID, L_CDR3, LMuFreq)
+MutSubData$KMutation <- NA
+MutSubData$LMutation <- NA
+MutSubData$KMutation <- ifelse(str_starts(MutSubData$L_ID, "K"), MutSubData$LMuFreq*100, NA)
+MutSubData$LMutation <- ifelse(str_starts(MutSubData$L_ID, "L"), MutSubData$LMuFreq*100, NA)
+MutSubData$HMuFreq <- MutSubData$HMuFreq*100
+
+#summary table
+HMut <- summary(MutSubData$HMuFreq)
+KMut <- summary(MutSubData$KMutation)
+LMut <- summary(MutSubData$LMutation)
+MutTable <- cbind(HMut[1:6], KMut[1:6], LMut[1:6]) #get rid of NA column by just choose col 1:6
+MutTable <- data.frame(round(MutTable, digits = 2)) %>% rename("H_Mutation%" = X1, "K_Mutation%" = X2, "L_Mutation%" = X3)
+MutTable
+
+#create a list of HKL mutation rates
+Mutlist <- list("Heavy" = MutSubData$HMuFreq, "Kappa" = MutSubData$KMutation, "Lambda" = MutSubData$LMutation)
+
+#scatter plot
+stripchart(Mutlist, vertical = TRUE, method = "jitter", pch = 20, cex = 0.6, col = "#012169", ylab = "Mutation rate (%)", main = "H/K/L mutation rate")
+#Draw the mean line 
+MutMean <- as.numeric(MutTable[4,])  #MutTable[4,] for mean, MutTable[3,] for median
+locmean <- 1:length(MutMean)
+segments(locmean - 0.15, MutMean , locmean + 0.15, MutMean , col = "red", lwd = 2)
+
+
+#boxplot
+boxplot(Mutlist, names = c("Heavy", "Kappa", "Lambda"), ylab="Mutation rate (%)", main = "H/K/L mutation rate")
+#stripchart(Mutlist, vertical = TRUE, method = "jitter", add = TRUE, pch = 20, col = "#012169") # choose overlay points or not
+
+# H/K/L by Time_Point variable or any variables, can also choose third variable if wanted
+g5 <- ggplot(MutSubData, aes(x=Time_Point, y=HMuFreq)) 
+  g5 + geom_boxplot(outlier.shape = NA) +
+    ggtitle("H_Mutation") +
+    geom_jitter(position=position_jitter(width=0.2, height=0)) + #add individual points
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),  #remove background grid
+      panel.background = element_blank(),  #remove background color
+      axis.text.x = element_text(size = 10), # x axis 
+      axis.text.y = element_text(size = 10), # y axis 
+      axis.title.x = element_text(size = 15), # x title 
+      axis.title.y = element_text(size = 15), # y title
+      plot.title = element_text(hjust = 0.5, size = 18) #Title
+      )
+
+```
+
+
+
+
+
+
+
