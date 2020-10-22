@@ -1,7 +1,7 @@
 ---
 title: "Plots"
-author: "Kan Luo"
-date: "7/23/2020"
+author: "Kan Luo, Shih-Ni Prim"
+date: "10/20/2020"
 output:
   pdf_document: default
   html_document:
@@ -17,7 +17,9 @@ library(ggplot2)
 library(httr)
 ```
 
-```{r readin Data, echo=FALSE, message=FALSE}
+## Data preparation  
+
+```{r readin Data, echo = TRUE, message = FALSE}
 #Readin data from Github url address
 url1 <- 'https://github.com/luokan1227/537P1/raw/master/Data.xlsx'  # main data
 url2 <- 'https://github.com/luokan1227/537P1/raw/master/MonkeyID.xlsx'  # Monkey ID
@@ -35,12 +37,35 @@ colnames(Rawdata)[2] <- "Time_Point"
 # Final data set for all following analysis
 Data <- Rawdata
 
+# extract classifications of antibodies
+HV_Extract <- substr(Data$H_V, 5, 5)
+Data$HV_Extract <- HV_Extract
+table(Data$HV_Extract)
+
+HD_Extract <- substr(Data$H_D, 5, 5)
+Data$HD_Extract <- HD_Extract
+table(Data$HD_Extract)
+
+HJ_Extract <- substr(Data$H_J, 5, 5)
+Data$HJ_Extract <- HJ_Extract
+table(Data$HJ_Extract)
+
+LV_Ex <- substr(Data$L_V, 5, 6)
+LV_Extract <- ifelse(str_detect(LV_Ex, "-"), substr(LV_Ex, 1, 1), substr(LV_Ex, 1, 2)) 
+Data$LV_Extract <- LV_Extract
+table(Data$LV_Extract)
+
+LJ_Extract <- substr(Data$L_J, 5, 5)
+Data$LJ_Extract <- LJ_Extract
+table(Data$LJ_Extract)
+
+# create a subset with the variables we need plus the extracted information
+Data2 <- Data %>% select(MonkeyID, Treatment, Time_Point, Isotype, HV_Extract, HD_Extract, HJ_Extract, H_VBase, H_Substitutions, H_Insertions, H_Deletions, HMuFreq, H_CDR3, LV_Extract, LJ_Extract, L_VBase, L_Substitutions, L_Insertions, L_Deletions, LMuFreq, L_CDR3, Binding)
 ```
 
+## Isotype Plots and Table  
 
 ```{r Ig Isotype Plot/Table, echo=FALSE}
-
-
 # Histogram 
 Iso.order <- c("G", "M", "A", "D", "E") 
 g1 <- ggplot(Data, aes(x=factor(Isotype, levels = Iso.order))) 
@@ -222,6 +247,9 @@ g5 <- ggplot(MutSubData, aes(x=Time_Point, y=HMuFreq))
 ```
 
 
+```{r}
+
+```
 
 
 
