@@ -1,9 +1,10 @@
 ---
-title: "Plots"
+title: "Final Project: First Draft"
 author: "Kan Luo, Shih-Ni Prim"
 date: "10/20/2020"
 output:
-  pdf_document: default
+  pdf_document: 
+    toc: true
   html_document:
     df_print: paged
   word_document: default
@@ -15,11 +16,19 @@ library(readxl)
 library(tidyverse)
 library(ggplot2)
 library(httr)
+library(nlme)
 ```
+
+# Questions for Kan  
+
+* Why are there 7 treatment groups now?
+* 
+
+# Exploratory Data Analysis
 
 ## Data preparation  
 
-```{r readin Data, echo = TRUE, message = FALSE}
+```{r readin Data, echo = FALSE, message = FALSE}
 #Readin data from Github url address
 url1 <- 'https://github.com/luokan1227/537P1/raw/master/Data.xlsx'  # main data
 url2 <- 'https://github.com/luokan1227/537P1/raw/master/MonkeyID.xlsx'  # Monkey ID
@@ -62,6 +71,20 @@ table(Data$LJ_Extract)
 # create a subset with the variables we need plus the extracted information
 Data2 <- Data %>% select(MonkeyID, Treatment, Time_Point, Isotype, HV_Extract, HD_Extract, HJ_Extract, H_VBase, H_Substitutions, H_Insertions, H_Deletions, HMuFreq, H_CDR3, LV_Extract, LJ_Extract, L_VBase, L_Substitutions, L_Insertions, L_Deletions, LMuFreq, L_CDR3, Binding)
 ```
+Two datasets for analysis:  
+
+* `Data`: Kan has been using this one.
+* `Data2`: Shih-Ni created this subset, which removed some ID info that we won't use and added extracted information from antibodies.  
+
+## Contingency Tables  
+
+```{r, echo = TRUE}
+table(Data2$MonkeyID)
+table(Data2$Time_Point)
+table(Data2$Treatment)
+table(Data2$Time_Point, Data2$Treatment)
+```
+
 
 ## Isotype Plots and Table  
 
@@ -136,6 +159,7 @@ Isotable
 
 ```
 
+## CDR_3 Plots and tables
 
 ```{r CDR3 Plot/Table, echo=FALSE}
 g3 <- ggplot(Data, aes(H_CDR3))
@@ -189,6 +213,9 @@ qqnorm(Data$L_CDR3, main = "Q-Q Plot of L_CDR3", pch = 19, cex = 1)
 
 ```
 
+## Outlier detection
+
+[Need to add more]  
 Notice may have outlier in LCDR3 variable: 
 
 ```{r outlier}
@@ -197,6 +224,7 @@ summary(Data$L_CDR3)
 
 ```
 
+## Mutation Rate
 
 ```{r mutation rate, echo=FALSE, warning=FALSE}
 #Mutation rate sub data
@@ -246,12 +274,51 @@ g5 <- ggplot(MutSubData, aes(x=Time_Point, y=HMuFreq))
 
 ```
 
+## Test independence assumption
 
 ```{r}
+subset1 <- Data2 %>% filter(Time_Point == 1) %>% filter(MonkeyID == 6132) %>% select(HMuFreq, LMuFreq, H_CDR3, L_CDR3) %>% pairs()
+subset1 <- Data2 %>% filter(Time_Point == 1) %>% select(HMuFreq, LMuFreq, H_CDR3, L_CDR3) %>% pairs()
+```
 
+
+# Multivariate Data Analysis  
+
+```{r}
+ID <- as.factor(Data2$MonkeyID)
+trt <- as.factor(Data2$Treatment)
+tp <- as.factor(Data2$Time_Point)
+it <- as.factor(Data2$Isotype)
+fit.manova <- manova(cbind(Data2$L_CDR3, Data2$LMuFreq, Data2$H_CDR3, Data2$HMuFreq) ~ ID + trt+ tp + it)
+summary(fit.manova)
 ```
 
 
 
+# Longitudinal Data Analysis  
+
+First we don't consider treatments but only plot the mean trend over time.  
+
+$$Y_{ij}=\beta_0+\beta_1 Time_{ij}+e_{ij}$$
+
+```{r}
+meanTrend <- lm(Data2$Binding ~ Data2$Time_Point)
+summary(meanTrend)
+# simply connects the mean of each time point
+ggplot(Data2, aes(x = Time_Point, y = Binding)) + geom_point(aes(color = Treatment)) + geom_jitter() + stat_summary(fun = mean, geom = "line", lwd = 3, color = "red")
+```
+
+
+Here we use Binding as the only response. 
+Prdictors: `Treatment`.  
+Random effect for both intercept and slope.  
+
+$$Y_{ij} = \beta_0+\beta_1 t_{ij} + b_{0i} + b_{1i} + e_{ij}$$
+
+```{r}
+lda <- lme(fixed = Binding ~ Time_Point + Treatment,
+           random = ~ Time_Point | MonkeyID, data = Data2, method = "REML")
+summary(lda)
+```
 
 
