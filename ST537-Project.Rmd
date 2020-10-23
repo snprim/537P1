@@ -22,7 +22,12 @@ library(nlme)
 # Questions for Kan  
 
 * Why are there 7 treatment groups now?
-* 
+    * Treatment 1-3: different doses for 1st drug
+    * Treatment 4-6: different doses for 2nd drug
+    * Treatment 7: control
+* Next steps:
+    * add outlier detection
+    * create a new file to include only relevant sections
 
 # Exploratory Data Analysis
 
@@ -83,6 +88,8 @@ table(Data2$MonkeyID)
 table(Data2$Time_Point)
 table(Data2$Treatment)
 table(Data2$Time_Point, Data2$Treatment)
+table(Data2$MonkeyID, Data2$Treatment)
+ggplot(Data2, aes(x = Treatment, y = Binding)) + geom_boxplot()
 ```
 
 
@@ -210,7 +217,6 @@ qqnorm(Data$HMuFreq, main = "Q-Q Plot of HMuFreq", pch = 19, cex = 1)
 qqnorm(Data$H_CDR3, main = "Q-Q Plot of H_CDR3", pch = 19, cex = 1)
 qqnorm(Data$LMuFreq, main = "Q-Q Plot of LMuFreq", pch = 19, cex = 1)
 qqnorm(Data$L_CDR3, main = "Q-Q Plot of L_CDR3", pch = 19, cex = 1)
-
 ```
 
 ## Outlier detection
@@ -277,8 +283,17 @@ g5 <- ggplot(MutSubData, aes(x=Time_Point, y=HMuFreq))
 ## Test independence assumption
 
 ```{r}
-subset1 <- Data2 %>% filter(Time_Point == 1) %>% filter(MonkeyID == 6132) %>% select(HMuFreq, LMuFreq, H_CDR3, L_CDR3) %>% pairs()
-subset1 <- Data2 %>% filter(Time_Point == 1) %>% select(HMuFreq, LMuFreq, H_CDR3, L_CDR3) %>% pairs()
+# combine all the extracted values; the most number of the same combination is 36
+Data3 <- Data2 %>% unite("HID", c(HV_Extract:HJ_Extract, LV_Extract:LJ_Extract), remove = FALSE)
+max(table(Data3$HID))
+```
+
+
+```{r}
+Data2 %>% filter(Time_Point == 0) %>% select(HMuFreq, LMuFreq, H_CDR3, L_CDR3) %>% pairs()
+Data2 %>% filter(Time_Point == 1) %>% select(HMuFreq, LMuFreq, H_CDR3, L_CDR3) %>% pairs()
+Data2 %>% filter(Time_Point == 2) %>% select(HMuFreq, LMuFreq, H_CDR3, L_CDR3) %>% pairs()
+Data2 %>% filter(Time_Point == 3) %>% select(HMuFreq, LMuFreq, H_CDR3, L_CDR3) %>% pairs()
 ```
 
 
@@ -289,11 +304,10 @@ ID <- as.factor(Data2$MonkeyID)
 trt <- as.factor(Data2$Treatment)
 tp <- as.factor(Data2$Time_Point)
 it <- as.factor(Data2$Isotype)
-fit.manova <- manova(cbind(Data2$L_CDR3, Data2$LMuFreq, Data2$H_CDR3, Data2$HMuFreq) ~ ID + trt+ tp + it)
-summary(fit.manova)
+# four-way manova
+fit.manova4 <- manova(cbind(Data2$L_CDR3, Data2$LMuFreq, Data2$H_CDR3, Data2$HMuFreq) ~ trt + tp + it + ID)
+summary(fit.manova4)
 ```
-
-
 
 # Longitudinal Data Analysis  
 
