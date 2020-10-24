@@ -1,0 +1,179 @@
+---
+title: "Final Project -- Second Draft"
+author: "Kan Luo, Shih-Ni Prim"
+date: "10/23/2020"
+output: 
+  pdf_document:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+library(tidyverse)
+library(ggplot2)
+library(httr)
+library(nlme)
+```
+
+```{r readin Data, echo = FALSE, message = FALSE, warning = FALSE}
+#Readin data from Github url address
+url1 <- 'https://github.com/luokan1227/537P1/raw/master/Data.xlsx'  # main data
+url2 <- 'https://github.com/luokan1227/537P1/raw/master/MonkeyID.xlsx'  # Monkey ID
+GET(url1, write_disk(tf1 <- tempfile(fileext = ".xlsx")))
+GET(url2, write_disk(tf2 <- tempfile(fileext = ".xlsx")))
+Rawdata <- read_excel(tf1)
+MonkeyID <-  read_excel(tf2)
+#Add Monkey ID to raw data
+Rawdata <- inner_join(Rawdata, MonkeyID, by = "H_ID")
+colnames(Rawdata)[2] <- "Time_Point"
+#-----------------------
+#Adjust or add variables
+#-----------------------
+
+# Final data set for all following analysis
+Data <- Rawdata
+
+# extract classifications of antibodies
+HV_Extract <- substr(Data$H_V, 5, 5)
+Data$HV_Extract <- HV_Extract
+
+HD_Extract <- substr(Data$H_D, 5, 5)
+Data$HD_Extract <- HD_Extract
+
+HJ_Extract <- substr(Data$H_J, 5, 5)
+Data$HJ_Extract <- HJ_Extract
+
+LV_Ex <- substr(Data$L_V, 5, 6)
+LV_Extract <- ifelse(str_detect(LV_Ex, "-"), substr(LV_Ex, 1, 1), substr(LV_Ex, 1, 2)) 
+Data$LV_Extract <- LV_Extract
+
+LJ_Extract <- substr(Data$L_J, 5, 5)
+Data$LJ_Extract <- LJ_Extract
+
+# add drug type 
+Data$Drug <- ifelse(Data$Treatment == "group 7", 3, 
+                      ifelse(Data$Treatment == "group 1", 1, 
+                      ifelse(Data$Treatment == "group 2", 1, 
+                      ifelse(Data$Treatment == "group 3", 1, 2))))
+
+Data$Reactivity <- ifelse(Data$Binding > 0.1, 1, 0)
+
+# create a subset with the variables we need plus the extracted information
+Data2 <- Data %>% select(MonkeyID, Drug, Treatment, Time_Point, Isotype, HV_Extract, HD_Extract, HJ_Extract, H_VBase, H_Substitutions, H_Insertions, H_Deletions, HMuFreq, H_CDR3, LV_Extract, LJ_Extract, L_VBase, L_Substitutions, L_Insertions, L_Deletions, LMuFreq, L_CDR3, Binding, Reactivity)
+```
+
+# Introduction  
+
+# Methodologies  
+
+# Data Summaries  
+
+## Contingency Tables  
+
+The study included 20 rhesus macaques.  
+
+```{r}
+table(Data2$MonkeyID)
+```
+There are four time points; one before any procedure was done, and three after vaccine shots were administered to the macaques. In the treatment groups, groups 1-3 represent different doses of drug 1, groups 4-6 represent different doses of drug 2, and group 7 represents the control group. Later we'll look at the effect made by different drugs first and then different doses.  
+
+```{r}
+table(Data2$Time_Point, Data2$Treatment)
+table(Data2$Drug, Data2$Treatment)
+```
+
+Now we look at the table of each marcaque and the corresponding treatment group. As the table shows, each marcaque only received one kidn of treatment.  
+```{r}
+table(Data2$MonkeyID, Data2$Treatment)
+```
+
+
+```{r}
+ggplot(Data2, aes(x = Drug, y = Binding)) + geom_boxplot(aes(group = Drug))
+```
+
+```{r}
+table(Data$Drug, Data$Reactivity)
+table(Data$Time_Point, Data$Reactivity)
+```
+
+
+```{r}
+Data2 %>% group_by(Drug) %>% summarize(avgLMuFreq = mean(LMuFreq), avgHMuFreq = mean(HMuFreq), avgBinding = mean(Binding))
+```
+
+```{r}
+Data2 %>% select(LMuFreq, HMuFreq, L_CDR3, H_CDR3, Binding) %>% pairs()
+```
+
+## Outlier detection
+
+Notice may have outlier in LCDR3 variable.
+
+```{r outlier}
+summary(Data2$L_CDR3)
+subset1 <- Data2 %>% select(L_CDR3, H_CDR3)
+subset1$d2 <- mahalanobis(subset1, colMeans(subset1), cov(subset1))
+subset1$Z <- scale(subset1)
+plot(subset1$d2)
+plot(subset1$Z)
+subset2 <- subset1 %>% arrange(desc(d2), desc(Z)) 
+subset2[1,]
+which(subset1$L_CDR3 == 47)
+```
+Row 972 from `Data2` is in fact an outlier, as shown in the summary and plots above. The value for `L_CDR3` is quite unlikely. Since we can't go back to the original data, we remove the data point and will use the new dataset `Data3`.  
+
+```{r}
+Data2[972,]
+Data3 <- Data2[-972,]
+```
+
+
+
+# Multivariate Data Analysis  
+
+```{r}
+ID <- as.factor(Data3$MonkeyID)
+trt <- as.factor(Data3$Treatment)
+drug <- as.factor(Data3$Drug)
+tp <- as.factor(Data3$Time_Point)
+it <- as.factor(Data3$Isotype)
+# four-way manova
+
+
+fit.manova <- manova(cbind(Data3$L_CDR3, Data3$LMuFreq, Data3$H_CDR3, Data3$HMuFreq, Data3$Binding) ~ drug + tp)
+summary(fit.manova)
+
+fit.gls <- lm(cbind(Data3$L_CDR3, Data3$LMuFreq, Data3$H_CDR3, Data3$HMuFreq, Data3$Binding) ~ drug + tp)
+summary(fit.gls)
+
+fit.logit <- lm(Data3$Reactivity ~ drug*tp)
+summary(fit.logit)
+```
+
+# Longitudinal Data Analysis  
+
+First we don't consider treatments but only plot the mean trend over time.  
+
+$$Y_{ij}=\beta_0+\beta_1 Time_{ij}+e_{ij}$$
+
+```{r}
+# simply connects the mean of each time point
+ggplot(Data3, aes(x = Time_Point, y = Binding)) + geom_point(aes(color = as.factor(Drug))) + geom_jitter() + stat_summary(fun = mean, geom = "line", lwd = 3, color = "red")
+```
+
+
+Here we use Binding as the only response. 
+Prdictors: `Drug`.  
+Random effect for both intercept and slope.  
+
+$$Y_{ij} = \beta_0+\beta_1 t_{ij} + b_{0i} + b_{1i} + e_{ij}$$
+
+```{r}
+lda <- lme(fixed = Binding ~ Time_Point + Drug,
+           random = ~ Time_Point | MonkeyID, data = Data3, method = "REML")
+summary(lda)
+```
+
+

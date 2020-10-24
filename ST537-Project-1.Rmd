@@ -1,3 +1,4 @@
+
 ---
 title: "Final Project: First Draft"
 author: "Kan Luo, Shih-Ni Prim"
@@ -21,6 +22,9 @@ library(nlme)
 
 # Questions for Kan  
 
+* Questions for Kan:
+    * Samples from different organs?
+    * Differences among isotypes?
 * Why are there 7 treatment groups now?
     * Treatment 1-3: different doses for 1st drug
     * Treatment 4-6: different doses for 2nd drug
@@ -226,8 +230,6 @@ Notice may have outlier in LCDR3 variable:
 
 ```{r outlier}
 summary(Data$L_CDR3)
-
-
 ```
 
 ## Mutation Rate
