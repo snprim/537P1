@@ -20,19 +20,6 @@ library(httr)
 library(nlme)
 ```
 
-# Questions for Kan  
-
-* Questions for Kan:
-    * Samples from different organs?
-    * Differences among isotypes?
-* Why are there 7 treatment groups now?
-    * Treatment 1-3: different doses for 1st drug
-    * Treatment 4-6: different doses for 2nd drug
-    * Treatment 7: control
-* Next steps:
-    * add outlier detection
-    * create a new file to include only relevant sections
-
 # Exploratory Data Analysis
 
 ## Data preparation  

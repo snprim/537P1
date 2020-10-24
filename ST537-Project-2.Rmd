@@ -14,7 +14,22 @@ library(tidyverse)
 library(ggplot2)
 library(httr)
 library(nlme)
+library(emmeans)
 ```
+
+# Questions/next steps  
+
+* Questions for Kan:
+    * Samples from different organs?
+    * Differences among isotypes?
+* Why are there 7 treatment groups now?
+    * Treatment 1-3: different doses for 1st drug
+    * Treatment 4-6: different doses for 2nd drug
+    * Treatment 7: control
+* Instead of looking at average of Binding, look at average of reactivity to see the percentage of reactive
+* Variances can be very different in different cells  
+
+# Data Preparation
 
 ```{r readin Data, echo = FALSE, message = FALSE, warning = FALSE}
 #Readin data from Github url address
@@ -100,7 +115,9 @@ table(Data$Time_Point, Data$Reactivity)
 
 
 ```{r}
-Data2 %>% group_by(Drug) %>% summarize(avgLMuFreq = mean(LMuFreq), avgHMuFreq = mean(HMuFreq), avgBinding = mean(Binding))
+Data2 %>% group_by(Drug) %>% summarize(avgLMuFreq = mean(LMuFreq), avgHMuFreq = mean(HMuFreq), avgBinding = mean(Binding), varBinding = var(Binding), avgReact = mean(Reactivity))
+ggplot(Data2, aes(x = Drug, y = Binding)) + geom_point()
+ggplot(Data2, aes(x = Treatment, y = Binding)) + geom_point()
 ```
 
 ```{r}
@@ -151,8 +168,79 @@ summary(fit.gls)
 fit.logit <- lm(Data3$Reactivity ~ drug*tp)
 summary(fit.logit)
 ```
+## Pairwise comparison
+
+Now we take a look at the pairwise comparison for each treatment group.  
+
+```{r}
+respMat <- as.matrix(Data3[,c("L_CDR3", "LMuFreq", "H_CDR3", "HMuFreq", "Binding")])
+# pairwise comparison among treatment groups
+fit1 <- manova(respMat[,1:5] ~ trt)
+# summary(fit1)
+
+vars <- c("L_CDR3", "LMuFreq", "H_CDR3", "HMuFreq", "Binding")
+
+p <- 5
+q1 <- length(unique(trt))
+alpha.old <- 0.05
+nc1 <- p*q1*(q1-1)/2
+alpha.new1 <- alpha.old/nc1
+
+for (i in 1:5){
+  w <- c(0, 0, 0, 0, 0)
+  w[i] <- 1
+  print(paste(vars[i], " pairwise CI's"))
+  cont <- contrast(emmeans(fit1, "trt", weights = w), "pairwise")
+  bb <- confint(cont, level = 1 - alpha.new1, adj = "none")
+  print(bb)
+}
+```
+
+```{r}
+# pairwise comparison among drug groups
+fit2 <- manova(respMat[,1:5] ~ drug)
+# summary(fit2)
+p <- 5
+q2 <- length(unique(drug))
+alpha.old <- 0.05
+nc2 <- p*q2*(q2-1)/2
+alpha.new2 <- alpha.old/nc2
+
+for (i in 1:5){
+  w <- c(0, 0, 0, 0, 0)
+  w[i] <- 1
+  print(paste(vars[i], " pairwise CI's"))
+  cont <- contrast(emmeans(fit2, "drug", weights = w), "pairwise")
+  bb <- confint(cont, level = 1 - alpha.new2, adj = "none")
+  print(bb)
+}
+```
+
+```{r}
+# pairwise comparison among time point
+fit3 <- manova(respMat[,1:5] ~ tp)
+# summary(fit3)
+p <- 5
+q3 <- length(unique(tp))
+alpha.old <- 0.05
+nc3 <- p*q3*(q3-1)/2
+alpha.new3 <- alpha.old/nc3
+
+for (i in 1:5){
+  w <- c(0, 0, 0, 0, 0)
+  w[i] <- 1
+  print(paste(vars[i], " pairwise CI's"))
+  cont <- contrast(emmeans(fit3, "tp", weights = w), "pairwise")
+  bb <- confint(cont, level = 1 - alpha.new3, adj = "none")
+  print(bb)
+}
+```
+
+
 
 # Longitudinal Data Analysis  
+
+* check assumption of compound symmetry or equal variance  
 
 First we don't consider treatments but only plot the mean trend over time.  
 
