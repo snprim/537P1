@@ -1,7 +1,7 @@
 ---
 title: "Final Project -- Second Draft"
 author: "Kan Luo, Shih-Ni Prim"
-date: "10/23/2020"
+date: "10/24/2020"
 output: 
   pdf_document:
     toc: true
@@ -27,9 +27,12 @@ library(emmeans)
     * Treatment 4-6: different doses for 2nd drug
     * Treatment 7: control
 * Instead of looking at average of Binding, look at average of reactivity to see the percentage of reactive
-* Variances can be very different in different cells  
+* Variances can be very different in different cells
+* summaries of data points: time points, treatment groups, response variables, etc. 
 
 # Data Preparation
+
+The resulting dataset from this section is called `Data2`, and one outlier will be removed in a later section, which results in a final dataset `Data3`. So `Data3` is used for analysis. [This section won't be in the final report.]  
 
 ```{r readin Data, echo = FALSE, message = FALSE, warning = FALSE}
 #Readin data from Github url address
@@ -78,19 +81,22 @@ Data$Reactivity <- ifelse(Data$Binding > 0.1, 1, 0)
 Data2 <- Data %>% select(MonkeyID, Drug, Treatment, Time_Point, Isotype, HV_Extract, HD_Extract, HJ_Extract, H_VBase, H_Substitutions, H_Insertions, H_Deletions, HMuFreq, H_CDR3, LV_Extract, LJ_Extract, L_VBase, L_Substitutions, L_Insertions, L_Deletions, LMuFreq, L_CDR3, Binding, Reactivity)
 ```
 
+# Abstract  
+
 # Introduction  
+
+
 
 # Methodologies  
 
 # Data Summaries  
 
-## Contingency Tables  
-
-The study included 20 rhesus macaques.  
+Our data came from a vaccine study, in which 20 rhesus marcaque was given HIV vaccines as well as immunosuppressing treatments that can inhibit human body's mechanism to suppress antibodies and, in theory, enhance the effect of vaccines. The dataset has `r nrow(Data2)` data points, 20 rhesus monkeys. 
 
 ```{r}
 table(Data2$MonkeyID)
 ```
+
 There are four time points; one before any procedure was done, and three after vaccine shots were administered to the macaques. In the treatment groups, groups 1-3 represent different doses of drug 1, groups 4-6 represent different doses of drug 2, and group 7 represents the control group. Later we'll look at the effect made by different drugs first and then different doses.  
 
 ```{r}
