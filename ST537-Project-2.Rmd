@@ -52,24 +52,7 @@ colnames(Rawdata)[2] <- "Time_Point"
 # Final data set for all following analysis
 Data <- Rawdata
 
-# extract classifications of antibodies
-HV_Extract <- substr(Data$H_V, 5, 5)
-Data$HV_Extract <- HV_Extract
-
-HD_Extract <- substr(Data$H_D, 5, 5)
-Data$HD_Extract <- HD_Extract
-
-HJ_Extract <- substr(Data$H_J, 5, 5)
-Data$HJ_Extract <- HJ_Extract
-
-LV_Ex <- substr(Data$L_V, 5, 6)
-LV_Extract <- ifelse(str_detect(LV_Ex, "-"), substr(LV_Ex, 1, 1), substr(LV_Ex, 1, 2)) 
-Data$LV_Extract <- LV_Extract
-
-LJ_Extract <- substr(Data$L_J, 5, 5)
-Data$LJ_Extract <- LJ_Extract
-
-# add drug type 
+# add drug type and reactivity
 Data$Drug <- ifelse(Data$Treatment == "group 7", 3, 
                       ifelse(Data$Treatment == "group 1", 1, 
                       ifelse(Data$Treatment == "group 2", 1, 
@@ -78,7 +61,7 @@ Data$Drug <- ifelse(Data$Treatment == "group 7", 3,
 Data$Reactivity <- ifelse(Data$Binding > 0.1, 1, 0)
 
 # create a subset with the variables we need plus the extracted information
-Data2 <- Data %>% select(MonkeyID, Drug, Treatment, Time_Point, Isotype, HV_Extract, HD_Extract, HJ_Extract, H_VBase, H_Substitutions, H_Insertions, H_Deletions, HMuFreq, H_CDR3, LV_Extract, LJ_Extract, L_VBase, L_Substitutions, L_Insertions, L_Deletions, LMuFreq, L_CDR3, Binding, Reactivity)
+Data2 <- Data %>% select(MonkeyID, Drug, Treatment, Time_Point, Isotype, H_VBase, H_Substitutions, H_Insertions, H_Deletions, HMuFreq, H_CDR3, L_VBase, L_Substitutions, L_Insertions, L_Deletions, LMuFreq, L_CDR3, Binding, Reactivity)
 ```
 
 # Abstract  
@@ -97,27 +80,229 @@ Our data came from a vaccine study, in which 20 rhesus marcaque was given HIV va
 table(Data2$MonkeyID)
 ```
 
+In the current analysis, each row represents one antibody and its measurements. While it is possible to treat the 20 rhesus macaques as the observational units, the analysis will become quite complex. We would have to use information from gene segments of the heavy and light chains of the antibodies to classify each antibody. There are five such segments, and each has 6 to 11 subtypes. (In total, there can be $7*7*6*11*6=$ `r 7*7*6*11*6` combinations of gene segments.) Thus, we decided to follow the convention of vaccine studies and treat each antibody as independent.  
+
+The main goal of the study is to test whether any procedures can incease the diversity of antibodies and thus enhance the effectiveness of vaccines. Our predictors are time points, which indicates time and the number of vaccines given up to that point, treatment or drug, and Isotype. We first take a look at these variables.  
+
 There are four time points; one before any procedure was done, and three after vaccine shots were administered to the macaques. In the treatment groups, groups 1-3 represent different doses of drug 1, groups 4-6 represent different doses of drug 2, and group 7 represents the control group. Later we'll look at the effect made by different drugs first and then different doses.  
 
 ```{r}
 table(Data2$Time_Point, Data2$Treatment)
 table(Data2$Drug, Data2$Treatment)
+table(Data2$Drug, Data2$Treatment)
 ```
 
-Now we look at the table of each marcaque and the corresponding treatment group. As the table shows, each marcaque only received one kidn of treatment.  
+Each marcaque only received one kind of treatment.  
+
 ```{r}
 table(Data2$MonkeyID, Data2$Treatment)
 ```
 
+Next, we'll take a look at the variable `Isotype`. There are 5 kinds of heavy chain for antibodies: IgG, IgA, IgM, IgE, IgD. The two most important kinds are IgG and IgM. IgM mostly occurs in the acute stage of infection, and IgM appears later in blood with better neutralizing potentials.  
 
-```{r}
-ggplot(Data2, aes(x = Drug, y = Binding)) + geom_boxplot(aes(group = Drug))
+```{r Ig Isotype Plot/Table, echo=FALSE}
+# Histogram 
+Iso.order <- c("G", "M", "A", "D", "E") 
+g1 <- ggplot(Data, aes(x=factor(Isotype, levels = Iso.order))) 
+  g1 + geom_bar(stat = "count", width = 0.5, fill = "#012169") + # his plot
+    ggtitle("Ig Isotype") +  #Plot title
+    xlab("Ig Isotype") + ylab("Number of abs") +# X axis and y axis title
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),  #remove background grid
+          panel.background = element_blank(),  #remove background color
+          axis.text.x = element_text(size = 10), # x axis 
+          axis.text.y = element_text(size = 10), # y axis 
+          axis.title.x = element_text(size = 15), # x title 
+          axis.title.y = element_text(size = 15), # y title
+          plot.title = element_text(hjust = 0.5, size = 20) #Title
+          #legend.text = element_text(size=20), #Legend text
+          #legend.title = element_text(size = 20) # Legend title
+          )
+  
+
+g1.1 <- ggplot(Data, aes(x=factor(Isotype, levels = Iso.order))) 
+  g1.1 + geom_bar(stat = "count", width = 0.5, fill = "#012169", aes(x=factor(Isotype, levels = Iso.order), y=..prop.., group=1)) + # his plot
+    facet_wrap( ~ Time_Point) + #by subgroups
+    ggtitle("Ig Isotype") +  #Plot title
+    xlab("Ig Isotype") + ylab("% of abs") +# X axis and y axis title
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),  #remove background grid
+          panel.background = element_blank(),  #remove background color
+          axis.text.x = element_text(size = 10), # x axis 
+          axis.text.y = element_text(size = 10), # y axis 
+          axis.title.x = element_text(size = 15), # x title 
+          axis.title.y = element_text(size = 15), # y title
+          plot.title = element_text(hjust = 0.5, size = 20) #Title
+          #legend.text = element_text(size=20), #Legend text
+          #legend.title = element_text(size = 20) # Legend title
+          )
+
+# Donut Chart
+# Count ab number, create relative new data frame
+IsoData_donut <- data.frame(
+  Isotype = c("G", "M", "A", "D", "E"),
+  count = c(as.numeric(count(filter(Data, Isotype == "G"))), as.numeric(count(filter(Data, Isotype == "M"))), as.numeric(count(filter(Data, Isotype == "A"))), as.numeric(count(filter(Data, Isotype == "D"))), as.numeric(count(filter(Data, Isotype == "E")))))
+#Reorder Isotype
+IsoData_donut <- IsoData_donut %>% mutate(Isotype = factor(x=Isotype, levels = Iso.order))
+
+#Set color code
+Donut_col <- c("#87CEFA", "#00BFFF", "#1E90FF", "#4682B4", "#0000CD")
+
+# Calculate fractions of each isotype
+IsoData_donut$fraction <- round(IsoData_donut$count / sum(IsoData_donut$count) *100, digits = 1)
+
+
+# g2 <- ggplot(IsoData_donut, aes(x = 2, y = fraction, fill = Isotype)) 
+#   g2 + geom_bar(stat = "identity", color = "black", size=0.8) + #make the bar 
+#     coord_polar(theta = "y", start = 0)+  #circle the bar to make a pie chart
+#     ggtitle("Ig Isotype") +  #Title name
+#     geom_text(inherit.aes = F, x=0.5, y=0, data = IsoData_donut, aes(label=paste0(sum(count))), size=12)+  #Middle number of antibody value
+#     scale_fill_manual(values = Donut_col) +  #customize color
+#     theme_void()+  #remove background
+#     xlim(0.5, 2.5) +  #determine the size of hole
+#     theme(plot.title = element_text(hjust = 0.5, size = 20),  # Middle title, and size
+#       axis.ticks=element_blank(), axis.text=element_blank(), axis.title=element_blank()
+#       )
+
+#Table summery of lambda chain V gene
+Isotable <- data.frame(table(Data$Isotype))
+Isotable$per <- Isotable$Freq / sum(Isotable$Freq) *100
+Isotable[,3] <- round(Isotable[,3], digits = 1)
+colnames(Isotable) <- c("Isotype", "Ab #", "Ab %")
+Isotable
+
 ```
 
+
+As expected, we see that IgG and IgM occupy the biggest proportion of all antibodies in all time points. We'll use the variable `Isotype` as a grouping covariate later.  
+
+Next we'll examine our responses: `H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq`, `Binding`, and `Reactivity`. In each antibody, there are two sets of heavy chain and light chain, all of which forming a Y-shape immunoglobulin. Thus many of the variables start with H or L, indicating which chain the information comes from. 
+
+`H_CDR3` and `L_CDR3` indicates the length of the third complementarity-determining region on the variable heavy chain and light chain. The longer they are, the more potential there is to produce diverse antibodies. [Kan, could you check to see if this is correct?] In other words, we want the values to be higher. Below we see that the distributions are roughly normal with the center around 13 for `H_CDR3`, with all data points, and slightly centers for different time points. For the Q-Q plot for `L_CDR3`, we can see that there is one outlier. Without it, the distribution is likely normal. (We'll get to this soon.)  
+
+```{r CDR3 Plot/Table, echo=FALSE}
+g3 <- ggplot(Data, aes(H_CDR3))
+  g3 + geom_bar(stat = "count", width = 0.7, fill = "#012169") +
+    ggtitle("HCDR3") +  #Plot title
+    xlab("HCDR3 Length (aa)") + ylab("Number of abs") +# X axis and y axis title
+    scale_x_continuous(breaks = round(seq(min(Data$H_CDR3), max(Data$H_CDR3), by = 1),1)) + 
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),  #remove background grid
+          panel.background = element_blank(),  #remove background color
+          axis.text.x = element_text(size = 10), # x axis 
+          axis.text.y = element_text(size = 10), # y axis 
+          axis.title.x = element_text(size = 15), # x title 
+          axis.title.y = element_text(size = 15), # y title
+          plot.title = element_text(hjust = 0.5, size = 18) #Title
+          )
+
+g3.1 <- ggplot(Data, aes(H_CDR3))
+  g3.1 + geom_bar(stat = "count", width = 0.7, fill = "#012169") +
+    facet_wrap(~Time_Point) + #by subgroups
+    ggtitle("HCDR3") +  #Plot title
+    xlab("HCDR3 Length (aa)") + ylab("Number of abs") +# X axis and y axis title
+    scale_x_continuous(breaks = round(seq(min(Data$H_CDR3), max(Data$H_CDR3), by = 1),1)) + 
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),  #remove background grid
+          panel.background = element_blank(),  #remove background color
+          axis.text.x = element_text(size = 10), # x axis 
+          axis.text.y = element_text(size = 10), # y axis 
+          axis.title.x = element_text(size = 15), # x title 
+          axis.title.y = element_text(size = 15), # y title
+          plot.title = element_text(hjust = 0.5, size = 18) #Title
+          )
+
+g4 <- ggplot(Data, aes(L_CDR3))
+  g4 + geom_bar(stat = "count", width = 0.7, fill = "#012169") +
+    ggtitle("L_CDR3") +  #Plot title
+    xlab("LCDR2 Length (aa)") + ylab("Number of abs") +# X axis and y axis title
+    scale_x_continuous(breaks = round(seq(min(Data$L_CDR3), max(Data$L_CDR3), by = 1),1)) + 
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),  #remove background grid
+          panel.background = element_blank(),  #remove background color
+          axis.text.x = element_text(size = 10), # x axis 
+          axis.text.y = element_text(size = 10), # y axis 
+          axis.title.x = element_text(size = 15), # x title 
+          axis.title.y = element_text(size = 15), # y title
+          plot.title = element_text(hjust = 0.5, size = 18) #Title
+          )
+
+par(mfrow = c(1,2))
+qqnorm(Data$H_CDR3, main = "Q-Q Plot of H_CDR3", pch = 19, cex = 1)
+qqnorm(Data$L_CDR3, main = "Q-Q Plot of L_CDR3", pch = 19, cex = 1)
+```
+
+`HMuFreq` and `LMuFreq` are calculated by dividing `H_Substitution` by `H_VBase` for heavy chain and similarly for light chain. These two variables show how much the antibodies mutate. For the purpose of the study, the higher the mutation rate is, the better. Below we see some comparison of mutation rate between heavy chain and light chain. (Kappa and Lambda are two kinds of light chain.) [Kan, is there a reason to split up light chain into Kappa and Lambda? Could we simply plot heavy chain vs. light chain?]  
+
+```{r mutation rate, echo=FALSE, warning=FALSE}
+par(mfrow = c(1,2))
+qqnorm(Data$HMuFreq, main = "Q-Q Plot of HMuFreq", pch = 19, cex = 1)
+qqnorm(Data$LMuFreq, main = "Q-Q Plot of LMuFreq", pch = 19, cex = 1)
+
+#Mutation rate sub data
+MutSubData <- Data %>% select(Time_Point, Isotype, H_ID, H_CDR3, HMuFreq, L_ID, L_CDR3, LMuFreq)
+MutSubData$KMutation <- NA
+MutSubData$LMutation <- NA
+MutSubData$KMutation <- ifelse(str_starts(MutSubData$L_ID, "K"), MutSubData$LMuFreq*100, NA)
+MutSubData$LMutation <- ifelse(str_starts(MutSubData$L_ID, "L"), MutSubData$LMuFreq*100, NA)
+MutSubData$HMuFreq <- MutSubData$HMuFreq*100
+
+#summary table
+HMut <- summary(MutSubData$HMuFreq)
+KMut <- summary(MutSubData$KMutation)
+LMut <- summary(MutSubData$LMutation)
+MutTable <- cbind(HMut[1:6], KMut[1:6], LMut[1:6]) #get rid of NA column by just choose col 1:6
+MutTable <- data.frame(round(MutTable, digits = 2)) %>% rename("H_Mutation%" = X1, "K_Mutation%" = X2, "L_Mutation%" = X3)
+MutTable
+
+#create a list of HKL mutation rates
+Mutlist <- list("Heavy" = MutSubData$HMuFreq, "Kappa" = MutSubData$KMutation, "Lambda" = MutSubData$LMutation)
+
+#scatter plot
+stripchart(Mutlist, vertical = TRUE, method = "jitter", pch = 20, cex = 0.6, col = "#012169", ylab = "Mutation rate (%)", main = "H/K/L mutation rate")
+#Draw the mean line 
+MutMean <- as.numeric(MutTable[4,])  #MutTable[4,] for mean, MutTable[3,] for median
+locmean <- 1:length(MutMean)
+segments(locmean - 0.15, MutMean , locmean + 0.15, MutMean , col = "red", lwd = 2)
+
+
+#boxplot
+boxplot(Mutlist, names = c("Heavy", "Kappa", "Lambda"), ylab="Mutation rate (%)", main = "H/K/L mutation rate")
+#stripchart(Mutlist, vertical = TRUE, method = "jitter", add = TRUE, pch = 20, col = "#012169") # choose overlay points or not
+
+# H/K/L by Time_Point variable or any variables, can also choose third variable if wanted
+g5 <- ggplot(MutSubData, aes(x=Time_Point, y=HMuFreq)) 
+  g5 + geom_boxplot(outlier.shape = NA) +
+    ggtitle("H_Mutation") +
+    geom_jitter(position=position_jitter(width=0.2, height=0)) + #add individual points
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),  #remove background grid
+      panel.background = element_blank(),  #remove background color
+      axis.text.x = element_text(size = 10), # x axis 
+      axis.text.y = element_text(size = 10), # y axis 
+      axis.title.x = element_text(size = 15), # x title 
+      axis.title.y = element_text(size = 15), # y title
+      plot.title = element_text(hjust = 0.5, size = 18) #Title
+      )
+```
+
+Lastly, `Binding` indicates the rate of neutralizing, meaning how much the antibodies bind with the virus and thus make the virus ineffective. This is the most important measure of the study. `Reactivity` turns `Binding` into a binary variable; `Binding` rate above 0.1 is considered reactive. In the Q-Q plot of `Binding`, we can see that it is not normally distributed. Thus the `Reactivity` measure might be a better response to use. However, since our sample size is larger than 2000, we can use the Central Limit Theorem and assume normality.  
+
 ```{r}
+qqnorm(Data2$Binding)
+table(Data2$Reactivity)
+```
+Let's take a look at these response variables and check whether they might be correlated.  
+
+```{r}
+Data2 %>% select(LMuFreq, HMuFreq, L_CDR3, H_CDR3, Binding, Reactivity) %>% pairs()
+```
+
+Now we use some plots to see whether the response variables might be different for different time points, treatment groups or drugs, and grouping covariate (`Isotype`).  
+
+```{r}
+ggplot(Data2, aes(x = Reactivity)) + geom_bar(aes(fill = as.factor(Time_Point)), position = "dodge") + facet_wrap( ~ Drug, labeller = label_both) + scale_fill_discrete(name = "Time Point")
+ggplot(Data2, aes(x = Time_Point, y = Binding)) + geom_point() + facet_wrap( ~ Drug, labeller = label_both) + scale_fill_discrete(name = "Time Point")
 table(Data$Drug, Data$Reactivity)
 table(Data$Time_Point, Data$Reactivity)
 ```
+
+`Binding` or `Reactivity` do seem to be affected by various predictors.  
+Different drugs appear to have different boxplots in terms of the `Binding` variable.  
 
 
 ```{r}
@@ -126,21 +311,18 @@ ggplot(Data2, aes(x = Drug, y = Binding)) + geom_point()
 ggplot(Data2, aes(x = Treatment, y = Binding)) + geom_point()
 ```
 
-```{r}
-Data2 %>% select(LMuFreq, HMuFreq, L_CDR3, H_CDR3, Binding) %>% pairs()
-```
 
 ## Outlier detection
 
-Notice may have outlier in LCDR3 variable.
+Before we go into analyses, notice may have outlier in LCDR3 variable.  
 
 ```{r outlier}
 summary(Data2$L_CDR3)
 subset1 <- Data2 %>% select(L_CDR3, H_CDR3)
 subset1$d2 <- mahalanobis(subset1, colMeans(subset1), cov(subset1))
 subset1$Z <- scale(subset1)
-plot(subset1$d2)
-plot(subset1$Z)
+plot(subset1$d2, pch = 19)
+plot(subset1$Z, pch = 19)
 subset2 <- subset1 %>% arrange(desc(d2), desc(Z)) 
 subset2[1,]
 which(subset1$L_CDR3 == 47)
@@ -151,8 +333,6 @@ Row 972 from `Data2` is in fact an outlier, as shown in the summary and plots ab
 Data2[972,]
 Data3 <- Data2[-972,]
 ```
-
-
 
 # Multivariate Data Analysis  
 
@@ -271,3 +451,24 @@ summary(lda)
 ```
 
 
+# List of variables  
+
+* Treatment: Treatment A is the mock control, and treatment B and C are two different kinds of Treg inhibitor treatments.
+* Time Points: 0 represents before immunization; 1 represents 2 weeks post 1st immunization; 2 represents 2 weeks post 2nd immunization; and 3 represents 2 weeks post 3rd immunization, respectively.
+* Isotype: the category of antibody type
+* H_ID and L_ID: heavy chain and light chain IDs for the particular observation
+* H_V, H_D and H_J: the gene segments used in heavy chain VDJ recombination in that antibody. The same applies to L_V and L_J
+* H_VBase: the number of nucleotide of the heavy chain variable region
+* H_Substitutions, H_Insertions, H_Deletions: the number of relative nucleotide mutations.
+* HMuFreq: calculated by H_Substitutions / H_VBase
+* H_CDR3: the number of amino acid of the heavy chain’s third complementarity determining region 
+* Binding: affinity of antibodies against a selected HIV glycoprotein. The larger value indicates stronger binding  
+
+# Reference  
+
+The dataset, [which can be found here](https://github.com/luokan1227/537P1), was provided by Kan Luo, as he was one of authors for the following four publications that used the dataset:  
+
+1. Luo K, Liao HX, Zhang R, et al. Tissue memory B cell repertoire analysis after ALVAC/AIDSVAX B/E gp120 immunization of rhesus macaques. *JCI Insight*. 2016;1(20):e88522. Published 2016 Dec 8. doi:10.1172/jci.insight.88522
+2. Bradley, T., Kuraoka, M., Yeh, C.-H., Tian, M., Chen, H., Cain, D. W., . . . Haynes, B. F. (2020). Immune checkpoint modulation enhances HIV-1 antibody induction. *Nature Communications*, 11(1), 948. doi:10.1038/s41467-020-14670-w
+3. Easterhoff, D., Pollara, J., Luo, K., Tolbert, W. D., Young, B., Mielke, D., . . . Ferrari, G. (2020). Boosting with AIDSVAX B/E Enhances Env Constant Region 1 and 2 Antibody-Dependent Cellular Cytotoxicity Breadth and Potency. *Journal of Virology*, 94(4), e01120-01119. doi:10.1128/jvi.01120-19
+4. Wiehe, K., Easterhoff, D., Luo, K., Nicely, N. I., Bradley, T., Jaeger, F. H., Dennison, S. M., Zhang, R., Lloyd, K. E., Stolarchuk, C., Parks, R., Sutherland, L. L., Scearce, R. M., Morris, L., Kaewkungwal, J., Nitayaphan, S., Pitisuttithum, P., Rerks-Ngarm, S., Sinangil, F., Phogat, S., … Haynes, B. F. (2014). Antibody light-chain-restricted recognition of the site of immune pressure in the RV144 HIV-1 vaccine trial is phylogenetically conserved. *Immunity*, 41(6), 909–918. https://doi.org/10.1016/j.immuni.2014.11.014  
