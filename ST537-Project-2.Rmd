@@ -8,7 +8,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE, eval = TRUE, message = FALSE, warning = FALSE)
 library(readxl)
 library(tidyverse)
 library(ggplot2)
@@ -19,22 +19,19 @@ library(emmeans)
 
 # Questions/next steps  
 
-* Questions for Kan:
-    * Samples from different organs?
-    * Differences among isotypes?
-* Why are there 7 treatment groups now?
-    * Treatment 1-3: different doses for 1st drug
-    * Treatment 4-6: different doses for 2nd drug
-    * Treatment 7: control
+* Questions for Kan marked as [Kan...] below.
+* Comments for future addition and revisions in [...]
 * Instead of looking at average of Binding, look at average of reactivity to see the percentage of reactive
 * Variances can be very different in different cells
-* summaries of data points: time points, treatment groups, response variables, etc. 
+* How to hide message from API?
+* The resulting dataset from this section is called `Data2`, and one outlier will be removed in a later section, which results in a final dataset `Data3`. So `Data3` is used for analysis.
+* Who can figure out how to put all figures and tables after all text and before supplmental materials?
+* Use the caret package to do training and predition?
+* Please do condense any tables or figures if you see a way to do so.
+* Longitudinal analysis: consider how to show whether time point 2 is the peak and if the difference is significant  
 
-# Data Preparation
 
-The resulting dataset from this section is called `Data2`, and one outlier will be removed in a later section, which results in a final dataset `Data3`. So `Data3` is used for analysis. [This section won't be in the final report.]  
-
-```{r readin Data, echo = FALSE, message = FALSE, warning = FALSE}
+```{r readin Data}
 #Readin data from Github url address
 url1 <- 'https://github.com/luokan1227/537P1/raw/master/Data.xlsx'  # main data
 url2 <- 'https://github.com/luokan1227/537P1/raw/master/MonkeyID.xlsx'  # Monkey ID
@@ -68,9 +65,13 @@ Data2 <- Data %>% select(MonkeyID, Drug, Treatment, Time_Point, Isotype, H_VBase
 
 # Introduction  
 
+A dominant vaccine development strategy is to induce neutralizing antibodies by immunizing humans with the virus’ glycoproteins. However, HIV vaccines that adopted this strategy mostly failed due to the fact that HIV is an RNA virus, which mutates rapidly to escape the inhibition of neutralizing antibodies. In other words, by the time the body generates neutralizing antibodies against the glycoproteins of some HIV strains, the RNA virus has already mutated. Thus, the existing neutralizing antibody fails to recognize, bind with, and neutralize the HIV virus. One possible solution is to increase the number of potential neutralizing antibodies that will cycle in the body by releasing a variety of antibodies after glycoprotein immunization.  
 
+Our dataset includes 23 variables (measurements of antibodies) after 20 rhesus macaques were given the same HIV vaccine at three different time points and one of three randomly selected anti-Treg treatments. Although only 20 animals were in the study, antibodies are viewed as independent in the study of vaccines, and therefore we treat these 2,239 observations as independent. Blood samples were collected two weeks after vaccine dosing, and antibodies were isolated from those samples.  A different number of antibodies were collected from each blood sample, limited by assay yield. Each observation contains information about the antibody isolated post the glycoprotein immunization. For our final project, we plan to determine if the different Treg treatments and number of vaccine injections cause changes in the antibody characteristics and if the changes are related to immunization/treatment timepoints.  
 
 # Methodologies  
+
+During the experiment, monkeys (rhesus macaques) were given glycoprotein immunization and supplemental antibody doses, as well as one of three treatments (two experimental regulatory T-cell  suppression treatments and one control). Regulatory T (Treg) cells prevent autoimmune diseases and suppress allergic reactions by inhibiting adaptive antibody immune response in the germinal center. Theoretically, this adaptive response lowers the effectiveness of vaccines. Thus the experiment used T-cell suppression treatments to investigate  the effect on immunization. These drugs are widely used in post transplant immunosuppression treatment to prevent rejection.  
 
 # Data Summaries  
 
@@ -100,7 +101,7 @@ table(Data2$MonkeyID, Data2$Treatment)
 
 Next, we'll take a look at the variable `Isotype`. There are 5 kinds of heavy chain for antibodies: IgG, IgA, IgM, IgE, IgD. The two most important kinds are IgG and IgM. IgM mostly occurs in the acute stage of infection, and IgM appears later in blood with better neutralizing potentials.  
 
-```{r Ig Isotype Plot/Table, echo=FALSE}
+```{r Ig Isotype Plot/Table}
 # Histogram 
 Iso.order <- c("G", "M", "A", "D", "E") 
 g1 <- ggplot(Data, aes(x=factor(Isotype, levels = Iso.order))) 
@@ -336,27 +337,40 @@ Data3 <- Data2[-972,]
 
 # Multivariate Data Analysis  
 
+Now we want to test whether predictors `Drug` and `Isotype` have effects on the five responses: `H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq`, and `Binding`. We choose `Binding` here, because all the variables are continuous. We will use `Reactivity` separately when we use logistic regression. Although `Time_Point` is also one of the predictors, we will use it for longitudinal analysis in the next section.  
+
+First, we use manova to test effects. Since we have a large same size (n = 2464), we can assume normality. In the output, we can see that the main effects of `Drug` and `Isotype` and the interaction effects are all significant.  
+
 ```{r}
 ID <- as.factor(Data3$MonkeyID)
 trt <- as.factor(Data3$Treatment)
 drug <- as.factor(Data3$Drug)
 tp <- as.factor(Data3$Time_Point)
 it <- as.factor(Data3$Isotype)
-# four-way manova
 
-
-fit.manova <- manova(cbind(Data3$L_CDR3, Data3$LMuFreq, Data3$H_CDR3, Data3$HMuFreq, Data3$Binding) ~ drug + tp)
+fit.manova <- manova(cbind(Data3$H_CDR3, Data3$HMuFreq, Data3$L_CDR3, Data3$LMuFreq, Data3$Binding) ~ drug*it)
 summary(fit.manova)
-
-fit.gls <- lm(cbind(Data3$L_CDR3, Data3$LMuFreq, Data3$H_CDR3, Data3$HMuFreq, Data3$Binding) ~ drug + tp)
-summary(fit.gls)
-
-fit.logit <- lm(Data3$Reactivity ~ drug*tp)
-summary(fit.logit)
 ```
+
+We next use multiple linear regression.  
+
+```{r}
+fit.gls <- lm(cbind(Data3$L_CDR3, Data3$LMuFreq, Data3$H_CDR3, Data3$HMuFreq, Data3$Binding) ~ drug*it)
+summary(fit.gls)
+```
+
+Finally, we use logistic regression.  
+
+```{r}
+fit.logit <- lm(Data3$Reactivity ~ drug*it)
+summary(fit.logit)
+
+```
+
+
 ## Pairwise comparison
 
-Now we take a look at the pairwise comparison for each treatment group.  
+To know more details about which groups have different means, we use pairwise comparisons for each treatment group, drug, and Isotype. (We set $\alpha$ as 0.05, and it is adjusted based on the number of pairs and variables being compared.)  
 
 ```{r}
 respMat <- as.matrix(Data3[,c("L_CDR3", "LMuFreq", "H_CDR3", "HMuFreq", "Binding")])
@@ -404,10 +418,10 @@ for (i in 1:5){
 
 ```{r}
 # pairwise comparison among time point
-fit3 <- manova(respMat[,1:5] ~ tp)
+fit3 <- manova(respMat[,1:5] ~ it)
 # summary(fit3)
 p <- 5
-q3 <- length(unique(tp))
+q3 <- length(unique(it))
 alpha.old <- 0.05
 nc3 <- p*q3*(q3-1)/2
 alpha.new3 <- alpha.old/nc3
@@ -416,40 +430,146 @@ for (i in 1:5){
   w <- c(0, 0, 0, 0, 0)
   w[i] <- 1
   print(paste(vars[i], " pairwise CI's"))
-  cont <- contrast(emmeans(fit3, "tp", weights = w), "pairwise")
+  cont <- contrast(emmeans(fit3, "it", weights = w), "pairwise")
   bb <- confint(cont, level = 1 - alpha.new3, adj = "none")
   print(bb)
 }
 ```
 
+Here are the pairs that have significant differences:  
 
+* Treatment
+    * L_CDR3: none
+    * LMuFreq: none
+    * H_CDR3: 
+        * group 1 > group 4
+    * HMuFreq: 
+        * group 1 > group 7
+        * group 3 < group 5
+        * group 3 < group 6
+        * group 5 > group 7
+        * group 6 > group 7
+    * Binding:
+        * group 1 < group 2
+        * group 1 > group 6
+        * group 2 > group 3
+        * group 2 > group 4
+        * group 2 > group 5
+        * group 2 > group 6
+        * group 3 < group 7
+        * group 4 > group 6
+        * group 4 < group 7
+        * group 5 < group 7
+        * group 6 < group 7
+* Drug
+    * L_CDR3: none
+    * LMuFreq: none
+    * H_CDR3: 
+        * 1 > 2
+    * HMuFreq: 
+        * 1 < 2
+        * 1 > 3
+        * 2 > 3
+    * Binding: 
+        * 1 < 3
+        * 2 < 3
+* Isotype
+    * L_CDR3: none
+    * LMuFreq: none
+    * H_CDR3: 
+        * IgD < IgG
+    * HMuFreq: 
+        * IgD < IgG
+        * IgG > IgM
+    * Binding: 
+        * IgA < IgG
+        * IgD < IgG
+        * IgG > IgM
+
+In short, `L_CDR3` and `LMuFreq` do not have significnat paired differences.  
+
+For `H_CDR3`, treatment group 1 (drug 1) is higher than treatment group 7 (control), and IgG has a longer H_CDR3 length than IgD.  
+
+For `HMuFreq`, drug 2 has the highest mean, followed by drug 1 and control. More specifically, treatment groups 5 and 6 (two doses in drug 2) have the highest mutation rates. IgG has higher mutation rate than IgD.  
+
+For `Binding`, drug 3 has the highest mean, but drug 1 and drug 2 do not have significant differences. IgG has higher binding rate than IgA, IgD, and IgM.  
+
+We could conclude that the drugs/treatment groups do increase mutation rate; however, they do not increase binding rate. That is to say, although the treatments do help increase the diversity of antibodies, they are not specific to the HIV antigens and thus do not increase binding. 
 
 # Longitudinal Data Analysis  
 
-* check assumption of compound symmetry or equal variance  
-
-First we don't consider treatments but only plot the mean trend over time.  
+First we don't consider treatments but only plot the mean trend over time. The plot shows that bindign does vary over time. The red line shows the mean trend over time, and the blue line shows the variance over time. The variance does not seem equal over time, so we will have to use unequal variance for the covariance structure.  
 
 $$Y_{ij}=\beta_0+\beta_1 Time_{ij}+e_{ij}$$
 
 ```{r}
 # simply connects the mean of each time point
-ggplot(Data3, aes(x = Time_Point, y = Binding)) + geom_point(aes(color = as.factor(Drug))) + geom_jitter() + stat_summary(fun = mean, geom = "line", lwd = 3, color = "red")
+ggplot(Data3, aes(x = Time_Point, y = Binding)) + geom_point(stat = "identity", aes(color = as.factor(Drug))) + geom_jitter() + stat_summary(fun = mean, geom = "line", lwd = 2, color = "red") + stat_summary(fun = var, geom = "line", lwd = 2, color = "blue") + scale_color_discrete(name = "Drug")
+
 ```
 
+Here we use `Binding` as the response, `Time_Point` as the time factor, and `Drug` as the covariates. Random effect for both intercept and slope. Now we want to add one covariate: `Drug`. We use two indicator variables: `D1` and `D2`, where  
 
-Here we use Binding as the only response. 
-Prdictors: `Drug`.  
-Random effect for both intercept and slope.  
+$$D1=
+\begin{cases}
+1 & \text{if Drug = 1} \\
+0 & \text{otherwise}
+\end{cases}
+$$
 
-$$Y_{ij} = \beta_0+\beta_1 t_{ij} + b_{0i} + b_{1i} + e_{ij}$$
+$$D2=
+\begin{cases}
+1 & \text{if Drug = 2} \\
+0 & \text{otherwise}
+\end{cases}
+$$
+
+Assuming that the random effects are the same for each drug, our full model is: 
+
+$$Y_{ij} = \beta_0+ \beta_1 Time_{ij} + D1_i(\beta_2+\beta_3 Time_{ij}) + D2_i (\beta_4+\beta_5 Time_{ij}) + b_{0i} + b_{1i} Time_{ij} + e_{ij}$$  
+Drug 1: $Y_{ij} = \beta_0+\beta_1 Time_{ij} + \beta_2+\beta_3 Time_{ij} + b_{0i} + b_{1i} Time_{ij} + e_{ij}$  
+Drug 2: $Y_{ij} = \beta_0+\beta_1 Time_{ij} + \beta_4+\beta_5 Time_{ij} + b_{0i} + b_{1i} Time_{ij} + e_{ij}$  
+Drug 3: $Y_{ij} = \beta_0+\beta_1 Time_{ij} + b_{0i} + b_{1i} Time_{ij} + e_{ij}$  
+
+[need to list $\mathbf{D}$ and $\Sigma$]
+
+
 
 ```{r}
-lda <- lme(fixed = Binding ~ Time_Point + Drug,
-           random = ~ Time_Point | MonkeyID, data = Data3, method = "REML")
+dataLDA <- data.frame(id = Data3$MonkeyID, binding = Data3$Binding, Time_Point = Data3$Time_Point, D1 = as.numeric(Data3$Drug == 1), D2 = as.numeric(Data3$Drug == 2))
+# head(dataLDA)
+
+lda <- lme(fixed = binding ~ Time_Point + D1 + D1:Time_Point + D2 + D2:Time_Point,
+           random = ~ Time_Point | ID, data = dataLDA, method = "REML")
 summary(lda)
 ```
 
+The p-values for `Drug` and the interaction of `Drug` and `Time_Point` are large. So we try another model with `Time_Point` as the only predictor.  
+
+$$Y_{ij} = \beta_0+ \beta_1 Time_{ij} + b_{0i} + b_{1i} Time_{ij} + e_{ij}$$  
+[need to list $\mathbf{D}$ and $\Sigma$]
+[need to consider whether time point 2 is the optimal point]
+
+```{r}
+lda2 <- lme(fixed = binding ~ Time_Point,
+           random = ~ Time_Point | ID, data = dataLDA, method = "REML")
+summary(lda2)
+```
+
+This simpler model has lower AIC and BIC, as shown below. So we prefer the model with `Time_Point` as the predictor and, with the low p-values of the slope of `Time_Point`, conclude that the binding rates vary over time. In other words, the number of HIV vaccines given do affect the binding rate, but the drugs given do not have significant effects.  
+
+```{r}
+data.frame(cbind(AIC(lda, lda2), BIC(lda, lda2)))
+```
+
+
+# Discussion  
+
+
+
+# Conclusion  
+
+Although the study provides evidence to support the concept of using immunosuppressing treatments to increase diversity, the added diversity does not seem to improve the binding rate. In other words, this study does not provide evidence to show that the added treatments can enhance the effects of HIV vaccines. 
 
 # List of variables  
 
