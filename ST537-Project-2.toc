@@ -1,4 +1,4 @@
-\contentsline {section}{Questions/next steps}{1}{section*.2}%
+\contentsline {section}{Notes/questions}{1}{section*.2}%
 \contentsline {section}{Abstract}{2}{section*.3}%
 \contentsline {section}{Introduction}{2}{section*.4}%
 \contentsline {section}{Methodologies}{2}{section*.5}%
@@ -7,7 +7,6 @@
 \contentsline {section}{Multivariate Data Analysis}{20}{section*.8}%
 \contentsline {subsection}{Pairwise comparison}{25}{section*.9}%
 \contentsline {section}{Longitudinal Data Analysis}{31}{section*.10}%
-\contentsline {section}{Discussion}{33}{section*.11}%
-\contentsline {section}{Conclusion}{33}{section*.12}%
-\contentsline {section}{List of variables}{33}{section*.13}%
-\contentsline {section}{Reference}{34}{section*.14}%
+\contentsline {section}{Discussion}{34}{section*.11}%
+\contentsline {section}{List of variables}{34}{section*.12}%
+\contentsline {section}{Reference}{34}{section*.13}%

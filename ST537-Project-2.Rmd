@@ -1,7 +1,7 @@
 ---
 title: "Final Project -- Second Draft"
 author: "Kan Luo, Shih-Ni Prim"
-date: "10/24/2020"
+date: "10/25/2020"
 output: 
   pdf_document:
     toc: true
@@ -15,22 +15,20 @@ library(ggplot2)
 library(httr)
 library(nlme)
 library(emmeans)
+library(GGally)
 ```
 
-# Questions/next steps  
+# Notes/questions  
 
+* The resulting dataset from this section is called `Data2`, and one outlier will be removed in a later section, which results in a final dataset `Data3`. So `Data3` is used for analysis.
 * Questions for Kan marked as [Kan...] below.
 * Comments for future addition and revisions in [...]
 * Instead of looking at average of Binding, look at average of reactivity to see the percentage of reactive
-* Variances can be very different in different cells
-* How to hide message from API?
-* The resulting dataset from this section is called `Data2`, and one outlier will be removed in a later section, which results in a final dataset `Data3`. So `Data3` is used for analysis.
 * Who can figure out how to put all figures and tables after all text and before supplmental materials?
-* Use the caret package to do training and predition?
-* Please do condense any tables or figures if you see a way to do so.
-* Longitudinal analysis: consider how to show whether time point 2 is the peak and if the difference is significant  
+* Dig deeper into analysis results?
+* Not sure what sections the professor wants  
 
-
+[How to hide message from API?]  
 ```{r readin Data}
 #Readin data from Github url address
 url1 <- 'https://github.com/luokan1227/537P1/raw/master/Data.xlsx'  # main data
@@ -65,17 +63,18 @@ Data2 <- Data %>% select(MonkeyID, Drug, Treatment, Time_Point, Isotype, H_VBase
 
 # Introduction  
 
-A dominant vaccine development strategy is to induce neutralizing antibodies by immunizing humans with the virus’ glycoproteins. However, HIV vaccines that adopted this strategy mostly failed due to the fact that HIV is an RNA virus, which mutates rapidly to escape the inhibition of neutralizing antibodies. In other words, by the time the body generates neutralizing antibodies against the glycoproteins of some HIV strains, the RNA virus has already mutated. Thus, the existing neutralizing antibody fails to recognize, bind with, and neutralize the HIV virus. One possible solution is to increase the number of potential neutralizing antibodies that will cycle in the body by releasing a variety of antibodies after glycoprotein immunization.  
+A dominant vaccine development strategy is to induce neutralizing antibodies by immunizing humans with the virus’ glycoproteins. However, HIV vaccines that adopted this strategy mostly failed due to the fact that HIV is an RNA virus, which mutates rapidly to escape the inhibition of neutralizing antibodies. By the time the body generates neutralizing antibodies against the glycoproteins of some HIV strains, the RNA virus has already mutated. Thus, the existing neutralizing antibody fails to recognize, bind with, and neutralize the HIV virus. One possible solution is to increase the number of potential neutralizing antibodies that will cycle in the body by releasing a variety of antibodies after glycoprotein immunization.  
 
-Our dataset includes 23 variables (measurements of antibodies) after 20 rhesus macaques were given the same HIV vaccine at three different time points and one of three randomly selected anti-Treg treatments. Although only 20 animals were in the study, antibodies are viewed as independent in the study of vaccines, and therefore we treat these 2,239 observations as independent. Blood samples were collected two weeks after vaccine dosing, and antibodies were isolated from those samples.  A different number of antibodies were collected from each blood sample, limited by assay yield. Each observation contains information about the antibody isolated post the glycoprotein immunization. For our final project, we plan to determine if the different Treg treatments and number of vaccine injections cause changes in the antibody characteristics and if the changes are related to immunization/treatment timepoints.  
+Our dataset includes measurements of antibodies measured in 20 rhesus macaques after they were given the same HIV vaccine at three different time points and one of three randomly selected anti-Treg treatments. Blood samples were collected two weeks after vaccine dosing, and antibodies were isolated from those samples. A different number of antibodies were collected from each blood sample, limited by assay yield. Each observation contains information about the antibody isolated post the glycoprotein immunization. In the current report, we test if the different Treg treatments and number of vaccine injections cause changes in the antibody characteristics and if the changes are related to immunization/treatment timepoints.  
 
 # Methodologies  
 
-During the experiment, monkeys (rhesus macaques) were given glycoprotein immunization and supplemental antibody doses, as well as one of three treatments (two experimental regulatory T-cell  suppression treatments and one control). Regulatory T (Treg) cells prevent autoimmune diseases and suppress allergic reactions by inhibiting adaptive antibody immune response in the germinal center. Theoretically, this adaptive response lowers the effectiveness of vaccines. Thus the experiment used T-cell suppression treatments to investigate  the effect on immunization. These drugs are widely used in post transplant immunosuppression treatment to prevent rejection.  
+During the experiment, 20 rhesus macaques were given glycoprotein immunization and supplemental antibody doses, as well as one of three treatments (two experimental regulatory T-cell suppression treatments and one control). Regulatory T (Treg) cells prevent autoimmune diseases and suppress allergic reactions by inhibiting adaptive antibody immune response in the germinal center. Theoretically, this adaptive response lowers the effectiveness of vaccines. Thus the experiment used T-cell suppression treatments to investigate  the effect on immunization. These drugs are widely used in post transplant immunosuppression treatment to prevent rejection.  
 
 # Data Summaries  
+[Feel free to condense any tables or figures or make them look better.]
 
-Our data came from a vaccine study, in which 20 rhesus marcaque was given HIV vaccines as well as immunosuppressing treatments that can inhibit human body's mechanism to suppress antibodies and, in theory, enhance the effect of vaccines. The dataset has `r nrow(Data2)` data points, 20 rhesus monkeys. 
+The dataset has `r nrow(Data2)` data points and 20 rhesus monkeys. We first present our exploratory data analysis and summaries.  
 
 ```{r}
 table(Data2$MonkeyID)
@@ -83,7 +82,7 @@ table(Data2$MonkeyID)
 
 In the current analysis, each row represents one antibody and its measurements. While it is possible to treat the 20 rhesus macaques as the observational units, the analysis will become quite complex. We would have to use information from gene segments of the heavy and light chains of the antibodies to classify each antibody. There are five such segments, and each has 6 to 11 subtypes. (In total, there can be $7*7*6*11*6=$ `r 7*7*6*11*6` combinations of gene segments.) Thus, we decided to follow the convention of vaccine studies and treat each antibody as independent.  
 
-The main goal of the study is to test whether any procedures can incease the diversity of antibodies and thus enhance the effectiveness of vaccines. Our predictors are time points, which indicates time and the number of vaccines given up to that point, treatment or drug, and Isotype. We first take a look at these variables.  
+The main goal of the study is to test 1) whether the Treg suppression treatments can increase the diversity of antibodies and 2) enhance the effectiveness of vaccines. Our predictors are time points, which indicates time and the number of vaccines given up to that point, treatment or drug, and Isotype. We first take a look at these variables.  
 
 There are four time points; one before any procedure was done, and three after vaccine shots were administered to the macaques. In the treatment groups, groups 1-3 represent different doses of drug 1, groups 4-6 represent different doses of drug 2, and group 7 represents the control group. Later we'll look at the effect made by different drugs first and then different doses.  
 
@@ -171,7 +170,6 @@ colnames(Isotable) <- c("Isotype", "Ab #", "Ab %")
 Isotable
 
 ```
-
 
 As expected, we see that IgG and IgM occupy the biggest proportion of all antibodies in all time points. We'll use the variable `Isotype` as a grouping covariate later.  
 
@@ -287,10 +285,10 @@ Lastly, `Binding` indicates the rate of neutralizing, meaning how much the antib
 qqnorm(Data2$Binding)
 table(Data2$Reactivity)
 ```
-Let's take a look at these response variables and check whether they might be correlated.  
+Let's take a look at these response variables and check whether they might be correlated. In the plot below, we can see that none of the response variables are highly correlated, except for `Binding` and `Reactivity`, which is expected, because `Reactivity` is a binary variable derived from `Binding`. We will only choose one of these two variables in each analysis based on the type of analysis. [What else to point out here?]  
 
 ```{r}
-Data2 %>% select(LMuFreq, HMuFreq, L_CDR3, H_CDR3, Binding, Reactivity) %>% pairs()
+Data2 %>% select(LMuFreq, HMuFreq, L_CDR3, H_CDR3, Binding, Reactivity) %>% ggpairs()
 ```
 
 Now we use some plots to see whether the response variables might be different for different time points, treatment groups or drugs, and grouping covariate (`Isotype`).  
@@ -302,8 +300,7 @@ table(Data$Drug, Data$Reactivity)
 table(Data$Time_Point, Data$Reactivity)
 ```
 
-`Binding` or `Reactivity` do seem to be affected by various predictors.  
-Different drugs appear to have different boxplots in terms of the `Binding` variable.  
+`Binding` or `Reactivity` do seem to be affected by various predictors, and the boxplots for `Binding` do appear quite different.  
 
 
 ```{r}
@@ -311,7 +308,6 @@ Data2 %>% group_by(Drug) %>% summarize(avgLMuFreq = mean(LMuFreq), avgHMuFreq = 
 ggplot(Data2, aes(x = Drug, y = Binding)) + geom_point()
 ggplot(Data2, aes(x = Treatment, y = Binding)) + geom_point()
 ```
-
 
 ## Outlier detection
 
@@ -336,6 +332,7 @@ Data3 <- Data2[-972,]
 ```
 
 # Multivariate Data Analysis  
+[Use the caret package to do training and prediction?]  
 
 Now we want to test whether predictors `Drug` and `Isotype` have effects on the five responses: `H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq`, and `Binding`. We choose `Binding` here, because all the variables are continuous. We will use `Reactivity` separately when we use logistic regression. Although `Time_Point` is also one of the predictors, we will use it for longitudinal analysis in the next section.  
 
@@ -497,6 +494,7 @@ For `Binding`, drug 3 has the highest mean, but drug 1 and drug 2 do not have si
 We could conclude that the drugs/treatment groups do increase mutation rate; however, they do not increase binding rate. That is to say, although the treatments do help increase the diversity of antibodies, they are not specific to the HIV antigens and thus do not increase binding. 
 
 # Longitudinal Data Analysis  
+[Variances can be very different in different cells]
 
 First we don't consider treatments but only plot the mean trend over time. The plot shows that bindign does vary over time. The red line shows the mean trend over time, and the blue line shows the variance over time. The variance does not seem equal over time, so we will have to use unequal variance for the covariance structure.  
 
@@ -527,13 +525,16 @@ $$
 Assuming that the random effects are the same for each drug, our full model is: 
 
 $$Y_{ij} = \beta_0+ \beta_1 Time_{ij} + D1_i(\beta_2+\beta_3 Time_{ij}) + D2_i (\beta_4+\beta_5 Time_{ij}) + b_{0i} + b_{1i} Time_{ij} + e_{ij}$$  
+$$\mathbf{b_i} \sim N \left(0, \mathbf{D}=
+\begin{bmatrix}
+D_{11} & D_{12} \\
+D_{12} & D_{22} 
+\end{bmatrix}
+\right)$$
+
 Drug 1: $Y_{ij} = \beta_0+\beta_1 Time_{ij} + \beta_2+\beta_3 Time_{ij} + b_{0i} + b_{1i} Time_{ij} + e_{ij}$  
 Drug 2: $Y_{ij} = \beta_0+\beta_1 Time_{ij} + \beta_4+\beta_5 Time_{ij} + b_{0i} + b_{1i} Time_{ij} + e_{ij}$  
 Drug 3: $Y_{ij} = \beta_0+\beta_1 Time_{ij} + b_{0i} + b_{1i} Time_{ij} + e_{ij}$  
-
-[need to list $\mathbf{D}$ and $\Sigma$]
-
-
 
 ```{r}
 dataLDA <- data.frame(id = Data3$MonkeyID, binding = Data3$Binding, Time_Point = Data3$Time_Point, D1 = as.numeric(Data3$Drug == 1), D2 = as.numeric(Data3$Drug == 2))
@@ -547,7 +548,49 @@ summary(lda)
 The p-values for `Drug` and the interaction of `Drug` and `Time_Point` are large. So we try another model with `Time_Point` as the only predictor.  
 
 $$Y_{ij} = \beta_0+ \beta_1 Time_{ij} + b_{0i} + b_{1i} Time_{ij} + e_{ij}$$  
-[need to list $\mathbf{D}$ and $\Sigma$]
+
+$$
+\underbrace{\begin{bmatrix}
+Y_{i1} \\
+\vdots \\
+Y_{im_i}
+\end{bmatrix}}_{\mathbf{Y_i}}
+=
+\underbrace{\begin{bmatrix}
+1 & Time_{i1} \\
+\vdots & \vdots & \vdots \\
+1 & Time_{im_i} & 
+\end{bmatrix}}_{\mathbf{X_i}}
+\underbrace{\begin{bmatrix}
+\beta_0 \\
+\beta_1 
+\end{bmatrix}}_{\mathbf{\beta}}
++
+\underbrace{\begin{bmatrix}
+1 & Time_{i1} \\
+\vdots & \vdots \\
+1 & Time_{im_i}
+\end{bmatrix}}_{\mathbf{Z_i}} 
+\underbrace{\begin{bmatrix}
+b_{0i} \\
+b_{1i}
+\end{bmatrix}}_{\mathbf{b_i}}
++ 
+\underbrace{\begin{bmatrix}
+e_{i1} \\
+\vdots \\
+e_{im_i}
+\end{bmatrix}}_{\mathbf{e_i}}$$
+
+$$\mathbf{b_i} \sim N \left(0, \mathbf{D}=
+\begin{bmatrix}
+D_{11} & D_{12} \\
+D_{12} & D_{22} 
+\end{bmatrix}
+\right)$$  
+
+$$\mathbf{e}_{ij} \sim N(0, \mathbf{R}_i = \sigma^2 I_{mi})$$
+
 [need to consider whether time point 2 is the optimal point]
 
 ```{r}
@@ -564,10 +607,6 @@ data.frame(cbind(AIC(lda, lda2), BIC(lda, lda2)))
 
 
 # Discussion  
-
-
-
-# Conclusion  
 
 Although the study provides evidence to support the concept of using immunosuppressing treatments to increase diversity, the added diversity does not seem to improve the binding rate. In other words, this study does not provide evidence to show that the added treatments can enhance the effects of HIV vaccines. 
 
