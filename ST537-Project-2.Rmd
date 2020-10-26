@@ -1,6 +1,6 @@
 ---
-title: "Final Project -- Second Draft"
-author: "Kan Luo, Shih-Ni Prim"
+title: "Final Project -- **Antibody Response Induced by HIV Vaccines and T-cell Suppression Treatments in Rhesus Macaques** -- Second Draft"
+author: "Kan Luo, Shih-Ni Prim, Frederick Davey, Rizwana Rehman"
 date: "10/25/2020"
 output: 
   pdf_document:
@@ -331,7 +331,9 @@ Data2[972,]
 Data3 <- Data2[-972,]
 ```
 
-# Multivariate Data Analysis  
+# Data Analysis  
+
+## Multivariate Data Analysis  
 [Use the caret package to do training and prediction?]  
 
 Now we want to test whether predictors `Drug` and `Isotype` have effects on the five responses: `H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq`, and `Binding`. We choose `Binding` here, because all the variables are continuous. We will use `Reactivity` separately when we use logistic regression. Although `Time_Point` is also one of the predictors, we will use it for longitudinal analysis in the next section.  
@@ -357,6 +359,7 @@ summary(fit.gls)
 ```
 
 Finally, we use logistic regression.  
+[All the p-values are large. I am wondering if we should take out the variable `Reactivity` and just focus on `Binding`.]
 
 ```{r}
 fit.logit <- lm(Data3$Reactivity ~ drug*it)
@@ -365,7 +368,7 @@ summary(fit.logit)
 ```
 
 
-## Pairwise comparison
+### Pairwise comparison
 
 To know more details about which groups have different means, we use pairwise comparisons for each treatment group, drug, and Isotype. (We set $\alpha$ as 0.05, and it is adjusted based on the number of pairs and variables being compared.)  
 
@@ -493,10 +496,10 @@ For `Binding`, drug 3 has the highest mean, but drug 1 and drug 2 do not have si
 
 We could conclude that the drugs/treatment groups do increase mutation rate; however, they do not increase binding rate. That is to say, although the treatments do help increase the diversity of antibodies, they are not specific to the HIV antigens and thus do not increase binding. 
 
-# Longitudinal Data Analysis  
-[Variances can be very different in different cells]
+## Longitudinal Data Analysis  
+[This section probably needs some more revisions, since we still have three more lectures.]
 
-First we don't consider treatments but only plot the mean trend over time. The plot shows that bindign does vary over time. The red line shows the mean trend over time, and the blue line shows the variance over time. The variance does not seem equal over time, so we will have to use unequal variance for the covariance structure.  
+First we don't consider treatments but only plot the mean trend over time. The plot shows that bindign does vary over time. The red line shows the mean trend over time, and the blue line shows the variance over time. The variance does not seem equal over time, so we use unequal variance over time for the covariance structure.  
 
 $$Y_{ij}=\beta_0+\beta_1 Time_{ij}+e_{ij}$$
 
@@ -541,7 +544,7 @@ dataLDA <- data.frame(id = Data3$MonkeyID, binding = Data3$Binding, Time_Point =
 # head(dataLDA)
 
 lda <- lme(fixed = binding ~ Time_Point + D1 + D1:Time_Point + D2 + D2:Time_Point,
-           random = ~ Time_Point | ID, data = dataLDA, method = "REML")
+           random = ~ Time_Point | id, weights = varIdent(form = ~ 1 | Time_Point), data = dataLDA, method = "REML")
 summary(lda)
 ```
 
@@ -595,7 +598,7 @@ $$\mathbf{e}_{ij} \sim N(0, \mathbf{R}_i = \sigma^2 I_{mi})$$
 
 ```{r}
 lda2 <- lme(fixed = binding ~ Time_Point,
-           random = ~ Time_Point | ID, data = dataLDA, method = "REML")
+           random = ~ Time_Point | id, weights = varIdent(form = ~ 1 | Time_Point), data = dataLDA, method = "REML")
 summary(lda2)
 ```
 
@@ -608,7 +611,7 @@ data.frame(cbind(AIC(lda, lda2), BIC(lda, lda2)))
 
 # Discussion  
 
-Although the study provides evidence to support the concept of using immunosuppressing treatments to increase diversity, the added diversity does not seem to improve the binding rate. In other words, this study does not provide evidence to show that the added treatments can enhance the effects of HIV vaccines. 
+In this study we used both multivariate and longitudinal data analysis to examine the effects of HIV vaccines and Treg suppression treatments. Although the study provides evidence to support the concept of using immunosuppressing treatments to increase diversity, the added diversity does not seem to improve the binding rate. In other words, this study does not provide evidence to show that the added treatments can enhance the effects of HIV vaccines. 
 
 # List of variables  
 
