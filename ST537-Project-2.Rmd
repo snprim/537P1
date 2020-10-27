@@ -23,13 +23,12 @@ library(GGally)
 * The resulting dataset from this section is called `Data2`, and one outlier will be removed in a later section, which results in a final dataset `Data3`. So `Data3` is used for analysis.
 * Questions for Kan marked as [Kan...] below.
 * Comments for future addition and revisions in [...]
-* Instead of looking at average of Binding, look at average of reactivity to see the percentage of reactive
+* Instead of looking at average of Binding, look at average of reactivity to see the percentage of reactive. Perhaps use natural log to transform Binding.
 * Who can figure out how to put all figures and tables after all text and before supplmental materials?
 * Dig deeper into analysis results?
 * Not sure what sections the professor wants  
 
-[How to hide message from API?]  
-```{r readin Data}
+```{r readin Data, results = 'hide'}
 #Readin data from Github url address
 url1 <- 'https://github.com/luokan1227/537P1/raw/master/Data.xlsx'  # main data
 url2 <- 'https://github.com/luokan1227/537P1/raw/master/MonkeyID.xlsx'  # Monkey ID
