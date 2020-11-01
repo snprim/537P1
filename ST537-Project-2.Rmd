@@ -80,7 +80,7 @@ table(Data2$MonkeyID)
 ```
 
 In the current analysis, each row represents one antibody and its measurements. While it is possible to treat the 20 rhesus macaques as the observational units, the analysis will become quite complex. We would have to use information from gene segments of the heavy and light chains of the antibodies to classify each antibody.  
-Human antibody is formed by heavy chain and light chain. For heavy chain, human has about 51 V-gene segments, 25 D-gene segments and 6 J-gene segment. For light chain (kappa and lambda), there are 71 V-gene segments and 9 J-gene segments[ref.5]. Any heavy chain V-D-J combination and light chain V-J combinations can randomly happen in germline center. Theoretically, there can be $51*25*6*71*9=$ `r 51*25*6*71*9` combinations of gene segments. Considering the frequently happened mutation, insertation, class switching, each individual can have over **10 billion** different antibodies. Thus, we decided to follow the convention of vaccine studies and treat each antibody as independent.  
+Human antibody is formed by heavy chain and light chain. For heavy chain, human has about 51 V-gene segments, 25 D-gene segments and 6 J-gene segment. For light chain (kappa and lambda), there are 71 V-gene segments and 9 J-gene segments*[ref.5]*. Any heavy chain V-D-J combination and light chain V-J combinations can randomly happen in germline center. Theoretically, there can be $51*25*6*71*9=$ `r 51*25*6*71*9` combinations of gene segments. Considering the frequently happened mutation, insertation, class switching, each individual can have over **10 billion** different antibodies. Thus, we decided to follow the convention of vaccine studies and treat each antibody as independent.  
 
 The main goal of the study is to test 1) whether the Treg suppression treatments can increase the diversity of antibodies and 2) enhance the effectiveness of vaccines. Our predictors are time points, which indicates time and the number of vaccines given up to that point, treatment or drug, and Isotype. We first take a look at these variables.  
 
@@ -98,7 +98,7 @@ Each macaque only received one kind of treatment.
 table(Data2$MonkeyID, Data2$Treatment)
 ```
 
-Next, we'll take a look at the variable `Isotype`. There are 5 kinds of immunoglobulin isotypes: IgG, IgA, IgM, IgE, IgD[ref.6]. The two most important kinds are IgG and IgM. IgM occurs in the acute stage of infection and perform an role of primary response. The secondary response IgG appears later in serum with higher binding affinity, and neutralizing potentials against toxins and virus. IgA mostly found in mucosal tissues such as Nasal mucosa. Non-dominant IgD and IgE are typically lower than 1% in blood.  
+Next, we'll take a look at the variable `Isotype`. There are 5 kinds of immunoglobulin isotypes: IgG, IgA, IgM, IgE, IgD *[ref.6]*. The two most important kinds are IgG and IgM. IgM occurs in the acute stage of infection and perform an role of primary response. The secondary response IgG appears later in serum with higher binding affinity, and neutralizing potentials against toxins and virus. IgA mostly found in mucosal tissues such as Nasal mucosa. Non-dominant IgD and IgE are typically lower than 1% in blood.  
 
 ```{r Ig Isotype Plot/Table}
 # Histogram 
@@ -173,9 +173,11 @@ Isotable
 
 As expected, we see that IgG and IgM occupy the biggest proportion of all antibodies in all time points. Before immunization (time point 0), there are similar weight of IgG and IgM found in blood. After the 1st immunization (time point 1), primary immune response results an increase of IgM, followed with IgG increase at later time point 2 and 3.  We'll use the variable `Isotype` as a grouping covariate later.  
 
-Next we'll examine our responses: `H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq`, `Binding`, and `Reactivity`. In each antibody, there are two sets of heavy chain and light chain, all of which forming a Y-shape immunoglobulin. Thus many of the variables start with H or L, indicating which chain the information comes from. 
+Next we'll examine our variables: `H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq`, `Binding`, and `Reactivity`. In each antibody, there are two sets of heavy chain and light chain, all of which forming a Y-shape immunoglobulin. Thus many of the variables start with H or L, indicating which chain the information comes from. 
 
-`H_CDR3` and `L_CDR3` indicates the length of the third complementarity-determining region on the variable heavy chain and light chain. The longer they are, the more potential there is to produce diverse antibodies. [Kan, could you check to see if this is correct?] In other words, we want the values to be higher. Below we see that the distributions are roughly normal with the center around 13 for `H_CDR3`, with all data points, and slightly centers for different time points. For the Q-Q plot for `L_CDR3`, we can see that there is one outlier. Without it, the distribution is likely normal. (We'll get to this soon.)  
+`H_CDR3` and `L_CDR3` indicates the length of the third complementarity-determining region on the variable heavy chain and light chain. Post antigen stimulation, antibody obtains higher antigen-binding affinity by random mutations and insertions. For HIV antibody response, researchers found many broadly neutralizing antibodies, such as PG9, shared the characteristics of long HCDR3 and high mutation frequency *[ref.7]*. In HIV vaccine study, a goal is to induce more long HCDR3 and highly mutated antibodies, which are more potential to be HIV neutralizing antibody.  
+
+Below we see that the distributions are roughly normal with the center around 13 amino acid for `H_CDR3`, with all data points, and slightly centers for different time points. For the Q-Q plot for `L_CDR3`, we can see that there is one outlier. Without it, the distribution is likely normal. (We'll get to this soon.)  
 
 ```{r CDR3 Plot/Table, echo=FALSE}
 g3 <- ggplot(Data, aes(H_CDR3))
@@ -226,7 +228,7 @@ qqnorm(Data$H_CDR3, main = "Q-Q Plot of H_CDR3", pch = 19, cex = 1)
 qqnorm(Data$L_CDR3, main = "Q-Q Plot of L_CDR3", pch = 19, cex = 1)
 ```
 
-`HMuFreq` and `LMuFreq` are calculated by dividing `H_Substitution` by `H_VBase` for heavy chain and similarly for light chain. These two variables show how much the antibodies mutate. For the purpose of the study, the higher the mutation rate is, the better. Below we see some comparison of mutation rate between heavy chain and light chain. (Kappa and Lambda are two kinds of light chain.) [Kan, is there a reason to split up light chain into Kappa and Lambda? Could we simply plot heavy chain vs. light chain?]  
+`HMuFreq` and `LMuFreq` are calculated by dividing `H_Substitution` by `H_VBase` for heavy chain and similarly for light chain. These two variables show how much the antibodies mutate. Their values are obtained by comparing our obtained antibody sequence to it's germline gene segement sequence. For the purpose of the study, the higher the mutation rate is, the better. Below we see some comparison of mutation rate between heavy chain and light chain. (Kappa and Lambda are two kinds of light chain.) [Kan, is there a reason to split up light chain into Kappa and Lambda? Could we simply plot heavy chain vs. light chain? *Yes. If you just want to talk about heavy chain, you can ignore the light chain is kappa or lambda. But if you want to discuss something on light chain, kappa and lambda light chains are different two subtypes, almost everyone in the area split them.*]  
 
 ```{r mutation rate, echo=FALSE, warning=FALSE}
 par(mfrow = c(1,2))
@@ -279,7 +281,9 @@ g5 <- ggplot(MutSubData, aes(x=Time_Point, y=HMuFreq))
       )
 ```
 
-Lastly, `Binding` indicates the rate of neutralizing, meaning how much the antibodies bind with the virus and thus make the virus ineffective. This is the most important measure of the study. `Reactivity` turns `Binding` into a binary variable; `Binding` rate above 0.1 is considered reactive. In the Q-Q plot of `Binding`, we can see that it is not normally distributed. Thus the `Reactivity` measure might be a better response to use. However, since our sample size is larger than 2000, we can use the Central Limit Theorem and assume normality.  
+Lastly, `Binding` is mostly related with the ability of neutralizing, only those antibodies whom bind with the virus can have the chance to make the virus ineffective. This is the most important measure of the study. `Reactivity` turns `Binding` into a binary variable; `Binding` affinity above 0.1 is considered reactive.  
+
+In the Q-Q plot of `Binding`, we can see that it is not normally distributed, because in theory the `Binding` affinity can't below 0, which indicates no binding at all. The upper boundary of testing `Binding` affinity is around 4 because of saturation of assay. Thus the `Reactivity` measure might be a better response to use. However, since our sample size is larger than 2000, we can use the Central Limit Theorem and assume normality.  
 
 ```{r}
 qqnorm(Data2$Binding)
@@ -635,4 +639,5 @@ The dataset, [which can be found here](https://github.com/luokan1227/537P1), was
 3. Easterhoff, D., Pollara, J., Luo, K., Tolbert, W. D., Young, B., Mielke, D., . . . Ferrari, G. (2020). Boosting with AIDSVAX B/E Enhances Env Constant Region 1 and 2 Antibody-Dependent Cellular Cytotoxicity Breadth and Potency. *Journal of Virology*, 94(4), e01120-01119. doi:10.1128/jvi.01120-19
 4. Wiehe, K., Easterhoff, D., Luo, K., Nicely, N. I., Bradley, T., Jaeger, F. H., Dennison, S. M., Zhang, R., Lloyd, K. E., Stolarchuk, C., Parks, R., Sutherland, L. L., Scearce, R. M., Morris, L., Kaewkungwal, J., Nitayaphan, S., Pitisuttithum, P., Rerks-Ngarm, S., Sinangil, F., Phogat, S., … Haynes, B. F. (2014). Antibody light-chain-restricted recognition of the site of immune pressure in the RV144 HIV-1 vaccine trial is phylogenetically conserved. *Immunity*, 41(6), 909–918. https://doi.org/10.1016/j.immuni.2014.11.014  
 5.Lefranc MP, Giudicelli V, Ginestoux C, Bodmer J, Muller W, Bontrop R, Lemaitre M, Malik A, Barbie V, Chaume D. IMGT, the international ImMunoGeneTics database. *Nucleic Acids Res*. 1999;27:209–212. doi: 10.1093/nar/27.1.209.  
-6.Jenny M Woof , Dennis R Burton,Human antibody-Fc receptor interactions illuminated by crystal structures.*Nat Rev Immunol*. 2004 Feb;4(2):89-99. doi: 10.1038/nri1266.
+6.Jenny M Woof , Dennis R Burton,Human antibody-Fc receptor interactions illuminated by crystal structures.*Nat Rev Immunol*. 2004 Feb;4(2):89-99. doi: 10.1038/nri1266.  
+7.Jordan R. Willis, Jessica A. Finn, Bryan Briney, Gopal Sapparapu, Vidisha Singh, Hannah King, Celia C. LaBranche, David C. Montefiori, Jens Meiler, and James E. Crowe Jr., Long antibody HCDR3s from HIV-naïve donors presented on a PG9 neutralizing antibody background mediate HIV neutralization. *PNAS* April 19, 2016 113 (16) 4446-4451
