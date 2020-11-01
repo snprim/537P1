@@ -289,7 +289,7 @@ In the Q-Q plot of `Binding`, we can see that it is not normally distributed, be
 qqnorm(Data2$Binding)
 table(Data2$Reactivity)
 ```
-Let's take a look at these response variables and check whether they might be correlated. In the plot below, we can see that none of the response variables are highly correlated, except for `Binding` and `Reactivity`, which is expected, because `Reactivity` is a binary variable derived from `Binding`. We will only choose one of these two variables in each analysis based on the type of analysis. [What else to point out here?]  
+Let's take a look at these variables and check whether they might be correlated. In the plot below, we can see that none of the variables are highly correlated, except for `Binding` and `Reactivity`, which is expected, because `Reactivity` is a binary variable derived from `Binding`. We will only choose one of these two response variables in each analysis based on the type of analysis. [What else to point out here?]  
 
 ```{r}
 Data2 %>% select(LMuFreq, HMuFreq, L_CDR3, H_CDR3, Binding, Reactivity) %>% ggpairs()
@@ -306,12 +306,19 @@ table(Data$Time_Point, Data$Reactivity)
 
 `Binding` or `Reactivity` do seem to be affected by various predictors, and the boxplots for `Binding` do appear quite different.  
 
+From the table Drug vs. Reactivity, we find among all three treatments, HIV-envelope negative antibodies are more than positive antibodies. However, the positive antibody percentage is higher in control group in general. This can be explained by T-reg cell inhibition treatments in group 1 and 2 lead an massive antibody release from germinal center, non-HIV-specific antibodies able to circling in blood without the suppression from T-reg cells, so the percentage of HIV-negative antibody become higher than normal group (group 3).  
+From the table Time_Point vs. Reactivity, we can see there are very few HIV-positive antibodies in the base line (Time point 0). Those antibodies suppose to major bind with some other (unknown) antigens and happens to cross-reactive with HIV-envelopes, so their binding affinity to HIV envelopes are typically low. We can observe that from Time_Point vs. Binding plot above. As the time goes on and more vaccince immunization received, we are able to find HIV-positive antibodies in rhesus blood with significant increased rates.  
+
 
 ```{r}
 Data2 %>% group_by(Drug) %>% summarize(avgLMuFreq = mean(LMuFreq), avgHMuFreq = mean(HMuFreq), avgBinding = mean(Binding), varBinding = var(Binding), avgReact = mean(Reactivity))
 ggplot(Data2, aes(x = Drug, y = Binding)) + geom_point()
 ggplot(Data2, aes(x = Treatment, y = Binding)) + geom_point()
 ```
+
+
+
+
 
 ## Outlier detection
 
