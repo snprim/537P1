@@ -79,7 +79,8 @@ The dataset has `r nrow(Data2)` data points and 20 rhesus monkeys. We first pres
 table(Data2$MonkeyID)
 ```
 
-In the current analysis, each row represents one antibody and its measurements. While it is possible to treat the 20 rhesus macaques as the observational units, the analysis will become quite complex. We would have to use information from gene segments of the heavy and light chains of the antibodies to classify each antibody. There are five such segments, and each has 6 to 11 subtypes. (In total, there can be $7*7*6*11*6=$ `r 7*7*6*11*6` combinations of gene segments.) Thus, we decided to follow the convention of vaccine studies and treat each antibody as independent.  
+In the current analysis, each row represents one antibody and its measurements. While it is possible to treat the 20 rhesus macaques as the observational units, the analysis will become quite complex. We would have to use information from gene segments of the heavy and light chains of the antibodies to classify each antibody.  
+Human antibody is formed by heavy chain and light chain. For heavy chain, human has about 51 V-gene segments, 25 D-gene segments and 6 J-gene segment. For light chain (kappa and lambda), there are 71 V-gene segments and 9 J-gene segments[ref.5]. Any heavy chain V-D-J combination and light chain V-J combinations can randomly happen in germline center. Theoretically, there can be $51*25*6*71*9=$ `r 51*25*6*71*9` combinations of gene segments. Considering the frequently happened mutation, insertation, class switching, each individual can have over **10 billion** different antibodies. Thus, we decided to follow the convention of vaccine studies and treat each antibody as independent.  
 
 The main goal of the study is to test 1) whether the Treg suppression treatments can increase the diversity of antibodies and 2) enhance the effectiveness of vaccines. Our predictors are time points, which indicates time and the number of vaccines given up to that point, treatment or drug, and Isotype. We first take a look at these variables.  
 
@@ -91,13 +92,13 @@ table(Data2$Drug, Data2$Treatment)
 table(Data2$Drug, Data2$Treatment)
 ```
 
-Each marcaque only received one kind of treatment.  
+Each macaque only received one kind of treatment.  
 
 ```{r}
 table(Data2$MonkeyID, Data2$Treatment)
 ```
 
-Next, we'll take a look at the variable `Isotype`. There are 5 kinds of heavy chain for antibodies: IgG, IgA, IgM, IgE, IgD. The two most important kinds are IgG and IgM. IgM mostly occurs in the acute stage of infection, and IgM appears later in blood with better neutralizing potentials.  
+Next, we'll take a look at the variable `Isotype`. There are 5 kinds of immunoglobulin isotypes: IgG, IgA, IgM, IgE, IgD[ref.6]. The two most important kinds are IgG and IgM. IgM occurs in the acute stage of infection and perform an role of primary response. The secondary response IgG appears later in serum with higher binding affinity, and neutralizing potentials against toxins and virus. IgA mostly found in mucosal tissues such as Nasal mucosa. Non-dominant IgD and IgE are typically lower than 1% in blood.  
 
 ```{r Ig Isotype Plot/Table}
 # Histogram 
@@ -170,7 +171,7 @@ Isotable
 
 ```
 
-As expected, we see that IgG and IgM occupy the biggest proportion of all antibodies in all time points. We'll use the variable `Isotype` as a grouping covariate later.  
+As expected, we see that IgG and IgM occupy the biggest proportion of all antibodies in all time points. Before immunization (time point 0), there are similar weight of IgG and IgM found in blood. After the 1st immunization (time point 1), primary immune response results an increase of IgM, followed with IgG increase at later time point 2 and 3.  We'll use the variable `Isotype` as a grouping covariate later.  
 
 Next we'll examine our responses: `H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq`, `Binding`, and `Reactivity`. In each antibody, there are two sets of heavy chain and light chain, all of which forming a Y-shape immunoglobulin. Thus many of the variables start with H or L, indicating which chain the information comes from. 
 
@@ -633,3 +634,5 @@ The dataset, [which can be found here](https://github.com/luokan1227/537P1), was
 2. Bradley, T., Kuraoka, M., Yeh, C.-H., Tian, M., Chen, H., Cain, D. W., . . . Haynes, B. F. (2020). Immune checkpoint modulation enhances HIV-1 antibody induction. *Nature Communications*, 11(1), 948. doi:10.1038/s41467-020-14670-w
 3. Easterhoff, D., Pollara, J., Luo, K., Tolbert, W. D., Young, B., Mielke, D., . . . Ferrari, G. (2020). Boosting with AIDSVAX B/E Enhances Env Constant Region 1 and 2 Antibody-Dependent Cellular Cytotoxicity Breadth and Potency. *Journal of Virology*, 94(4), e01120-01119. doi:10.1128/jvi.01120-19
 4. Wiehe, K., Easterhoff, D., Luo, K., Nicely, N. I., Bradley, T., Jaeger, F. H., Dennison, S. M., Zhang, R., Lloyd, K. E., Stolarchuk, C., Parks, R., Sutherland, L. L., Scearce, R. M., Morris, L., Kaewkungwal, J., Nitayaphan, S., Pitisuttithum, P., Rerks-Ngarm, S., Sinangil, F., Phogat, S., … Haynes, B. F. (2014). Antibody light-chain-restricted recognition of the site of immune pressure in the RV144 HIV-1 vaccine trial is phylogenetically conserved. *Immunity*, 41(6), 909–918. https://doi.org/10.1016/j.immuni.2014.11.014  
+5.Lefranc MP, Giudicelli V, Ginestoux C, Bodmer J, Muller W, Bontrop R, Lemaitre M, Malik A, Barbie V, Chaume D. IMGT, the international ImMunoGeneTics database. *Nucleic Acids Res*. 1999;27:209–212. doi: 10.1093/nar/27.1.209.  
+6.Jenny M Woof , Dennis R Burton,Human antibody-Fc receptor interactions illuminated by crystal structures.*Nat Rev Immunol*. 2004 Feb;4(2):89-99. doi: 10.1038/nri1266.
