@@ -2,12 +2,12 @@
 \contentsline {section}{Abstract}{2}{section*.3}%
 \contentsline {section}{Introduction}{2}{section*.4}%
 \contentsline {section}{Methodologies}{2}{section*.5}%
-\contentsline {section}{Data Summaries}{2}{section*.6}%
-\contentsline {subsection}{Outlier detection}{18}{section*.7}%
-\contentsline {section}{Data Analysis}{20}{section*.8}%
-\contentsline {subsection}{Multivariate Data Analysis}{20}{section*.9}%
-\contentsline {subsubsection}{Pairwise comparison}{25}{section*.10}%
-\contentsline {subsection}{Longitudinal Data Analysis}{31}{section*.11}%
-\contentsline {section}{Discussion}{34}{section*.12}%
-\contentsline {section}{List of variables}{34}{section*.13}%
-\contentsline {section}{Reference}{34}{section*.14}%
+\contentsline {section}{Data Summaries}{3}{section*.6}%
+\contentsline {subsection}{Outlier detection}{19}{section*.7}%
+\contentsline {section}{Data Analysis}{21}{section*.8}%
+\contentsline {subsection}{Multivariate Data Analysis}{21}{section*.9}%
+\contentsline {subsubsection}{Pairwise comparison}{26}{section*.10}%
+\contentsline {subsection}{Longitudinal Data Analysis}{32}{section*.11}%
+\contentsline {section}{Discussion}{35}{section*.12}%
+\contentsline {section}{List of variables}{35}{section*.13}%
+\contentsline {section}{Reference}{35}{section*.14}%

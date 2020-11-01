@@ -66,25 +66,46 @@ A dominant vaccine development strategy is to induce neutralizing antibodies by 
 
 Our dataset includes measurements of antibodies measured in 20 rhesus macaques after they were given the same HIV vaccine at three different time points and one of three randomly selected anti-Treg treatments. Blood samples were collected two weeks after vaccine dosing, and antibodies were isolated from those samples. A different number of antibodies were collected from each blood sample, limited by assay yield. Each observation contains information about the antibody isolated post the glycoprotein immunization. In the current report, we test if the different Treg treatments and number of vaccine injections cause changes in the antibody characteristics and if the changes are related to immunization/treatment timepoints.  
 
+Specifically, we evaluate:  
+1. **Do treatments, time points, or isotypes have effects on the mutation frequency or the amino acid count in the third complementarity determining region (CDR3)?** This will be evaluated with a three-way MANOVA, followed by further pair-wise analysis of any values found significantly different.  
+  
+2. **Do the paired antibody heavy chain and light chain have different mutation rate, CDR3, or binding values?** This will be evaluated with paired comparisons by antibody.  
+  
+3. **How does the binding strength of the antibodies develop in response to the number of vaccine dosages by treatment?** This will be evaluated with a longitudinal analysis by test subject.  
+
 # Methodologies  
 
 During the experiment, 20 rhesus macaques were given glycoprotein immunization and supplemental antibody doses, as well as one of three treatments (two experimental regulatory T-cell suppression treatments and one control). Regulatory T (Treg) cells prevent autoimmune diseases and suppress allergic reactions by inhibiting adaptive antibody immune response in the germinal center. Theoretically, this adaptive response lowers the effectiveness of vaccines. Thus the experiment used T-cell suppression treatments to investigate  the effect on immunization. These drugs are widely used in post transplant immunosuppression treatment to prevent rejection.  
 
+For the analysis of mutation frequency and CDR3 count, each antibody within the same treatment is treated as an independent observation. While we might expect different variance within subject vs between subjects, the number of potential antibodies observed is much higher than the number sampled in a blood draw.  A human antibody is formed by a heavy chain and light chain. For heavy chain, human has about 51 V-gene segments, 25 D-gene segments and 6 J-gene segment. For light chain (kappa and lambda), there are 71 V-gene segments and 9 J-gene segments[ref.5]. Any heavy chain V-D-J combination and light chain V-J combinations can randomly happen in germline center. Theoretically, there can be $51*25*6*71*9=$ `r 51*25*6*71*9` combinations of gene segments. Considering the frequently happened mutation, insertation, class switching, each individual can have over **10 billion** different antibodies. Thus, we decided to follow the convention of vaccine studies and treat each antibody as independent.   [Kan -- can you identify a reference article or journal here that uses this convention? We don't need to quote it / change the answer, it's just defending our claim that it's a standard practice]
+
+To evaluate the mutation frequency and CDR count vs Treatments, Timepoints, and Isotypes MANOVA, we will be running the [xxx] function from the [xxx] package [package citation]
+
+For the longitudinal analysis of binding strength vs number of vaccine doses, we will be using the gls function from the nlme package$^{[7]}.$ 
+
 # Data Summaries  
 [Feel free to condense any tables or figures or make them look better.]
 
-The dataset has `r nrow(Data2)` data points and 20 rhesus monkeys. We first present our exploratory data analysis and summaries.  
+The dataset has `r nrow(Data2)` antibodies collected from 20 rhesus monkeys. We first present our exploratory data analysis and summaries.  First an overview of the number of antibodies collected per treatment at each timepoint
 
-```{r}
-table(Data2$MonkeyID)
+```{r, echo= FALSE}
+#table(Data2$MonkeyID)
+Data2Summary<- Data2 %>% group_by(Drug, Time_Point, MonkeyID) %>% summarize(nObs = n())
+Data2Summary$Drug<- as.factor(Data2Summary$Drug)
+
+g<- ggplot(data = Data2Summary, mapping = aes(x = nObs, color = Drug)) + 
+  geom_histogram(bins = 8, fill = 'white', position = 'stack' ) + facet_grid(Drug~Time_Point)
+g
+
 ```
 
 In the current analysis, each row represents one antibody and its measurements. While it is possible to treat the 20 rhesus macaques as the observational units, the analysis will become quite complex. We would have to use information from gene segments of the heavy and light chains of the antibodies to classify each antibody.  
-Human antibody is formed by heavy chain and light chain. For heavy chain, human has about 51 V-gene segments, 25 D-gene segments and 6 J-gene segment. For light chain (kappa and lambda), there are 71 V-gene segments and 9 J-gene segments[ref.5]. Any heavy chain V-D-J combination and light chain V-J combinations can randomly happen in germline center. Theoretically, there can be $51*25*6*71*9=$ `r 51*25*6*71*9` combinations of gene segments. Considering the frequently happened mutation, insertation, class switching, each individual can have over **10 billion** different antibodies. Thus, we decided to follow the convention of vaccine studies and treat each antibody as independent.  
+
+
 
 The main goal of the study is to test 1) whether the Treg suppression treatments can increase the diversity of antibodies and 2) enhance the effectiveness of vaccines. Our predictors are time points, which indicates time and the number of vaccines given up to that point, treatment or drug, and Isotype. We first take a look at these variables.  
 
-There are four time points; one before any procedure was done, and three after vaccine shots were administered to the macaques. In the treatment groups, groups 1-3 represent different doses of drug 1, groups 4-6 represent different doses of drug 2, and group 7 represents the control group. Later we'll look at the effect made by different drugs first and then different doses.  
+There are four time points; time zero was collected before any procedure was done. Times 1,2, and 3 were collected two weeks after an initial and two booster vaccine shots were administered to the macaques. In the treatment groups, groups 1-3 represent different doses of anti T-Reg drug 1, groups 4-6 represent different doses of anti-Treg drug 2, and group 7 represents the control group. 
 
 ```{r}
 table(Data2$Time_Point, Data2$Treatment)
@@ -636,3 +657,5 @@ The dataset, [which can be found here](https://github.com/luokan1227/537P1), was
 4. Wiehe, K., Easterhoff, D., Luo, K., Nicely, N. I., Bradley, T., Jaeger, F. H., Dennison, S. M., Zhang, R., Lloyd, K. E., Stolarchuk, C., Parks, R., Sutherland, L. L., Scearce, R. M., Morris, L., Kaewkungwal, J., Nitayaphan, S., Pitisuttithum, P., Rerks-Ngarm, S., Sinangil, F., Phogat, S., … Haynes, B. F. (2014). Antibody light-chain-restricted recognition of the site of immune pressure in the RV144 HIV-1 vaccine trial is phylogenetically conserved. *Immunity*, 41(6), 909–918. https://doi.org/10.1016/j.immuni.2014.11.014  
 5.Lefranc MP, Giudicelli V, Ginestoux C, Bodmer J, Muller W, Bontrop R, Lemaitre M, Malik A, Barbie V, Chaume D. IMGT, the international ImMunoGeneTics database. *Nucleic Acids Res*. 1999;27:209–212. doi: 10.1093/nar/27.1.209.  
 6.Jenny M Woof , Dennis R Burton,Human antibody-Fc receptor interactions illuminated by crystal structures.*Nat Rev Immunol*. 2004 Feb;4(2):89-99. doi: 10.1038/nri1266.
+7.Pinheiro J, Bates D, DebRoy S, Sarkar D, R Core Team (2020). _nlme: Linear and Nonlinear Mixed Effects Models_. R package
+version 3.1-150, <URL: https://CRAN.R-project.org/package=nlme>.
