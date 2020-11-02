@@ -3,11 +3,12 @@
 \contentsline {section}{Introduction}{2}{section*.4}%
 \contentsline {section}{Methodologies}{2}{section*.5}%
 \contentsline {section}{Data Summaries}{3}{section*.6}%
-\contentsline {subsection}{Outlier detection}{19}{section*.7}%
-\contentsline {section}{Data Analysis}{21}{section*.8}%
-\contentsline {subsection}{Multivariate Data Analysis}{21}{section*.9}%
-\contentsline {subsubsection}{Pairwise comparison}{26}{section*.10}%
-\contentsline {subsection}{Longitudinal Data Analysis}{32}{section*.11}%
-\contentsline {section}{Discussion}{35}{section*.12}%
-\contentsline {section}{List of variables}{35}{section*.13}%
-\contentsline {section}{Reference}{35}{section*.14}%
+\contentsline {section}{Why does the x-axis label on the L\_CDR3 plot specify LCDR2 Length?}{6}{section*.7}%
+\contentsline {section}{I don't know what Kappa and Lambda Chains are, are we evaluating them for our research questions? We should describe how they fit into the research questions if they are, or otherwise omit them for being extra detail.}{11}{section*.8}%
+\contentsline {section}{Data Analysis}{21}{section*.9}%
+\contentsline {subsection}{Multivariate Data Analysis}{21}{section*.10}%
+\contentsline {subsubsection}{Pairwise comparison}{25}{section*.11}%
+\contentsline {subsection}{Longitudinal Data Analysis}{31}{section*.12}%
+\contentsline {section}{Discussion}{34}{section*.13}%
+\contentsline {section}{List of variables}{35}{section*.14}%
+\contentsline {section}{Reference}{35}{section*.15}%
