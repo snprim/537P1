@@ -334,6 +334,7 @@ subset2 <- subset1 %>% arrange(desc(d2), desc(Z))
 subset2[1,]
 which(subset1$L_CDR3 == 47)
 ```
+
 Row 972 from `Data2` is in fact an outlier, as shown in the summary and plots above. The value for `L_CDR3` is quite unlikely. According to the experience, this is caused by the error during sequencing data analysis, Since we don't have the raw sequencing data and related software resources to re-analysis this particular data point, we decide to remove it and will use the new dataset `Data3`. It will not affect the conclusion of statistics analysis or inferences.   
 
 ```{r}
