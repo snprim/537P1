@@ -79,7 +79,7 @@ Specifically, we evaluate:
 
 During the experiment, 20 rhesus macaques were given glycoprotein immunization and supplemental antibody doses, as well as one of three treatments (two experimental regulatory T-cell suppression treatments and one control). Regulatory T (Treg) cells prevent autoimmune diseases and suppress allergic reactions by inhibiting adaptive antibody immune response in the germinal center. Theoretically, this adaptive response lowers the effectiveness of vaccines. Thus the experiment used T-cell suppression treatments to investigate  the effect on immunization. These drugs are widely used in post transplant immunosuppression treatment to prevent rejection.  
 
-For the analysis of mutation frequency and CDR3 count, each antibody within the same treatment is treated as an independent observation. While we might expect different variance within subject vs between subjects, the number of potential antibodies observed is much higher than the number sampled in a blood draw.  A human antibody is formed by a heavy chain and light chain. For heavy chain, human has about 51 V-gene segments, 25 D-gene segments and 6 J-gene segment. For light chain (kappa and lambda), there are 71 V-gene segments and 9 J-gene segments[ref.5]. Any heavy chain V-D-J combination and light chain V-J combinations can randomly happen in germline center. Theoretically, there can be $51*25*6*71*9=$ `r 51*25*6*71*9` combinations of gene segments. Considering the frequently happened mutation, insertation, class switching, each individual can have over **10 billion** different antibodies. Thus, we decided to follow the convention of vaccine studies and treat each antibody as independent.   [Kan -- can you identify a reference article or journal here that uses this convention? We don't need to quote it / change the answer, it's just defending our claim that it's a standard practice]
+For the analysis of mutation frequency and CDR3 count, each antibody within the same treatment is treated as an independent observation. While we might expect different variance within subject vs between subjects, the number of potential antibodies observed is much higher than the number sampled in a blood draw.  A human antibody is formed by a heavy chain and light chain. For heavy chain, human has about 51 V-gene segments, 25 D-gene segments and 6 J-gene segment. For light chain (kappa and lambda), there are 71 V-gene segments and 9 J-gene segments[ref.5]. Any heavy chain V-D-J combination and light chain V-J combinations can randomly happen in germline center. Theoretically, there can be $51*25*6*71*9=$ `r 51*25*6*71*9` combinations of gene segments. Considering the frequently happened mutation, insertion, class switching, each individual can have over **10 billion** different antibodies. Thus, we decided to follow the convention of vaccine studies and treat each antibody as independent.   [Kan -- can you identify a reference article or journal here that uses this convention? We don't need to quote it / change the answer, it's just defending our claim that it's a standard practice]
 
 To evaluate the mutation frequency and CDR count vs Treatments, Timepoints, and Isotypes MANOVA, we will be running the [xxx] function from the [xxx] package [package citation]
 
@@ -297,7 +297,11 @@ ggplot(Data2, aes(x = Treatment, y = Binding)) + geom_point()
 
 Now we want to test whether predictors `Drug` and `Isotype` have effects on the five responses: `H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq`, and `Binding`. We choose `Binding` here, because all the variables are continuous. 
 
-First, we use manova to test effects. Since we have a large sample size (n = 2464) [I don't think this is an accurate sample size.  Some of the isotypes only have 1-10 samples in some of the time points.  I think we should trim to IgG and IgM, can possibly include IgD], we can assume normality. In the output, we can see that the main effects of `Drug` and `Isotype` and the interaction effects are all significant.  
+# [I don't think this is an accurate sample size.  Some of the isotypes only have 1-10 samples in some of the time points.  I think we should trim to IgG and IgM, can possibly include IgD]
+
+First, we use manova to test effects. Since we have a large sample size (n = 2464), we can assume normality. In the output, we can see that the main effects of `Drug` and `Isotype` and the interaction effects are all significant.  
+
+#[How are we managing controls? / Controlling for time 0 data?]
 
 ```{r}
 ID <- as.factor(Data3$MonkeyID)
@@ -376,7 +380,7 @@ for (i in 1:5){
   print(bb)
 }
 ```
-
+# [ We should have code build these tables, why / where are we fitting for groups? This muddies the conclusions]
 Here are the pairs that have significant differences:  
 
 * Treatment
@@ -440,7 +444,7 @@ We could conclude that the drugs/treatment groups do increase mutation rate; how
 ## Longitudinal Data Analysis  
 [This section probably needs some more revisions, since we still have three more lectures.]
 
-First we don't consider treatments but only plot the mean trend over time. The plot shows that bindign does vary over time. The red line shows the mean trend over time, and the blue line shows the variance over time. The variance does not seem equal over time, so we use unequal variance over time for the covariance structure.  
+First we don't consider treatments but only plot the mean trend over time. The plot shows that binding does vary over time. The red line shows the mean trend over time, and the blue line shows the variance over time. The variance does not seem equal over time, so we use unequal variance over time for the covariance structure.  
 
 $$Y_{ij}=\beta_0+\beta_1 Time_{ij}+e_{ij}$$
 
@@ -489,7 +493,7 @@ lda <- lme(fixed = binding ~ Time_Point + D1 + D1:Time_Point + D2 + D2:Time_Poin
 summary(lda)
 ```
 
-The p-values for `Drug` and the interaction of `Drug` and `Time_Point` are large. So we try another model with `Time_Point` as the only predictor.  
+The p-values for `Drug` and the interaction of `Drug` and `Time_Point` are large. So we try another model with `Time_Point` as the only predictor.  [This is skipping the part where we fit only main effect (not interaction) with Drug]
 
 $$Y_{ij} = \beta_0+ \beta_1 Time_{ij} + b_{0i} + b_{1i} Time_{ij} + e_{ij}$$  
 
@@ -575,7 +579,7 @@ The dataset, [which can be found here](https://github.com/luokan1227/537P1), was
 2. Bradley, T., Kuraoka, M., Yeh, C.-H., Tian, M., Chen, H., Cain, D. W., . . . Haynes, B. F. (2020). Immune checkpoint modulation enhances HIV-1 antibody induction. *Nature Communications*, 11(1), 948. doi:10.1038/s41467-020-14670-w
 3. Easterhoff, D., Pollara, J., Luo, K., Tolbert, W. D., Young, B., Mielke, D., . . . Ferrari, G. (2020). Boosting with AIDSVAX B/E Enhances Env Constant Region 1 and 2 Antibody-Dependent Cellular Cytotoxicity Breadth and Potency. *Journal of Virology*, 94(4), e01120-01119. doi:10.1128/jvi.01120-19
 4. Wiehe, K., Easterhoff, D., Luo, K., Nicely, N. I., Bradley, T., Jaeger, F. H., Dennison, S. M., Zhang, R., Lloyd, K. E., Stolarchuk, C., Parks, R., Sutherland, L. L., Scearce, R. M., Morris, L., Kaewkungwal, J., Nitayaphan, S., Pitisuttithum, P., Rerks-Ngarm, S., Sinangil, F., Phogat, S., … Haynes, B. F. (2014). Antibody light-chain-restricted recognition of the site of immune pressure in the RV144 HIV-1 vaccine trial is phylogenetically conserved. *Immunity*, 41(6), 909–918. https://doi.org/10.1016/j.immuni.2014.11.014  
-5.Lefranc MP, Giudicelli V, Ginestoux C, Bodmer J, Muller W, Bontrop R, Lemaitre M, Malik A, Barbie V, Chaume D. IMGT, the international ImMunoGeneTics database. *Nucleic Acids Res*. 1999;27:209–212. doi: 10.1093/nar/27.1.209.  
-6.Jenny M Woof , Dennis R Burton,Human antibody-Fc receptor interactions illuminated by crystal structures.*Nat Rev Immunol*. 2004 Feb;4(2):89-99. doi: 10.1038/nri1266.
-7.Pinheiro J, Bates D, DebRoy S, Sarkar D, R Core Team (2020). _nlme: Linear and Nonlinear Mixed Effects Models_. R package
+5. Lefranc MP, Giudicelli V, Ginestoux C, Bodmer J, Muller W, Bontrop R, Lemaitre M, Malik A, Barbie V, Chaume D. IMGT, the international ImMunoGeneTics database. *Nucleic Acids Res*. 1999;27:209–212. doi: 10.1093/nar/27.1.209.  
+6. Jenny M Woof , Dennis R Burton,Human antibody-Fc receptor interactions illuminated by crystal structures.*Nat Rev Immunol*. 2004 Feb;4(2):89-99. doi: 10.1038/nri1266.
+7. Pinheiro J, Bates D, DebRoy S, Sarkar D, R Core Team (2020). _nlme: Linear and Nonlinear Mixed Effects Models_. R package
 version 3.1-150, <URL: https://CRAN.R-project.org/package=nlme>.
