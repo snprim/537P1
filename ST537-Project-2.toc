@@ -2,12 +2,13 @@
 \contentsline {section}{Abstract}{2}{section*.3}%
 \contentsline {section}{Introduction}{2}{section*.4}%
 \contentsline {section}{Methodologies}{2}{section*.5}%
-\contentsline {section}{Data Summaries}{2}{section*.6}%
-\contentsline {subsection}{Outlier detection}{18}{section*.7}%
-\contentsline {section}{Data Analysis}{20}{section*.8}%
-\contentsline {subsection}{Multivariate Data Analysis}{20}{section*.9}%
-\contentsline {subsubsection}{Pairwise comparison}{25}{section*.10}%
-\contentsline {subsection}{Longitudinal Data Analysis}{31}{section*.11}%
-\contentsline {section}{Discussion}{34}{section*.12}%
-\contentsline {section}{List of variables}{34}{section*.13}%
-\contentsline {section}{Reference}{34}{section*.14}%
+\contentsline {section}{Data Summaries}{3}{section*.6}%
+\contentsline {section}{Data Analysis}{19}{section*.7}%
+\contentsline {subsection}{Multivariate Data Analysis}{19}{section*.8}%
+\contentsline {section}{{[}I don't think this is an accurate sample size. Some of the isotypes only have 1-10 samples in some of the time points. I think we should trim to IgG and IgM, can possibly include IgD{]}}{19}{section*.9}%
+\contentsline {subsubsection}{Pairwise comparison}{20}{section*.10}%
+\contentsline {section}{{[} We should have code build these tables, why / where are we fitting for groups? This muddies the conclusions{]}}{22}{section*.11}%
+\contentsline {subsection}{Longitudinal Data Analysis}{23}{section*.12}%
+\contentsline {section}{Discussion}{26}{section*.13}%
+\contentsline {section}{List of variables}{27}{section*.14}%
+\contentsline {section}{Reference}{27}{section*.15}%
