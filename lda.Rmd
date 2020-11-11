@@ -1,0 +1,170 @@
+---
+title: "Longitudinal Analysis for final project"
+author: "Shih-Ni Prim"
+date: "11/11/2020"
+output: 
+  pdf_document:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, eval = TRUE, message = FALSE, warning = FALSE)
+library(readxl)
+library(tidyverse)
+library(ggplot2)
+library(httr)
+library(nlme)
+library(emmeans)
+library(GGally)
+library(knitr)
+```
+
+```{r readin Data, results = 'hide'}
+#Readin data from Github url address
+url1 <- 'https://github.com/luokan1227/537P1/raw/master/Data.xlsx'  # main data
+url2 <- 'https://github.com/luokan1227/537P1/raw/master/MonkeyID.xlsx'  # Monkey ID
+GET(url1, write_disk(tf1 <- tempfile(fileext = ".xlsx")))
+GET(url2, write_disk(tf2 <- tempfile(fileext = ".xlsx")))
+Rawdata <- read_excel(tf1)
+MonkeyID <-  read_excel(tf2)
+#Add Monkey ID to raw data
+Rawdata <- inner_join(Rawdata, MonkeyID, by = "H_ID")
+colnames(Rawdata)[2] <- "Time_Point"
+#-----------------------
+#Adjust or add variables
+#-----------------------
+
+# Final data set for all following analysis
+Data <- Rawdata
+
+# add drug type and reactivity
+Data$Drug <- ifelse(Data$Treatment == "group 7", 3, 
+                      ifelse(Data$Treatment == "group 1", 1, 
+                      ifelse(Data$Treatment == "group 2", 1, 
+                      ifelse(Data$Treatment == "group 3", 1, 2))))
+
+Data$Reactivity <- ifelse(Data$Binding > 0.1, 1, 0)
+
+# create a subset with the variables we need plus the extracted information
+Data2 <- Data %>% select(MonkeyID, Drug, Treatment, Time_Point, Isotype, H_VBase, H_Substitutions, H_Insertions, H_Deletions, HMuFreq, H_CDR3, L_VBase, L_Substitutions, L_Insertions, L_Deletions, LMuFreq, L_CDR3, Binding, Reactivity)
+
+# final data 
+Data3 <- Data2[-972,]
+```
+
+3. **How does the binding strength of the antibodies develop in response to the number of vaccine dosages by treatment?** This will be evaluated with a longitudinal analysis by test subject.  
+
+# Data Analysis  
+
+## Longitudinal Data Analysis  
+[This section probably needs some more revisions, since we still have three more lectures.]
+
+First we don't consider treatments but only plot the mean trend over time. The plot shows that binding does vary over time. The red line shows the mean trend over time, and the blue line shows the variance over time. The variance does not seem equal over time, so we use unequal variance over time for the covariance structure.  
+
+$$Y_{ij}=\beta_0+\beta_1 Time_{ij}+e_{ij}$$
+
+```{r}
+# simply connects the mean of each time point
+ggplot(Data3, aes(x = Time_Point, y = Binding)) + geom_point(stat = "identity", aes(color = as.factor(Drug))) + geom_jitter() + stat_summary(fun = mean, geom = "line", lwd = 2, color = "red") + stat_summary(fun = var, geom = "line", lwd = 2, color = "blue") + scale_color_discrete(name = "Drug")
+
+```
+
+Here we use `Binding` as the response, `Time_Point` as the time factor, and `Drug` as the covariates. Random effect for both intercept and slope. Now we want to add one covariate: `Drug`. We use two indicator variables: `D1` and `D2`, where  
+
+$$D1=
+\begin{cases}
+1 & \text{if Drug = 1} \\
+0 & \text{otherwise}
+\end{cases}
+$$
+
+$$D2=
+\begin{cases}
+1 & \text{if Drug = 2} \\
+0 & \text{otherwise}
+\end{cases}
+$$
+
+Assuming that the random effects are the same for each drug, our full model is: 
+
+$$Y_{ij} = \beta_0+ \beta_1 Time_{ij} + D1_i(\beta_2+\beta_3 Time_{ij}) + D2_i (\beta_4+\beta_5 Time_{ij}) + b_{0i} + b_{1i} Time_{ij} + e_{ij}$$  
+$$\mathbf{b_i} \sim N \left(0, \mathbf{D}=
+\begin{bmatrix}
+D_{11} & D_{12} \\
+D_{12} & D_{22} 
+\end{bmatrix}
+\right)$$
+
+Drug 1: $Y_{ij} = \beta_0+\beta_1 Time_{ij} + \beta_2+\beta_3 Time_{ij} + b_{0i} + b_{1i} Time_{ij} + e_{ij}$  
+Drug 2: $Y_{ij} = \beta_0+\beta_1 Time_{ij} + \beta_4+\beta_5 Time_{ij} + b_{0i} + b_{1i} Time_{ij} + e_{ij}$  
+Drug 3: $Y_{ij} = \beta_0+\beta_1 Time_{ij} + b_{0i} + b_{1i} Time_{ij} + e_{ij}$  
+
+```{r}
+dataLDA <- data.frame(id = Data3$MonkeyID, binding = Data3$Binding, Time_Point = Data3$Time_Point, D1 = as.numeric(Data3$Drug == 1), D2 = as.numeric(Data3$Drug == 2))
+# head(dataLDA)
+
+lda <- lme(fixed = binding ~ Time_Point + D1 + D1:Time_Point + D2 + D2:Time_Point,
+           random = ~ Time_Point | id, weights = varIdent(form = ~ 1 | Time_Point), data = dataLDA, method = "REML")
+summary(lda)
+```
+
+The p-values for `Drug` and the interaction of `Drug` and `Time_Point` are large. So we try another model with `Time_Point` as the only predictor.  [This is skipping the part where we fit only main effect (not interaction) with Drug]
+
+$$Y_{ij} = \beta_0+ \beta_1 Time_{ij} + b_{0i} + b_{1i} Time_{ij} + e_{ij}$$  
+
+$$
+\underbrace{\begin{bmatrix}
+Y_{i1} \\
+\vdots \\
+Y_{im_i}
+\end{bmatrix}}_{\mathbf{Y_i}}
+=
+\underbrace{\begin{bmatrix}
+1 & Time_{i1} \\
+\vdots & \vdots & \vdots \\
+1 & Time_{im_i} & 
+\end{bmatrix}}_{\mathbf{X_i}}
+\underbrace{\begin{bmatrix}
+\beta_0 \\
+\beta_1 
+\end{bmatrix}}_{\mathbf{\beta}}
++
+\underbrace{\begin{bmatrix}
+1 & Time_{i1} \\
+\vdots & \vdots \\
+1 & Time_{im_i}
+\end{bmatrix}}_{\mathbf{Z_i}} 
+\underbrace{\begin{bmatrix}
+b_{0i} \\
+b_{1i}
+\end{bmatrix}}_{\mathbf{b_i}}
++ 
+\underbrace{\begin{bmatrix}
+e_{i1} \\
+\vdots \\
+e_{im_i}
+\end{bmatrix}}_{\mathbf{e_i}}$$
+
+$$\mathbf{b_i} \sim N \left(0, \mathbf{D}=
+\begin{bmatrix}
+D_{11} & D_{12} \\
+D_{12} & D_{22} 
+\end{bmatrix}
+\right)$$  
+
+$$\mathbf{e}_{ij} \sim N(0, \mathbf{R}_i = \sigma^2 I_{mi})$$
+
+[need to consider whether time point 2 is the optimal point]
+
+```{r}
+lda2 <- lme(fixed = binding ~ Time_Point,
+           random = ~ Time_Point | id, weights = varIdent(form = ~ 1 | Time_Point), data = dataLDA, method = "REML")
+summary(lda2)
+```
+
+This simpler model has lower AIC and BIC, as shown below. So we prefer the model with `Time_Point` as the predictor and, with the low p-values of the slope of `Time_Point`, conclude that the binding rates vary over time. In other words, the number of HIV vaccines given do affect the binding rate, but the drugs given do not have significant effects.  
+
+```{r}
+data.frame(cbind(AIC(lda, lda2), BIC(lda, lda2)))
+```
+
