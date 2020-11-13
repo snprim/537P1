@@ -15,7 +15,14 @@
 \begin{figure}
 \centering
 \includegraphics{lda_files/figure-latex/piecewise1-1.pdf}
-\caption{\label{fig:piecewise1}Piecewise Linear Function}
+\caption{\label{fig:piecewise1}Piecewise Linear Function--three segments}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{lda_files/figure-latex/piecewise2-1.pdf}
+\caption{\label{fig:piecewise2}Piecewise Linear Function--two segments}
 \end{figure}
 \efloatseparator
  

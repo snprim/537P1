@@ -111,7 +111,7 @@ The new model is thus $$Y_{ij}=S1(\beta_0+\beta_1 Time_{ij})+S2(\beta_2+\beta_3 
 
 We also want to make sure that the trend is continuous at timepoint = 1 and 2.  
 
-Our final model is $Y_{ij} = \beta_0(S1 + 2S2 - S2 Time_{ij}) + \beta_1 (S1 Time_{ij} + 2S2 - S2 Time_{ij}) + \beta_4(-S2 + S2 Time_{ij} + S3) + \beta_5(-2S2 + 2S2 Time_{ij} + S3 Time_{ij}) + e_{ij}$ where $$\mathbf{e}_i \sim N(0, \sigma^2I)$$  
+Our model is $Y_{ij} = \beta_0(S1 + 2S2 - S2 Time_{ij}) + \beta_1 (S1 Time_{ij} + 2S2 - S2 Time_{ij}) + \beta_4(-S2 + S2 Time_{ij} + S3) + \beta_5(-2S2 + 2S2 Time_{ij} + S3 Time_{ij}) + e_{ij}$ where $$\mathbf{e}_i \sim N(0, \sigma^2I)$$  
 
 ```{r}
 S1 <- as.numeric(Data3$Time_Point >= 0 & Data3$Time_Point < 1)
@@ -120,7 +120,7 @@ S3 <- as.numeric(Data3$Time_Point >= 2)
 dataLDA1 <- data.frame(id = Data3$MonkeyID, binding = Data3$Binding, time = Data3$Time_Point, S1 = S1, S2 = S2, S3 = S3)
 meanform <- binding ~ -1 + I(S1 + 2*S2 - S2:time) + I(S1:time + 2*S2 - S2:time) + I(-S2 + S2:time + S3) + I(-2*S2 + 2*S2:time + S3:time)
 fit.gls <- gls(model = meanform, data = dataLDA1, weights = varIdent(form = ~ 1 | time), correlation = corCompSymm(form = ~1 | id))
-summary(fit.gls)
+# summary(fit.gls)
 ```
 
 Again, our final mean model is 
@@ -142,14 +142,70 @@ f2 <- function(x, y){y = -0.2413024 + 0.2623556*x}
 f3 <- function(x, y){y = 0.7699600-0.2432756*x}
 ```
 
-```{r, piecewise1, fig.cap = "Piecewise Linear Function"}
+```{r, piecewise1, fig.cap = "Piecewise Linear Function--three segments"}
 ggplot(Data3, aes(x = Time_Point, y = Binding, colour = as.factor(MonkeyID))) + 
   geom_point() + stat_function(fun = f1, xlim = c(0, 1), geom = "line") + 
-  geom_point() + stat_function(fun = f2, xlim = c(1, 2), geom = "line") + 
-  geom_point() + stat_function(fun = f3, xlim = c(2, 3), geom = "line")
+  stat_function(fun = f2, xlim = c(1, 2), geom = "line") + 
+  stat_function(fun = f3, xlim = c(2, 3), geom = "line")
 ```
 
-Next we check whether adding random effects improve the model. We assume that random effects exist in the intercept and slope. Our linear mixed model is then: $Y_{ij} = \beta_0(S1 + 2S2 - S2 Time_{ij}) + \beta_1 (S1 Time_{ij} + 2S2 - S2 Time_{ij}) + \beta_4(-S2 + S2 Time_{ij} + S3) + \beta_5(-2S2 + 2S2 Time_{ij} + S3 Time_{ij}) + b_{0i} + b{1i} Time_{ij} + e_{ij}$  
+As shown in Figure \@ref(fig:piecewise1), the two segments S1 and S2 look linear. So now we'll refit the model with only two piecewise sections; we'll call them S4 and S5. The new model is therefore $$Y_{ij}=S4(\beta_0+\beta_1 Time_{ij})+S5(\beta_2+\beta_3 Time_{ij})+e_{ij}$$  
+
+$$S4=
+\begin{cases}
+1 & \text{if Timepoint} < 2 \\
+0 & \text{otherwise}
+\end{cases}
+$$
+$$S5=
+\begin{cases}
+1 & \text{if Timepoint} \ge 2 \\
+0 & \text{otherwise}
+\end{cases}
+$$
+
+We also want to make sure that the trend is continuous at Time_Point = 2.  
+
+Our model is then $Y_{ij} = \beta_1(-2S4 + S4 Time_{ij}) + \beta_2(S4 + S5) + \beta_3(2S4 + S5 Time_{ij}) + e_{ij}$ where $$\mathbf{e}_i \sim N(0, \sigma^2I)$$  
+
+```{r}
+S4 <- as.numeric(Data3$Time_Point < 2)
+S5 <- as.numeric(Data3$Time_Point >= 2)
+dataLDA1$S4 <- S4
+dataLDA1$S5 <- S5
+meanform2 <- binding ~ -1 + I(-2*S4 + S4:time) + I(S4 + S5) + I(2*S4 + S5:time)
+fit.gls2 <- gls(model = meanform2, data = dataLDA1, weights = varIdent(form = ~ 1 | time), correlation = corCompSymm(form = ~1 | id))
+# summary(fit.gls2)
+```
+
+Again, our model is $Y_{ij}= \beta_1(-2S4 + S4 Time_{ij}) + \beta_2(S4 + S5) + \beta_3(2S4 + S5 Time_{ij}) + e_{ij}$, which can be written as $Y_{ij} = S4(-2 \beta_1 + \beta_2 + 2\beta_3) + S4 Time_{ij}(\beta_1) + S5(\beta_2) + S5 Time_{ij}(\beta_3) + e_{ij}$  
+
+We first find the mean trend for S4 and S5:  
+
+S4: $(-2*0.5310975 + 0.5720853 + 2*-0.0000723) + 0.5310975*time = -0.4902543 + 0.5310975*time$
+S5: $0.5720853 - 0.0000723*time$
+
+We can make the plot again to see if the model is reasonable, as shown in Figure \@ref(fig:piecewise2). Indeed, there is a linear line between Time_Point 0 and 2 and one between Time_Point 2 and 3. The two lines are contiuous at Time_Point 2. A comparison of AIC And BIC of these two models, shown in Table \@ref(tab:AIC-tab1), indicates that the second model (`fit.gls2`) is indeed a better model. We'll add random effects to it.  
+
+```{r}
+# when S4 = 1
+f4 <- function(x, y){y = -0.4902543 + 0.5310975*x}
+# when S5 = 1
+f5 <- function(x, y){y = 0.5720853 - 0.0000723*x}
+```
+
+```{r, piecewise2, fig.cap = "Piecewise Linear Function--two segments"}
+ggplot(Data3, aes(x = Time_Point, y = Binding, colour = as.factor(MonkeyID))) + 
+  geom_point() + stat_function(fun = f4, xlim = c(0, 2), geom = "line") + 
+  stat_function(fun = f5, xlim = c(2, 3), geom = "line")
+```
+
+```{r, AIC-tab1}
+knitr::kable(data.frame(cbind(AIC(fit.gls, fit.gls2), BIC(fit.gls, fit.gls2))), caption = "AIC and BIC between two gls models")
+```
+
+
+Next we check whether adding random effects improve the model. We assume that random effects exist in the intercept and slope. Our linear mixed model is then: $Y_{ij}= \beta_1(-2S4 + S4 Time_{ij}) + \beta_2(S4 + S5) + \beta_3(2S4 + S5 Time_{ij}) + b_{0i} + b{1i} Time_{ij} + e_{ij}$  
 where $$\mathbf{b}_i \sim N \left( 0, \mathbf{D} = 
 \begin{pmatrix}
 D_{11} & D_{12} \\
@@ -158,24 +214,24 @@ D_{11} & D_{12} \\
 
 ```{r}
 # with random intercept and slope, compound symmetry, unequal variances
-fit.a1 <- lme(fixed = meanform, random = ~ time | id, data = dataLDA1, weights = varIdent(form = ~ 1 | time), correlation = corCompSymm(form = ~1 | id))
-summary(fit.a1)
+fit.a1 <- lme(fixed = meanform2, random = ~ time | id, data = dataLDA1, weights = varIdent(form = ~ 1 | time), correlation = corCompSymm(form = ~1 | id))
+# summary(fit.a1)
 ```
 
 ```{r}
 # random intercept and slope, AR1, unequal variances
-fit.a2 <- lme(fixed = meanform, random = ~ time | id, data = dataLDA1, weights = varIdent(form = ~ 1 | time), correlation = corAR1(form = ~ 1 | id))
+fit.a2 <- lme(fixed = meanform2, random = ~ time | id, data = dataLDA1, weights = varIdent(form = ~ 1 | time), correlation = corAR1(form = ~ 1 | id))
 ```
 
-```{r, AIC-tab}
-kable(data.frame(AIC(fit.gls, fit.a1, fit.a2), BIC(fit.gls, fit.a1, fit.a2)), caption = "AIC and BIC for three models")
+```{r, AIC-tab2}
+kable(data.frame(AIC(fit.gls2, fit.a1, fit.a2), BIC(fit.gls2, fit.a1, fit.a2)), caption = "AIC and BIC for three models")
 ```
 
-As shown in Table \@ref(tab:AIC-tab), the model `fit.a2` (random intercept and slope, AR1 correlation, unequal variances) has the lowest AIC And BIC, so it seems the bets model. We now check residuals for both models.  
+As shown in Table \@ref(tab:AIC-tab2), the model `fit.a2` (random intercept and slope, AR1 correlation, unequal variances) has the lowest AIC And BIC, so it seems the bets model. We now check residuals for both models.  
 
 ```{r, QQmodel, fig.cap = "Q-Q plots of models: GLS, compound symmetry, AR1"}
 par(mfrow = c(1,3))
-gls.res <- residuals(fit.gls, type = "normalized")
+gls.res <- residuals(fit.gls2, type = "normalized")
 qqnorm(gls.res)
 lme.res1 <- residuals(fit.a1, level = 1, type = "normalized")
 qqnorm(lme.res1)
@@ -185,19 +241,19 @@ qqnorm(lme.res2)
 
 All of the Q-Q plots in Figure \@ref(fig:QQmodel) are reasonable, so we'll use `fit.a2` for further analysis.  
 
-Now we would like to know if the slopes between Time_Point 1 and 2 and between Time_Point 2 and 3 equal zero. $H_0: \text{ slope of } S2=0 \text{ and slope of } S2=0$, which means $H_0: -\beta_0 -\beta_1 + \beta_4 + 2\beta_5 = 0 and \beta_5=0$  
+Now we would like to know if the slopes between Time_Point 0 and 2 and between Time_Point 2 and 3 equal zero. $H_0: \text{ slope of } S4=0 \text{ and slope of } S5=0$, which means $H_0: \beta_1 = 0 \text{ and } \beta_3=0$  
 
-Thus, we can check for two tests: $$\mathbf{L_1 \beta}=0$$ where $\mathbf{L_1}=(-1, -1, 1, 2)$ and $\mathbf{\beta}=(\beta_0, \beta_1, \beta_4, \beta_5)^T$ and $$\mathbf{L_1 \beta} = 0$$ where $\mathbf{L_2}=(0, 0, 0, 1)$ and $\mathbf{\beta}=(\beta_0, \beta_1, \beta_4, \beta_5)^T$  
+Thus, we can check for two tests: $$\mathbf{L_1 \beta}=0$$ where $\mathbf{L_1}=(1, 0, 0)$ and $\mathbf{\beta}=(\beta_1, \beta_2, \beta_3)^T$ and $$\mathbf{L_2 \beta} = 0$$ where $\mathbf{L_2}=(0, 0, 1)$ and $\mathbf{\beta}=(\beta_1, \beta_2, \beta_3)^T$  
 
-```{r, S2S3-slope}
-L1 <- matrix(c(-1, -1, 1, 2), byrow = TRUE, nrow = 1)
-L2 <- matrix(c(0, 0, 0, 1), byrow = TRUE, nrow = 1)
+```{r, S4S5-slope}
+L1 <- matrix(c(1, 0, 0), byrow = TRUE, nrow = 1)
+L2 <- matrix(c(0, 0, 1), byrow = TRUE, nrow = 1)
 test1 <- anova.lme(fit.a2, L = L1, adjustSigma = TRUE)
 test2 <- anova.lme(fit.a2, L = L2, adjustSigma = TRUE)
-kable(data.frame(rbind(test1, test2)), caption = "Inference of S2 ad S3 slopes")
+kable(data.frame(rbind(test1, test2)), caption = "Inference of S4 ad S5 slopes")
 ```
 
-As shown in Table \@ref(tab:S2S3-slope), both of the slopes in S2 and S3 have very small p-values, indicating that Time_Point 2 has significantly higher Binding rate than Time_Point 1 (since the slope is positive) and that Time_Point 3 has significantly lower Binding rate than Time_Point 2 (since the slope is negative). In other words, Time_Point 2, when the monkeys had received two vaccines, had the highest Binding rate.  
+As shown in Table \@ref(tab:S4S5-slope), the slop of S4 has a very small p-value, while the slope of S5 is quite large, indicating that the change in Binding rate between Time_Point 0 and Time_Point 2 is significant while the change between Time_Point 2 and Time_Point 3 is not significant. We conclude that Time_Point 2, when the monkeys had received two vaccines, had the highest Binding rate, while the last vaccine shot at Time_Point 3 did not make a difference to the Binding rate.  
 
 ## With Drugs  
 
