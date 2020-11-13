@@ -123,6 +123,11 @@ fit.gls <- gls(model = meanform, data = dataLDA1, weights = varIdent(form = ~ 1 
 summary(fit.gls)
 ```
 
+Again, our final mean model is 
+$$Y_{ij} = \beta_0(S1 + 2S2 - S2 Time_{ij}) + \beta_1 (S1 Time_{ij} + 2S2 - S2 Time_{ij})+$$
+$$\beta_4(-S2 + S2 Time_{ij} + S3) + \beta_5(-2S2 + 2S2 Time_{ij} + S3 Time_{ij}) + e_{ij}$$ which can be written as $$Y_{ij} = S1(\beta_0) + S1 Time_{ij} (\beta_1) + S2( 2\beta_0 + 2\beta_1 - \beta_4 -2\beta_5) + S2 Time_{ij}(-\beta_0 -\beta_1 + \beta_4 + 2\beta_5)$$
+$$ + S3(\beta_4) + S3 Time_{ij} (\beta_5) + e_{ij}$$  
+From the model above, we can find the intercepts and slopes for all three segments of the mean trend and make a plot, as seen in Figure \@ref(fig:piecewise1):  
 
 S1: $-0.2221651+0.2432183*time$  
 S2: $(2*-0.2221651+2*0.2432183-0.7699600+2*0.2432756)+(0.2221651-0.2432183+0.7699600-2*0.2432756)*time = -0.2413024 + 0.2623556*time$  
@@ -136,6 +141,7 @@ f2 <- function(x, y){y = -0.2413024 + 0.2623556*x}
 # when S3 = 1
 f3 <- function(x, y){y = 0.7699600-0.2432756*x}
 ```
+
 ```{r, piecewise1, fig.cap = "Piecewise Linear Function"}
 ggplot(Data3, aes(x = Time_Point, y = Binding, colour = as.factor(MonkeyID))) + 
   geom_point() + stat_function(fun = f1, xlim = c(0, 1), geom = "line") + 
@@ -161,14 +167,13 @@ summary(fit.a1)
 fit.a2 <- lme(fixed = meanform, random = ~ time | id, data = dataLDA1, weights = varIdent(form = ~ 1 | time), correlation = corAR1(form = ~ 1 | id))
 ```
 
-```{r}
-AIC(fit.gls, fit.a1, fit.a2)
-BIC(fit.gls, fit.a1, fit.a2)
+```{r, AIC-tab}
+kable(data.frame(AIC(fit.gls, fit.a1, fit.a2), BIC(fit.gls, fit.a1, fit.a2)), caption = "AIC and BIC for three models")
 ```
 
-We now check residuals for both models.  
+As shown in Table \@ref(tab:AIC-tab), the model `fit.a2` (random intercept and slope, AR1 correlation, unequal variances) has the lowest AIC And BIC, so it seems the bets model. We now check residuals for both models.  
 
-```{r}
+```{r, QQmodel, fig.cap = "Q-Q plots of models: GLS, compound symmetry, AR1"}
 par(mfrow = c(1,3))
 gls.res <- residuals(fit.gls, type = "normalized")
 qqnorm(gls.res)
@@ -178,7 +183,21 @@ lme.res2 <- residuals(fit.a2, level = 1, type = "normalized")
 qqnorm(lme.res2)
 ```
 
+All of the Q-Q plots in Figure \@ref(fig:QQmodel) are reasonable, so we'll use `fit.a2` for further analysis.  
 
+Now we would like to know if the slopes between Time_Point 1 and 2 and between Time_Point 2 and 3 equal zero. $H_0: \text{ slope of } S2=0 \text{ and slope of } S2=0$, which means $H_0: -\beta_0 -\beta_1 + \beta_4 + 2\beta_5 = 0 and \beta_5=0$  
+
+Thus, we can check for two tests: $$\mathbf{L_1 \beta}=0$$ where $\mathbf{L_1}=(-1, -1, 1, 2)$ and $\mathbf{\beta}=(\beta_0, \beta_1, \beta_4, \beta_5)^T$ and $$\mathbf{L_1 \beta} = 0$$ where $\mathbf{L_2}=(0, 0, 0, 1)$ and $\mathbf{\beta}=(\beta_0, \beta_1, \beta_4, \beta_5)^T$  
+
+```{r, S2S3-slope}
+L1 <- matrix(c(-1, -1, 1, 2), byrow = TRUE, nrow = 1)
+L2 <- matrix(c(0, 0, 0, 1), byrow = TRUE, nrow = 1)
+test1 <- anova.lme(fit.a2, L = L1, adjustSigma = TRUE)
+test2 <- anova.lme(fit.a2, L = L2, adjustSigma = TRUE)
+kable(data.frame(rbind(test1, test2)), caption = "Inference of S2 ad S3 slopes")
+```
+
+As shown in Table \@ref(tab:S2S3-slope), both of the slopes in S2 and S3 have very small p-values, indicating that Time_Point 2 has significantly higher Binding rate than Time_Point 1 (since the slope is positive) and that Time_Point 3 has significantly lower Binding rate than Time_Point 2 (since the slope is negative). In other words, Time_Point 2, when the monkeys had received two vaccines, had the highest Binding rate.  
 
 ## With Drugs  
 

@@ -21,6 +21,13 @@
  
 \begin{figure}
 \centering
+\includegraphics{lda_files/figure-latex/QQmodel-1.pdf}
+\caption{\label{fig:QQmodel}Q-Q plots of models: GLS, compound symmetry, AR1}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
 \includegraphics{lda_files/figure-latex/LDA-overview-1.pdf}
 \caption{\label{fig:LDA-overview}Means and Variances over timepoints}
 \end{figure}

@@ -1,5 +1,39 @@
 \begin{table}
 
+\caption{\label{tab:AIC-tab}AIC and BIC for three models}
+\centering
+\begin{tabular}[t]{l|r|r|r|r}
+\hline
+  & df & AIC & df.1 & BIC\\
+\hline
+fit.gls & 9 & 3323.050 & 9 & 3375.322\\
+\hline
+fit.a1 & 12 & 3243.345 & 12 & 3313.040\\
+\hline
+fit.a2 & 12 & 3072.122 & 12 & 3141.817\\
+\hline
+\end{tabular}
+\end{table}
+\efloatseparator
+ 
+\begin{table}
+
+\caption{\label{tab:S2S3-slope}Inference of S2 ad S3 slopes}
+\centering
+\begin{tabular}[t]{r|r|r|r}
+\hline
+numDF & denDF & F.value & p.value\\
+\hline
+1 & 2441 & 185.5755 & 0\\
+\hline
+1 & 2441 & 116.9812 & 0\\
+\hline
+\end{tabular}
+\end{table}
+\efloatseparator
+ 
+\begin{table}
+
 \caption{\label{tab:AIC-table}AIC and BIC for Longitudinal Models}
 \centering
 \begin{tabular}[t]{l|r|r|r|r}
