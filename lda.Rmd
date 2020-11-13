@@ -1,10 +1,22 @@
 ---
 title: "Longitudinal Analysis for final project"
 author: "Shih-Ni Prim"
-date: "11/11/2020"
+date: "11/12/2020"
+fontsize: 12pt
+geometry: margin = 1in
+mainfont: Times New Roman
+spacing: 1.5
+fig_caption: yes
+indent: true
+header-includes:
+  - \usepackage{endfloat}  
 output: 
-  pdf_document:
+  bookdown::pdf_document2:
+    latex_engine: lualatex
     toc: true
+    fig_width: 6.5
+    fig_height: 4
+    df_print: kable
 ---
 
 ```{r setup, include=FALSE}
@@ -17,6 +29,9 @@ library(nlme)
 library(emmeans)
 library(GGally)
 library(knitr)
+
+library(bookdown)
+
 ```
 
 ```{r readin Data, results = 'hide'}
@@ -59,15 +74,20 @@ Data3 <- Data2[-972,]
 ## Longitudinal Data Analysis  
 [This section probably needs some more revisions, since we still have three more lectures.]
 
-First we don't consider treatments but only plot the mean trend over time. The plot shows that binding does vary over time. The red line shows the mean trend over time, and the blue line shows the variance over time. The variance does not seem equal over time, so we use unequal variance over time for the covariance structure.  
+As seen in Figure \@ref(fig:LDA-overview), the different time points have different variances (shown in blue), and the means (shown in red) are not in a linear pattern.  
 
-$$Y_{ij}=\beta_0+\beta_1 Time_{ij}+e_{ij}$$
 
-```{r}
+```{r, LDA-overview, fig.cap = "Means and Variances over timepoints"}
 # simply connects the mean of each time point
 ggplot(Data3, aes(x = Time_Point, y = Binding)) + geom_point(stat = "identity", aes(color = as.factor(Drug))) + geom_jitter() + stat_summary(fun = mean, geom = "line", lwd = 2, color = "red") + stat_summary(fun = var, geom = "line", lwd = 2, color = "blue") + scale_color_discrete(name = "Drug")
 
 ```
+
+First we don't consider treatments but only plot the mean trend over time. The plot shows that binding does vary over time. The red line shows the mean trend over time, and the blue line shows the variance over time. The variance does not seem equal over time, so we use unequal variance over time for the covariance structure.  
+
+$$Y_{ij}=\beta_0+\beta_1 Time_{ij}+e_{ij}$$
+
+
 
 Here we use `Binding` as the response, `Time_Point` as the time factor, and `Drug` as the covariates. Random effect for both intercept and slope. Now we want to add one covariate: `Drug`. We use two indicator variables: `D1` and `D2`, where  
 
@@ -162,9 +182,10 @@ lda2 <- lme(fixed = binding ~ Time_Point,
 summary(lda2)
 ```
 
-This simpler model has lower AIC and BIC, as shown below. So we prefer the model with `Time_Point` as the predictor and, with the low p-values of the slope of `Time_Point`, conclude that the binding rates vary over time. In other words, the number of HIV vaccines given do affect the binding rate, but the drugs given do not have significant effects.  
+This simpler model has lower AIC and BIC, as shown below. So we prefer the model with `Time_Point` as the predictor and, with the low p-values of the slope of `Time_Point`, conclude that the binding rates vary over time. In other words, the number of HIV vaccines given do affect the binding rate, but the drugs given do not have significant effects. As seen in Table \@ref(tab:AIC-table), blah blah...  
 
-```{r}
-data.frame(cbind(AIC(lda, lda2), BIC(lda, lda2)))
+
+```{r, AIC-table}
+knitr::kable(data.frame(cbind(AIC(lda, lda2), BIC(lda, lda2))), caption = "AIC and BIC for Longitudinal Models")
 ```
 

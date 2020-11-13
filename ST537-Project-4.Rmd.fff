@@ -1,0 +1,12 @@
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-4.Rmd_files/figure-latex/hist-antibodies-1.pdf}
+\caption{\label{fig:hist-antibodies}Histograms of Antibodies}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-4.Rmd_files/figure-latex/isotype-plot-1.pdf}
+\caption{\label{fig:isotype-plot}Histograms of Isotypes}
+\end{figure}

@@ -1,5 +1,5 @@
 ---
-title: "Final Project -- **Antibody Response Induced by HIV Vaccines and T-cell Suppression Treatments in Rhesus Macaques** -- Second Draft"
+title: "**Antibody Response Induced by HIV Vaccines and T-cell Suppression Treatments in Rhesus Macaques**"
 author: "Group 3: Kan Luo, Shih-Ni Prim, Frederick Davey, Rizwana Rehman"
 date: "11/12/2020"
 fontsize: 12pt
@@ -8,8 +8,10 @@ mainfont: Times New Roman
 spacing: 1.5
 fig_caption: yes
 indent: true
+header-includes:
+  - \usepackage{endfloat}  
 output: 
-  pdf_document:
+  bookdown::pdf_document2:
     latex_engine: lualatex
     toc: true
     fig_width: 6.5
@@ -28,7 +30,7 @@ library(emmeans)
 library(GGally)
 library(knitr)
 library(ICSNP)
-
+library(bookdown)
 ```
 
 
@@ -111,33 +113,36 @@ $Q3$. How does the binding strength of the antibodies develop in response to the
 
 For exploratory data analysis we used histograms and Q-Q plots. We also computed correlations among variables. 
 
-## Data Summaries**  
+## Data Summaries  
 
-The dataset has `r nrow(Data2)` antibodies collected from 20 rhesus monkeys. We first present our exploratory data analysis and summaries. An overview of the number of antibodies collected per treatment at each time-point is given below (Figure 1) along with tables for treatment counts per time-point and Isoptype per treatment for individual time-points.  
+The dataset has `r nrow(Data2)` antibodies collected from 20 rhesus monkeys. We first present our exploratory data analysis and summaries. An overview of the number of antibodies collected per treatment at each time-point is given below (Figure \@ref(fig:hist-antibodies)) along with tables for treatment counts per time-point and Isoptype per treatment for individual time-points.  
 
-```{r, echo= FALSE}
-#table(Data2$MonkeyID)
+```{r}
 Data2Summary<- Data2 %>% group_by(Drug, Time_Point, MonkeyID) %>% summarize(nObs = n())
 Data2Summary$Drug<- as.factor(Data2Summary$Drug)
-g<- ggplot(data = Data2Summary, mapping = aes(x = nObs, color = Drug)) + 
-  geom_histogram(bins = 8, fill = 'white' ) + facet_grid(Drug~Time_Point, labeller = label_both) + 
-  labs(xlab = 'n Antibodies Collected', ylab = 'n Monkeys', title= 'Figure1: Histograms of Antibodies Collected per Treatment and Timepoint')
-g
-table(Data2$Drug, Data2$Time_Point, dnn= c('Drug', 'TimePoint'))
-table(Data2$Drug, Data2$Time_Point, Data2$Isotype, dnn= c('Drug', 'TimePoint', 'Isotype'))
 ```
- 
 
-Next,  the histogram of  `Isotype` is presented in Figure 2.  
+```{r, hist-antibodies, fig.cap = "Histograms of Antibodies"}
+# "Histograms of Antibodies Collected per Treatment and Timepoint"
+ggplot(data = Data2Summary, mapping = aes(x = nObs, color = Drug)) + geom_histogram(bins = 8, fill = 'white' ) + facet_grid(Drug~Time_Point, labeller = label_both) + labs(xlab = 'n Antibodies Collected', ylab = 'n Monkeys')
+```
 
-```{r Ig Isotype Plot/Table}
+```{r, ft-drug-timepoint}
+knitr::kable(table(Data2$Drug, Data2$Time_Point, dnn= c('Drug', 'TimePoint')), caption = "Frequency tables of drug vs. timepoints")
+```
+```{r, ft-drug-timepoint-isotype}
+knitr::kable(table(Data2$Drug, Data2$Time_Point, Data2$Isotype, dnn= c('Drug', 'TimePoint', 'Isotype')), caption = "Frequency tables of drug vs. timepoints vs. isotypes")
+```
+
+Next,  the histogram of  `Isotype` is presented in Figure \@ref(fig:isotype-plot).  
+
+```{r, isotype-plot, fig.cap = "Histograms of Isotypes"}
 # Histogram 
 Iso.order <- c("G", "M", "A", "D", "E") 
 g1 <- ggplot(Data, aes(x=factor(Isotype, levels = Iso.order), fill=as.factor(Drug))) 
   g1 + geom_bar(stat = "count", width = .9, position = 'Stack') + # his plot
     facet_grid(cols = vars(Time_Point), labeller = label_both) +
     labs(fill = 'Drug') + # Legend Content
-    ggtitle("Figure 2: Ig Isotype") +  #Plot title
     xlab("Ig Isotype") + ylab("Number of abs") +# X axis and y axis title
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),  #remove background grid
           panel.background = element_blank(),  #remove background color
@@ -300,6 +305,7 @@ Data3 %>% select(LMuFreq, HMuFreq, L_CDR3, H_CDR3, Binding) %>% ggpairs()
 For inferential analysis we used Dependent Hotellings $T^2$ test using the ICSNP package [xxx] for Q1. To answer Q2 $i.e.,$ to evaluate the mutation frequency and CDR count vs. Treatments and Isotypes we used two-way MANOVA.  we ran the [xxx] function from the [xxx] package [package citation]. It was followed by further pair-wise analysis. 
 
 To answer $Q1$ we conducted  Hotellings $T^2$ test for a  pairwise comparison between respective heavy chain and light chain variable pairs `L_CDR3`, `H_CDR3` and `HMuFreq`, `LMuFreq`.
+
 ```{r hotelling }
 Light <- data.frame(Data3$L_CDR3,Data3$LMuFreq)
 Heavy <- data.frame(Data3$H_CDR3,Data3$HMuFreq)
