@@ -143,7 +143,7 @@ ggplot(Data3, aes(x = Time_Point, y = Binding, colour = as.factor(MonkeyID))) +
   geom_point() + stat_function(fun = f3, xlim = c(2, 3), geom = "line")
 ```
 
-Next we check whether adding random effects improve the model. We assume that random effects exist in the intercept and slope. Our linear mixed model is then: $Y_{ij} = \beta_0(S1 + 2S2 - S2 Time_{ij}) + \beta_1 (S1 Time_{ij} + 2S2 - S2 Time_{ij}) + \beta_4(-S2 + S2 Time_{ij} + S3) + \beta_5(-2S2 + 2S2 Time_{ij} + S3 Time_{ij}) + b_{0i} + b{1i} + e_{ij}$  
+Next we check whether adding random effects improve the model. We assume that random effects exist in the intercept and slope. Our linear mixed model is then: $Y_{ij} = \beta_0(S1 + 2S2 - S2 Time_{ij}) + \beta_1 (S1 Time_{ij} + 2S2 - S2 Time_{ij}) + \beta_4(-S2 + S2 Time_{ij} + S3) + \beta_5(-2S2 + 2S2 Time_{ij} + S3 Time_{ij}) + b_{0i} + b{1i} Time_{ij} + e_{ij}$  
 where $$\mathbf{b}_i \sim N \left( 0, \mathbf{D} = 
 \begin{pmatrix}
 D_{11} & D_{12} \\
