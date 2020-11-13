@@ -1,8 +1,26 @@
 \begin{figure}
-
-{\centering \includegraphics{lda_files/figure-latex/LDA-overview-1}
-
-}
-
-\caption{Means and Variances over timepoints}\label{fig:LDA-overview}
+\centering
+\includegraphics{lda_files/figure-latex/mean-monkey-1.pdf}
+\caption{\label{fig:mean-monkey}Mean trend by monkey}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{lda_files/figure-latex/variance-monkey-1.pdf}
+\caption{\label{fig:variance-monkey}Variances over time by monkey}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{lda_files/figure-latex/piecewise1-1.pdf}
+\caption{\label{fig:piecewise1}Piecewise Linear Function}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{lda_files/figure-latex/LDA-overview-1.pdf}
+\caption{\label{fig:LDA-overview}Means and Variances over timepoints}
 \end{figure}

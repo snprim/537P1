@@ -31,7 +31,6 @@ library(GGally)
 library(knitr)
 
 library(bookdown)
-
 ```
 
 ```{r readin Data, results = 'hide'}
@@ -72,22 +71,122 @@ Data3 <- Data2[-972,]
 # Data Analysis  
 
 ## Longitudinal Data Analysis  
-[This section probably needs some more revisions, since we still have three more lectures.]
 
-As seen in Figure \@ref(fig:LDA-overview), the different time points have different variances (shown in blue), and the means (shown in red) are not in a linear pattern.  
+As seen in Figure \@ref(fig:mean-monkey) and Figure \@ref(fig:variance-monkey), the mean trend is not linear, and the different time points have different variances. This information suggests that we should use piecewise linear models and set variances as unequal over time.  
 
+
+```{r, mean-monkey, fig.cap = "Mean trend by monkey"}
+ggplot(Data3, aes(x = Time_Point, y = Binding, colour = as.factor(MonkeyID))) + geom_point() + stat_summary(fun = mean, geom = "line")
+```
+
+```{r, variance-monkey, fig.cap = "Variances over time by monkey"}
+ggplot(Data3, aes(x = Time_Point, y = Binding, colour = as.factor(MonkeyID))) + geom_point() + stat_summary(fun = var, geom = "line")
+```
+
+
+We first consider a model with time point as the only covariate: $$Y_{ij}=\beta_0+\beta_1 Time_{ij}+e_{ij}$$  
+
+
+Thus we will use a piecewise linear model, in which each segment has different intercepts and slopes. We use three indicator variables: $S1, S2, S3$ as the indicator variables, where 
+$$S1=
+\begin{cases}
+1 & \text{if } 0 \le \text{Timepoint} < 1 \\
+0 & \text{otherwise}
+\end{cases}
+$$
+$$S2=
+\begin{cases}
+1 & \text{if } 1 \le \text{Timepoint} < 2 \\
+0 & \text{otherwise}
+\end{cases}
+$$
+$$S3=
+\begin{cases}
+1 & \text{if Timepoint} \ge 2 \\
+0 & \text{otherwise}
+\end{cases}
+$$
+
+The new model is thus $$Y_{ij}=S1(\beta_0+\beta_1 Time_{ij})+S2(\beta_2+\beta_3 Time_{ij})+S3(\beta_4+\beta_5 Time_{ij})+e_{ij}$$  
+
+We also want to make sure that the trend is continuous at timepoint = 1 and 2.  
+
+Our final model is $Y_{ij} = \beta_0(S1 + 2S2 - S2 Time_{ij}) + \beta_1 (S1 Time_{ij} + 2S2 - S2 Time_{ij}) + \beta_4(-S2 + S2 Time_{ij} + S3) + \beta_5(-2S2 + 2S2 Time_{ij} + S3 Time_{ij}) + e_{ij}$ where $$\mathbf{e}_i \sim N(0, \sigma^2I)$$  
+
+```{r}
+S1 <- as.numeric(Data3$Time_Point >= 0 & Data3$Time_Point < 1)
+S2 <- as.numeric(Data3$Time_Point >= 1 & Data3$Time_Point < 2)
+S3 <- as.numeric(Data3$Time_Point >= 2)
+dataLDA1 <- data.frame(id = Data3$MonkeyID, binding = Data3$Binding, time = Data3$Time_Point, S1 = S1, S2 = S2, S3 = S3)
+meanform <- binding ~ -1 + I(S1 + 2*S2 - S2:time) + I(S1:time + 2*S2 - S2:time) + I(-S2 + S2:time + S3) + I(-2*S2 + 2*S2:time + S3:time)
+fit.gls <- gls(model = meanform, data = dataLDA1, weights = varIdent(form = ~ 1 | time), correlation = corCompSymm(form = ~1 | id))
+summary(fit.gls)
+```
+
+
+S1: $-0.2221651+0.2432183*time$  
+S2: $(2*-0.2221651+2*0.2432183-0.7699600+2*0.2432756)+(0.2221651-0.2432183+0.7699600-2*0.2432756)*time = -0.2413024 + 0.2623556*time$  
+S3: $0.7699600-0.2432756*time$  
+
+```{r}
+# when S1 = 1
+f1 <- function(x, y){y = -0.2221651+0.2432183*x}
+# when S2 = 1
+f2 <- function(x, y){y = -0.2413024 + 0.2623556*x}
+# when S3 = 1
+f3 <- function(x, y){y = 0.7699600-0.2432756*x}
+```
+```{r, piecewise1, fig.cap = "Piecewise Linear Function"}
+ggplot(Data3, aes(x = Time_Point, y = Binding, colour = as.factor(MonkeyID))) + 
+  geom_point() + stat_function(fun = f1, xlim = c(0, 1), geom = "line") + 
+  geom_point() + stat_function(fun = f2, xlim = c(1, 2), geom = "line") + 
+  geom_point() + stat_function(fun = f3, xlim = c(2, 3), geom = "line")
+```
+
+Next we check whether adding random effects improve the model. We assume that random effects exist in the intercept and slope. Our linear mixed model is then: $Y_{ij} = \beta_0(S1 + 2S2 - S2 Time_{ij}) + \beta_1 (S1 Time_{ij} + 2S2 - S2 Time_{ij}) + \beta_4(-S2 + S2 Time_{ij} + S3) + \beta_5(-2S2 + 2S2 Time_{ij} + S3 Time_{ij}) + b_{0i} + b{1i} + e_{ij}$  
+where $$\mathbf{b}_i \sim N \left( 0, \mathbf{D} = 
+\begin{pmatrix}
+D_{11} & D_{12} \\
+ & D_{22}
+ \end{pmatrix} \right)$$ and $$\mathbf{e}_i \sim N(0, \sigma^2I)$$  
+
+```{r}
+# with random intercept and slope, compound symmetry, unequal variances
+fit.a1 <- lme(fixed = meanform, random = ~ time | id, data = dataLDA1, weights = varIdent(form = ~ 1 | time), correlation = corCompSymm(form = ~1 | id))
+summary(fit.a1)
+```
+
+```{r}
+# random intercept and slope, AR1, unequal variances
+fit.a2 <- lme(fixed = meanform, random = ~ time | id, data = dataLDA1, weights = varIdent(form = ~ 1 | time), correlation = corAR1(form = ~ 1 | id))
+```
+
+```{r}
+AIC(fit.gls, fit.a1, fit.a2)
+BIC(fit.gls, fit.a1, fit.a2)
+```
+
+We now check residuals for both models.  
+
+```{r}
+par(mfrow = c(1,3))
+gls.res <- residuals(fit.gls, type = "normalized")
+qqnorm(gls.res)
+lme.res1 <- residuals(fit.a1, level = 1, type = "normalized")
+qqnorm(lme.res1)
+lme.res2 <- residuals(fit.a2, level = 1, type = "normalized")
+qqnorm(lme.res2)
+```
+
+
+
+## With Drugs  
 
 ```{r, LDA-overview, fig.cap = "Means and Variances over timepoints"}
 # simply connects the mean of each time point
 ggplot(Data3, aes(x = Time_Point, y = Binding)) + geom_point(stat = "identity", aes(color = as.factor(Drug))) + geom_jitter() + stat_summary(fun = mean, geom = "line", lwd = 2, color = "red") + stat_summary(fun = var, geom = "line", lwd = 2, color = "blue") + scale_color_discrete(name = "Drug")
 
 ```
-
-First we don't consider treatments but only plot the mean trend over time. The plot shows that binding does vary over time. The red line shows the mean trend over time, and the blue line shows the variance over time. The variance does not seem equal over time, so we use unequal variance over time for the covariance structure.  
-
-$$Y_{ij}=\beta_0+\beta_1 Time_{ij}+e_{ij}$$
-
-
 
 Here we use `Binding` as the response, `Time_Point` as the time factor, and `Drug` as the covariates. Random effect for both intercept and slope. Now we want to add one covariate: `Drug`. We use two indicator variables: `D1` and `D2`, where  
 
