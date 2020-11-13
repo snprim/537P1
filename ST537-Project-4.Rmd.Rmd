@@ -20,7 +20,7 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, eval = TRUE, message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(echo = FALSE, eval = TRUE, message = FALSE, warning = FALSE, cache = TRUE)
 library(readxl)
 library(tidyverse)
 library(ggplot2)
@@ -134,7 +134,7 @@ knitr::kable(table(Data2$Drug, Data2$Time_Point, dnn= c('Drug', 'TimePoint')), c
 knitr::kable(table(Data2$Drug, Data2$Time_Point, Data2$Isotype, dnn= c('Drug', 'TimePoint', 'Isotype')), caption = "Frequency tables of drug vs. timepoints vs. isotypes")
 ```
 
-Next,  the histogram of  `Isotype` is presented in Figure \@ref(fig:isotype-plot).  
+Next, the histogram of `Isotype` is presented in Figure \@ref(fig:isotype-plot).  
 
 ```{r, isotype-plot, fig.cap = "Histograms of Isotypes"}
 # Histogram 
@@ -156,35 +156,46 @@ g1 <- ggplot(Data, aes(x=factor(Isotype, levels = Iso.order), fill=as.factor(Dru
     )
 ```
 
-As expected, we observed that IgG and IgM occupied the biggest proportion of all antibodies in all time points. Before immunization (time point 0), there were similar weight of IgG and IgM found in blood. After the 1st immunization (time point 1), primary immune response resulted an increase of IgM, followed with IgG increase at later time point 2 and 3. 
+As expected, we observed that IgG and IgM occupied the biggest proportion of all antibodies in all time points. Before immunization (time point 0), there were similar weight of IgG and IgM found in blood. After the 1st immunization (time point 1), primary immune response resulted an increase of IgM, followed with IgG increase at later time point 2 and 3.  
 
-For the response variables, we began with an outlier check, and then reviewed their distributions across treatment and time-points.
+For the response variables, we began with an outlier check, and then reviewed their distributions across treatment and time-points.  
 
-```{r Outlier Review}
+```{r}
 tibContinuous <- gather(Data2, key = "Variable", value = "value", 
                         H_CDR3, HMuFreq, L_CDR3, LMuFreq, Binding)
+```
+
+
+```{r, outlier-review, fig.cap = "Histogram of Response Variables"}
 #histograms of continuous variables
 ggplot(data = tibContinuous, aes(x = value)) + 
   geom_histogram(bins = 20) +
-  facet_wrap(~Variable, scales = 'free') + labs(title = 'Figure 3: Histogram of Response Variables')
-t<- summary(scale(Data2$L_CDR3))
-kable(t(t), caption = 'Normal Standardized L_CDR3 Statistics')
+  facet_wrap(~Variable, scales = 'free')
 ```
-L_CDR3 appeared to have an outlier several standard (?distribution).  We believed that this  most likely was caused by a laboratory error, so we excluded this observation  and continued the analysis with the remaining data of 2464 observations.
+
+
+```{r, outlier-tab, eval = FALSE}
+standardized <- scale(Data2$L_CDR3)
+t <- apply(standardized, FUN = summary, MARGIN = 2)
+# t <- summary(scale(Data2$L_CDR3))
+knitr::kable(t, caption = "Summary Statistics for L_CDR3")
+```
+
+
+L_CDR3 appeared to have an outlier several standard (?distribution). We believed that this most likely was caused by a laboratory error, so we excluded this observation and continued the analysis with the remaining data of 2464 observations.  
 
 ```{r}
 Data3 <- Data2[-972,]
 ```
 
-We examined our responses: `H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq` and `Binding`. 
+We examined our responses: `H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq` and `Binding`.  
 
-We observed that for `H_CDR3` the distributions were roughly normal with the center around 13 at different time-points (Figure 4) without taking into account different treatments. Figure 5 represents the distribution of `H_CDR3` with respect to treatments at different time-points.  , and slightly centered around 9 for `L_CDR3` at different time- points (Figure 5).  
+We observed that for `H_CDR3` the distributions were roughly normal with the center around 13 at different time-points (Figure 4) without taking into account different treatments. Figure 5 represents the distribution of `H_CDR3` with respect to treatments at different time-points, and slightly centered around 9 for `L_CDR3` at different time- points (Figure 5).  
 
-```{r H_CDR3 Plot/Table, echo=FALSE}
+```{r, hist-HCDR3-trt, fig.cap = "Histogram H_CDR3"}
 g3.1 <- ggplot(Data3, aes(H_CDR3))
   g3.1 + geom_bar(stat = "count", width = 0.7, fill = "#012169") +
     facet_grid(Time_Point~., labeller = label_both) + #by subgroups
-    ggtitle("Figure 4: Histogram H_CDR3") +  #Plot title
     xlab("HCDR3 Length (aa)") + ylab("Number of antibodies") +# X axis and y axis title
     scale_x_continuous(breaks = round(seq(min(Data$H_CDR3), max(Data$H_CDR3), by = 1),1)) + 
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),  #remove background grid
@@ -194,22 +205,22 @@ g3.1 <- ggplot(Data3, aes(H_CDR3))
           axis.title.x = element_text(size = 15), # x title 
           axis.title.y = element_text(size = 15), # y title
           plot.title = element_text(hjust = 0.5, size = 18))  #Title
-  
-  
-  g4<- ggplot(data = Data3, mapping = aes(x = H_CDR3, color = as.factor(Drug))) + 
-  geom_histogram(bins = 10, fill = 'white', aes(y=..density..) ) + facet_grid(Drug~Time_Point, labeller = label_both) + 
-  labs(xlab = 'H_CDR3', ylab = 'Count', title= "Figure 5: Histograms of H_CDR3 vs. Treatment and Timepoint")
-g4 
 
 ```
 
-Figures for `L_CDR3` are shown next. 
+```{r, hist-HCDR3, fig.cap = "Histograms of H_CDR3 vs Treatment and Timepoint"}
+ggplot(data = Data3, mapping = aes(x = H_CDR3, color = as.factor(Drug))) + 
+  geom_histogram(bins = 10, fill = 'white', aes(y=..density..) ) + facet_grid(Drug~Time_Point, labeller = label_both) + 
+  labs(xlab = 'H_CDR3', ylab = 'Count')
+```
 
-```{r L_CDR3 Plot/Table, echo=FALSE}
+
+Figures for `L_CDR3` are shown next.  
+
+```{r, hist-LCDR3, fig.cap = "Histogram L_CDR3"}
 g5 <- ggplot(Data3, aes(L_CDR3))
   g5 + geom_bar(stat = "count", width = 0.7, fill = "#012169") +
     facet_grid(Time_Point~., labeller = label_both) + #by subgroups
-    ggtitle("Figure 6: Histogram L_CDR3") +  #Plot title
     xlab("LCDR3 Length (aa)") + ylab("Number of antibodies") +# X axis and y axis title
     scale_x_continuous(breaks = round(seq(min(Data$L_CDR3), max(Data$L_CDR3), by = 1),1)) + 
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),  #remove background grid
@@ -220,28 +231,30 @@ g5 <- ggplot(Data3, aes(L_CDR3))
           axis.title.y = element_text(size = 15), # y title
           plot.title = element_text(hjust = 0.5, size = 18) #Title
           )
+```
 
-g6<- ggplot(data = Data3, mapping = aes(x = L_CDR3, color = as.factor(Drug))) + 
+
+```{r, hist-LCDR3-trt, fig.cap = "Histograms of L_CDR3 vs Treatment and Timepoint"}
+ggplot(data = Data3, mapping = aes(x = L_CDR3, color = as.factor(Drug))) + 
   geom_histogram(bins = 10, fill = 'white', aes(y=..density..) ) + facet_grid(Drug~Time_Point, labeller = label_both) + 
-  labs(xlab = 'L_CDR3', ylab = 'Count', title= 'Figure 7: Histograms of L_CDR3 vs. Treatment and Timepoint')
-g6
+  labs(xlab = 'L_CDR3', ylab = 'Count')
 ```
 
-Q-Q plots of `H_CDR3` and `L_CDR3` are shown below.
+Q-Q plots of `H_CDR3` and `L_CDR3` are shown below.  
 
-```{r QQ, echo=FALSE, warning=FALSE}
-#par(mfrow = c(1,2))
-qqnorm(Data3$H_CDR3, main = "Figure 8a: Q-Q Plot of H_CDR3", pch = 19, cex = 1)
-qqnorm(Data3$L_CDR3, main = "Figure 8b: Q-Q Plot of L_CDR3", pch = 19, cex = 1)
+```{r, QQ, fig.cap = "Q-Q Plots of H_CDR3 and L_CDR3"}
+par(mfrow = c(1,2))
+qqnorm(Data3$H_CDR3, pch = 19, cex = 1)
+qqnorm(Data3$L_CDR3, pch = 19, cex = 1)
 ```
-`HMuFreq` and `LMuFreq` were calculated by dividing `H_Substitution` by `H_VBase` for heavy chain and similarly for light chain. These two variables show how much the antibodies mutate. A higher mutation rate is usually indicative of better virus neutralization. Below we present comparison of mutation rate between heavy chain and light chain. 
 
-```{r mutation rate, echo=FALSE, warning=FALSE}
+`HMuFreq` and `LMuFreq` were calculated by dividing `H_Substitution` by `H_VBase` for heavy chain and similarly for light chain. These two variables show how much the antibodies mutate. A higher mutation rate is usually indicative of better virus neutralization. Below we present comparison of mutation rate between heavy chain and light chain.  
+
+```{r, murate1, fig.cap = "Histogram HMuFreq"}
 #par(mfrow = c(1,2))
 g7 <- ggplot(Data3, aes(HMuFreq))
   g7 + geom_bar(stat = "count", width = 0.7, fill = "#012169") +
     facet_grid(Time_Point~., labeller = label_both) + #by subgroups
-    ggtitle("Figure 9: Histogram HMuFreq") +  #Plot title
     xlab("HMuFreq Length (aa)") + ylab("Number of antibodies") +# X axis and y axis title
     
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),  #remove background grid
@@ -252,15 +265,18 @@ g7 <- ggplot(Data3, aes(HMuFreq))
           axis.title.y = element_text(size = 15), # y title
           plot.title = element_text(hjust = 0.5, size = 18) #Title
           )
-g8<- ggplot(data = Data3, mapping = aes(x = HMuFreq, color = as.factor(Drug))) + 
-  geom_histogram(bins = 10, fill = 'white' ) + facet_grid(Drug~Time_Point, labeller = label_both) + 
-  labs(xlab = 'HMuFreq', ylab = 'n Monkeys', title= 'Figure 10: Histograms of HMuFreq vs. Treatment and Timepoint')
-g8
+```
 
+```{r, murate2, fig.cap = "Histograms of HMuFreq vs Treatment and Timepoint"}
+ggplot(data = Data3, mapping = aes(x = HMuFreq, color = as.factor(Drug))) + 
+  geom_histogram(bins = 10, fill = 'white' ) + facet_grid(Drug~Time_Point, labeller = label_both) + 
+  labs(xlab = 'HMuFreq', ylab = 'n Monkeys')
+```
+
+```{r, murate3, fig.cap = "Histogram LMuFreq"}
 g9 <- ggplot(Data3, aes(LMuFreq))
   g9 + geom_bar(stat = "count", width = 0.7, fill = "#012169") +
     facet_grid(Time_Point~., labeller = label_both) + #by subgroups
-    ggtitle("Figure 11: Histogram LMuFreq") +  #Plot title
     xlab("LMuFreq Length (aa)") + ylab("Number of antibodies") +# X axis and y axis title
     
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),  #remove background grid
@@ -271,32 +287,39 @@ g9 <- ggplot(Data3, aes(LMuFreq))
           axis.title.y = element_text(size = 15), # y title
           plot.title = element_text(hjust = 0.5, size = 18) #Title
           )
-
-g10<- ggplot(data = Data3, mapping = aes(x = LMuFreq, color = as.factor(Drug))) + 
-  geom_histogram(bins = 10, fill = 'white' ) + facet_grid(Drug~Time_Point, labeller = label_both) + 
-  labs(xlab = 'LMuFreq', ylab = 'n Monkeys', title= 'Figure 12: Histograms of LMuFreq vs Treatment and Timepoint')
-g10
 ```
+
+```{r, murate4, fig.cap = "Histograms of LMuFreq vs Treatment and Timepoint"}
+ggplot(data = Data3, mapping = aes(x = LMuFreq, color = as.factor(Drug))) + 
+  geom_histogram(bins = 10, fill = 'white' ) + facet_grid(Drug~Time_Point, labeller = label_both) + 
+  labs(xlab = 'LMuFreq', ylab = 'n Monkeys')
+```
+
+
 Next, the Q-Q plots of `HMuFreq` and `LMuFreq` are shown.
 
-```{r HL QQ, echo=FALSE, warning=FALSE}
-qqnorm(Data3$HMuFreq, main = "Figure 13a: Q-Q Plot of HMuFreq", pch = 19, cex = 1)
-qqnorm(Data3$LMuFreq, main = "Figure 13b: Q-Q Plot of LMuFreq", pch = 19, cex = 1)
+```{r, QQ2, fig.cap = "Q-Q Plot of HMuFreq and LMuFreq"}
+par(mfrow = c(1,2))
+qqnorm(Data3$HMuFreq, pch = 19, cex = 1)
+qqnorm(Data3$LMuFreq, pch = 19, cex = 1)
 ```
 
 Lastly, Histogram of `Binding` with respect to treatments at different time points and Q-Q plot are shown. We observed that `Binding` was not normally distributed. However, since our sample size is larger than 2000, we can use the Central Limit Theorem and assume normality.  
 
-```{r}
-
-g8<- ggplot(data = Data3, mapping = aes(x = Binding, color = as.factor(Drug))) + 
+```{r, hist-binding, fig.cap = "Histograms of Binding Strength vs Treatment and Timepoint"}
+ggplot(data = Data3, mapping = aes(x = Binding, color = as.factor(Drug))) + 
   geom_histogram(bins = 10, fill = 'white', aes(y=..density..) ) + facet_grid(Drug~Time_Point, labeller = label_both) + 
-  labs(xlab = 'Binding', ylab = 'Count', title= 'Figure 14: Histograms of Binding Strength vs Treatment and Timepoint')
-g8
-qqnorm(Data3$Binding, main="Figure 15: Q-Q Plot of Binding", pch = 19, cex = 1)
+  labs(xlab = 'Binding', ylab = 'Count')
 ```
+
+```{r, QQ3, fig.cap = "Q-Q Plot of Binding"}
+qqnorm(Data3$Binding, pch = 19, cex = 1)
+```
+
+
 We checked whether response variables could be correlated. In the plot below, we observed that none of the response variables were highly correlated.
 
-```{r Q_Q binding}
+```{r, QQbinding, fig.cap = "Plots of response variables"}
 Data3 %>% select(LMuFreq, HMuFreq, L_CDR3, H_CDR3, Binding) %>% ggpairs()
 ```
 
