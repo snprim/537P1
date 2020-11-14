@@ -46,19 +46,3 @@ numDF & denDF & F.value & p.value\\
 \hline
 \end{tabular}
 \end{table}
-\efloatseparator
- 
-\begin{table}
-
-\caption{\label{tab:AIC-table}AIC and BIC for Longitudinal Models}
-\centering
-\begin{tabular}[t]{l|r|r|r|r}
-\hline
-  & df & AIC & df.1 & BIC\\
-\hline
-lda & 13 & 3673.651 & 13 & 3749.144\\
-\hline
-lda2 & 9 & 3661.551 & 9 & 3713.830\\
-\hline
-\end{tabular}
-\end{table}
