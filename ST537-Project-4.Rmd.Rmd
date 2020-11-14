@@ -1,7 +1,7 @@
 ---
 title: "**Antibody Response Induced by HIV Vaccines and T-cell Suppression Treatments in Rhesus Macaques**"
 author: "Group 3: Kan Luo, Shih-Ni Prim, Frederick Davey, Rizwana Rehman"
-date: "11/12/2020"
+date: "11/13/2020"
 fontsize: 12pt
 geometry: margin = 1in
 mainfont: Times New Roman
@@ -132,7 +132,8 @@ ggplot(data = Data2Summary, mapping = aes(x = nObs, color = Drug)) + geom_histog
 knitr::kable(table(Data2$Drug, Data2$Time_Point, dnn= c('Drug', 'TimePoint')), caption = "Frequency tables of drug vs. timepoints")
 ```
 ```{r, ft-drug-timepoint-isotype}
-knitr::kable(table(Data2$Drug, Data2$Time_Point, Data2$Isotype, dnn= c('Drug', 'TimePoint', 'Isotype')), caption = "Frequency tables of drug vs. timepoints vs. isotypes")
+dti <- table(Data2$Drug, Data2$Time_Point, Data2$Isotype, dnn= c('Drug', 'TimePoint', 'Isotype'))
+knitr::kable(list(dti[1,,], dti[2,,], dti[3,,]), caption = "Frequency tables of timepoints vs. isotypes for drug = 1, 2, 3, respectively")
 ```
 
 Next, the histogram of `Isotype` is presented in Figure \@ref(fig:isotype-plot).  
@@ -437,9 +438,7 @@ We could conclude that the drug groups do increase mutation rate; however, they 
 
 ## Longitudinal Analysis  
 
-For the longitudinal analysis of binding strength vs number of vaccine doses, we will be using the gls function from the nlme package$^{[7]}.$ (NEEDS TO UP DATED)
-
-To answer our research question Q2, **How does the binding strength of the antibodies develop in response to the number of vaccine dosages by treatment?**, we use longitudinal data analysis, including general linear models and linear mixed models.
+For the longitudinal analysis of binding strength vs number of vaccine doses, we will be using the `gls` and `lme` functions from the nlme package$^{[7]}.$ To answer our research question Q2, **How does the binding strength of the antibodies develop in response to the number of vaccine dosages by treatment?**, we use longitudinal data analysis, including general linear models and linear mixed models.  
 
 As seen in Figure \@ref(fig:mean-monkey) and Figure \@ref(fig:variance-monkey), the mean trend is not linear, and the different time points have different variances. This information suggests that we should use piecewise linear models and set variances as unequal over time.  
 
@@ -624,7 +623,7 @@ kable(data.frame(rbind(test1, test2)), caption = "Inference of S4 ad S5 slopes")
 
 As shown in Table \@ref(tab:S4S5-slope), the slop of S4 has a very small p-value, while the slope of S5 is quite large, indicating that the change in Binding rate between Time_Point 0 and Time_Point 2 is significant while the change between Time_Point 2 and Time_Point 3 is not significant. We conclude that Time_Point 2, when the monkeys had received two vaccines, had the highest Binding rate, while the last vaccine shot at Time_Point 3 did not make a difference to the Binding rate.  
 
-## Add drugs as a covariate  
+### Add drugs as a covariate  
 
 Next we add drugs as a covariate to see if it has effects on Binding. We use two indicator variables: `D2` and `D3`, where  
 

@@ -8,7 +8,7 @@
 \contentsline {subsection}{\numberline {2.2}Multivariate Data Analysis}{5}{subsection.2.2}%
 \contentsline {subsubsection}{\numberline {2.2.1}Pairwise comparison}{6}{subsubsection.2.2.1}%
 \contentsline {subsection}{\numberline {2.3}Longitudinal Analysis}{9}{subsection.2.3}%
-\contentsline {subsection}{\numberline {2.4}Add drugs as a covariate}{12}{subsection.2.4}%
+\contentsline {subsubsection}{\numberline {2.3.1}Add drugs as a covariate}{12}{subsubsection.2.3.1}%
 \contentsline {section}{\numberline {3}Results}{15}{section.3}%
 \contentsline {section}{\numberline {4}Discussion}{15}{section.4}%
 \contentsline {section}{\numberline {5}Conclusions}{15}{section.5}%
