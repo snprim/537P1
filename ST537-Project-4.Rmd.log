@@ -1,4 +1,4 @@
-This is LuaHBTeX, Version 1.12.0 (MiKTeX 20.7) (format=lualatex 2020.11.12)  13 NOV 2020 00:14
+This is LuaHBTeX, Version 1.12.0 (MiKTeX 20.7) (format=lualatex 2020.11.12)  13 NOV 2020 23:09
  restricted system commands enabled.
 **ST537-Project-4.Rmd.tex
 (./ST537-Project-4.Rmd.tex
@@ -1115,47 +1115,80 @@ Project-4.Rmd.fff)
 \openout4 = ST537-Project-4.Rmd.ttt
  (ST537-Project-4.Rmd.ttt) [4] [5] [6] [7] [8]
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/n' will be
-(Font)              scaled to size 14.39996pt on input line 606.
-[9] [10]
+(Font)              scaled to size 14.39996pt on input line 632.
+[9]
+LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/n' will be
+(Font)              scaled to size 8.4pt on input line 733.
+LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/n' will be
+(Font)              scaled to size 6.0pt on input line 733.
+LaTeX Font Info:    Font shape `TU/TimesNewRoman(1)/b/n' will be
+(Font)              scaled to size 11.7561pt on input line 754.
+LaTeX Font Info:    Font shape `TU/TimesNewRoman(1)/b/n' will be
+(Font)              scaled to size 8.22926pt on input line 754.
+LaTeX Font Info:    Font shape `TU/TimesNewRoman(1)/b/n' will be
+(Font)              scaled to size 5.87805pt on input line 754.
+[10] [11]
+Missing character: There is no 𝛽 (U+1D6FD) in font TimesNewRoman/B:mode=base;
+script=latn;language=dflt;!
+Missing character: There is no 𝛽 (U+1D6FD) in font TimesNewRoman/B:mode=base;
+script=latn;language=dflt;!
+Missing character: There is no 𝛽 (U+1D6FD) in font TimesNewRoman/B:mode=base;
+script=latn;language=dflt;!
+Missing character: There is no 𝛽 (U+1D6FD) in font TimesNewRoman/B:mode=base;
+script=latn;language=dflt;!
+[12] [13]
+Missing character: There is no 𝛽 (U+1D6FD) in font TimesNewRoman/B:mode=base;
+script=latn;language=dflt;!
+Missing character: There is no 𝛽 (U+1D6FD) in font TimesNewRoman/B:mode=base;
+script=latn;language=dflt;!
+Missing character: There is no 𝛽 (U+1D6FD) in font TimesNewRoman/B:mode=base;
+script=latn;language=dflt;!
+Missing character: There is no 𝛽 (U+1D6FD) in font TimesNewRoman/B:mode=base;
+script=latn;language=dflt;!
+Missing character: There is no 𝛽 (U+1D6FD) in font TimesNewRoman/B:mode=base;
+script=latn;language=dflt;!
+Missing character: There is no 𝛽 (U+1D6FD) in font TimesNewRoman/B:mode=base;
+script=latn;language=dflt;!
+[14]
 LaTeX Font Info:    Font shape `TU/TimesNewRoman(0)/m/it' will be
-(Font)              scaled to size 12.0pt on input line 772.
+(Font)              scaled to size 12.0pt on input line 1044.
 
-Underfull \hbox (badness 2726) in paragraph at lines 772--774
+Underfull \hbox (badness 2726) in paragraph at lines 1044--1046
 []\TU/TimesNewRoman(0)/m/n/12 Luo K, Liao HX, Zhang R, et al. Tis-sue mem-ory B cell reper-toire anal-y-sis af-
  []
 
 
-Underfull \hbox (badness 1430) in paragraph at lines 772--774
+Underfull \hbox (badness 1430) in paragraph at lines 1044--1046
 \TU/TimesNewRoman(0)/m/n/12 ter AL-VAC/AIDSVAX B/E gp120 im-mu-niza-tion of rhe-
 sus macaques. \TU/TimesNewRoman(0)/m/it/12 JCI In-sight\TU/TimesNewRoman(0)/m/n
 /12 .
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 778--780
+Underfull \hbox (badness 10000) in paragraph at lines 1050--1052
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 780--782
+Underfull \hbox (badness 10000) in paragraph at lines 1052--1054
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 782--784
+Underfull \hbox (badness 10000) in paragraph at lines 1054--1056
 
  []
 
-AED endfloat: Processing end Figures and Tables [11] (./ST537-Project-4.Rmd.lof
+AED endfloat: Processing end Figures and Tables [15] (./ST537-Project-4.Rmd.lof
 )
 \tf@lof=\write6
 
 \openout6 = ST537-Project-4.Rmd.lof
-[12
+[16
 
 
 ] (./ST537-Project-4.Rmd.fff
-<ST537-Project-4.Rmd_files/figure-latex/hist-antibodies-1.pdf, id=152, 469.755pt
+<ST537-Project-4.Rmd_files/figure-latex/hist-antibodies-1.pdf, id=211, 469.755pt
  x 289.08pt>
 File: ST537-Project-4.Rmd_files/figure-latex/hist-antibodies-1.pdf Graphic file 
 (type pdf)
@@ -1163,10 +1196,10 @@ File: ST537-Project-4.Rmd_files/figure-latex/hist-antibodies-1.pdf Graphic file
 Package luatex.def Info: ST537-Project-4.Rmd_files/figure-latex/hist-antibodies-
 1.pdf  used on input line 3.
 (luatex.def)             Requested size: 469.75386pt x 289.07928pt.
-[13
+[17
 
 <./ST537-Project-4.Rmd_files/figure-latex/hist-antibodies-1.pdf>]
-<ST537-Project-4.Rmd_files/figure-latex/isotype-plot-1.pdf, id=161, 469.755pt x 
+<ST537-Project-4.Rmd_files/figure-latex/isotype-plot-1.pdf, id=220, 469.755pt x 
 289.08pt>
 File: ST537-Project-4.Rmd_files/figure-latex/isotype-plot-1.pdf Graphic file (ty
 pe pdf)
@@ -1174,10 +1207,10 @@ pe pdf)
 Package luatex.def Info: ST537-Project-4.Rmd_files/figure-latex/isotype-plot-1.p
 df  used on input line 10.
 (luatex.def)             Requested size: 469.75386pt x 289.07928pt.
-[14
+[18
 
 <./ST537-Project-4.Rmd_files/figure-latex/isotype-plot-1.pdf>]
-<ST537-Project-4.Rmd_files/figure-latex/outlier-review-1.pdf, id=170, 469.755pt 
+<ST537-Project-4.Rmd_files/figure-latex/outlier-review-1.pdf, id=229, 469.755pt 
 x 289.08pt>
 File: ST537-Project-4.Rmd_files/figure-latex/outlier-review-1.pdf Graphic file (
 type pdf)
@@ -1185,187 +1218,253 @@ type pdf)
 Package luatex.def Info: ST537-Project-4.Rmd_files/figure-latex/outlier-review-1
 .pdf  used on input line 17.
 (luatex.def)             Requested size: 469.75386pt x 289.07928pt.
-[15
+[19
 
 <./ST537-Project-4.Rmd_files/figure-latex/outlier-review-1.pdf>]
-<ST537-Project-4.Rmd_files/figure-latex/hist-HCDR3-trt-1.pdf, id=179, 469.755pt 
+<ST537-Project-4.Rmd_files/figure-latex/outlier-d2-1.pdf, id=238, 469.755pt x 28
+9.08pt>
+File: ST537-Project-4.Rmd_files/figure-latex/outlier-d2-1.pdf Graphic file (type
+ pdf)
+<use ST537-Project-4.Rmd_files/figure-latex/outlier-d2-1.pdf>
+Package luatex.def Info: ST537-Project-4.Rmd_files/figure-latex/outlier-d2-1.pdf
+  used on input line 24.
+(luatex.def)             Requested size: 469.75386pt x 289.07928pt.
+[20
+
+<./ST537-Project-4.Rmd_files/figure-latex/outlier-d2-1.pdf>]
+<ST537-Project-4.Rmd_files/figure-latex/hist-HCDR3-trt-1.pdf, id=247, 469.755pt 
 x 289.08pt>
 File: ST537-Project-4.Rmd_files/figure-latex/hist-HCDR3-trt-1.pdf Graphic file (
 type pdf)
 <use ST537-Project-4.Rmd_files/figure-latex/hist-HCDR3-trt-1.pdf>
 Package luatex.def Info: ST537-Project-4.Rmd_files/figure-latex/hist-HCDR3-trt-1
-.pdf  used on input line 24.
+.pdf  used on input line 31.
 (luatex.def)             Requested size: 469.75386pt x 289.07928pt.
-[16
+[21
 
 <./ST537-Project-4.Rmd_files/figure-latex/hist-HCDR3-trt-1.pdf>]
-<ST537-Project-4.Rmd_files/figure-latex/hist-HCDR3-1.pdf, id=188, 469.755pt x 28
+<ST537-Project-4.Rmd_files/figure-latex/hist-HCDR3-1.pdf, id=257, 469.755pt x 28
 9.08pt>
 File: ST537-Project-4.Rmd_files/figure-latex/hist-HCDR3-1.pdf Graphic file (type
  pdf)
 <use ST537-Project-4.Rmd_files/figure-latex/hist-HCDR3-1.pdf>
 Package luatex.def Info: ST537-Project-4.Rmd_files/figure-latex/hist-HCDR3-1.pdf
-  used on input line 31.
+  used on input line 38.
 (luatex.def)             Requested size: 469.75386pt x 289.07928pt.
-[17
+[22
 
 <./ST537-Project-4.Rmd_files/figure-latex/hist-HCDR3-1.pdf>]
-<ST537-Project-4.Rmd_files/figure-latex/hist-LCDR3-1.pdf, id=197, 469.755pt x 28
+<ST537-Project-4.Rmd_files/figure-latex/hist-LCDR3-1.pdf, id=266, 469.755pt x 28
 9.08pt>
 File: ST537-Project-4.Rmd_files/figure-latex/hist-LCDR3-1.pdf Graphic file (type
  pdf)
 <use ST537-Project-4.Rmd_files/figure-latex/hist-LCDR3-1.pdf>
 Package luatex.def Info: ST537-Project-4.Rmd_files/figure-latex/hist-LCDR3-1.pdf
-  used on input line 38.
+  used on input line 45.
 (luatex.def)             Requested size: 469.75386pt x 289.07928pt.
-[18
+[23
 
 <./ST537-Project-4.Rmd_files/figure-latex/hist-LCDR3-1.pdf>]
-<ST537-Project-4.Rmd_files/figure-latex/hist-LCDR3-trt-1.pdf, id=206, 469.755pt 
+<ST537-Project-4.Rmd_files/figure-latex/hist-LCDR3-trt-1.pdf, id=275, 469.755pt 
 x 289.08pt>
 File: ST537-Project-4.Rmd_files/figure-latex/hist-LCDR3-trt-1.pdf Graphic file (
 type pdf)
 <use ST537-Project-4.Rmd_files/figure-latex/hist-LCDR3-trt-1.pdf>
 Package luatex.def Info: ST537-Project-4.Rmd_files/figure-latex/hist-LCDR3-trt-1
-.pdf  used on input line 45.
+.pdf  used on input line 52.
 (luatex.def)             Requested size: 469.75386pt x 289.07928pt.
-[19
+[24
 
 <./ST537-Project-4.Rmd_files/figure-latex/hist-LCDR3-trt-1.pdf>]
-<ST537-Project-4.Rmd_files/figure-latex/QQ-1.pdf, id=215, 469.755pt x 289.08pt>
+<ST537-Project-4.Rmd_files/figure-latex/QQ-1.pdf, id=284, 469.755pt x 289.08pt>
 File: ST537-Project-4.Rmd_files/figure-latex/QQ-1.pdf Graphic file (type pdf)
 <use ST537-Project-4.Rmd_files/figure-latex/QQ-1.pdf>
 Package luatex.def Info: ST537-Project-4.Rmd_files/figure-latex/QQ-1.pdf  used o
-n input line 52.
+n input line 59.
 (luatex.def)             Requested size: 469.75386pt x 289.07928pt.
-[20
+[25
 
 <./ST537-Project-4.Rmd_files/figure-latex/QQ-1.pdf>]
-<ST537-Project-4.Rmd_files/figure-latex/murate1-1.pdf, id=225, 469.755pt x 289.0
+<ST537-Project-4.Rmd_files/figure-latex/murate1-1.pdf, id=294, 469.755pt x 289.0
 8pt>
 File: ST537-Project-4.Rmd_files/figure-latex/murate1-1.pdf Graphic file (type pd
 f)
 <use ST537-Project-4.Rmd_files/figure-latex/murate1-1.pdf>
 Package luatex.def Info: ST537-Project-4.Rmd_files/figure-latex/murate1-1.pdf  u
-sed on input line 59.
+sed on input line 66.
 (luatex.def)             Requested size: 469.75386pt x 289.07928pt.
-[21
+[26
 
 <./ST537-Project-4.Rmd_files/figure-latex/murate1-1.pdf>]
-<ST537-Project-4.Rmd_files/figure-latex/murate2-1.pdf, id=235, 469.755pt x 289.0
+<ST537-Project-4.Rmd_files/figure-latex/murate2-1.pdf, id=303, 469.755pt x 289.0
 8pt>
 File: ST537-Project-4.Rmd_files/figure-latex/murate2-1.pdf Graphic file (type pd
 f)
 <use ST537-Project-4.Rmd_files/figure-latex/murate2-1.pdf>
 Package luatex.def Info: ST537-Project-4.Rmd_files/figure-latex/murate2-1.pdf  u
-sed on input line 66.
+sed on input line 73.
 (luatex.def)             Requested size: 469.75386pt x 289.07928pt.
-[22
+[27
 
 <./ST537-Project-4.Rmd_files/figure-latex/murate2-1.pdf>]
-<ST537-Project-4.Rmd_files/figure-latex/murate3-1.pdf, id=244, 469.755pt x 289.0
+<ST537-Project-4.Rmd_files/figure-latex/murate3-1.pdf, id=312, 469.755pt x 289.0
 8pt>
 File: ST537-Project-4.Rmd_files/figure-latex/murate3-1.pdf Graphic file (type pd
 f)
 <use ST537-Project-4.Rmd_files/figure-latex/murate3-1.pdf>
 Package luatex.def Info: ST537-Project-4.Rmd_files/figure-latex/murate3-1.pdf  u
-sed on input line 73.
+sed on input line 80.
 (luatex.def)             Requested size: 469.75386pt x 289.07928pt.
-[23
+[28
 
 <./ST537-Project-4.Rmd_files/figure-latex/murate3-1.pdf>]
-<ST537-Project-4.Rmd_files/figure-latex/murate4-1.pdf, id=253, 469.755pt x 289.0
+<ST537-Project-4.Rmd_files/figure-latex/murate4-1.pdf, id=321, 469.755pt x 289.0
 8pt>
 File: ST537-Project-4.Rmd_files/figure-latex/murate4-1.pdf Graphic file (type pd
 f)
 <use ST537-Project-4.Rmd_files/figure-latex/murate4-1.pdf>
 Package luatex.def Info: ST537-Project-4.Rmd_files/figure-latex/murate4-1.pdf  u
-sed on input line 80.
+sed on input line 87.
 (luatex.def)             Requested size: 469.75386pt x 289.07928pt.
-[24
+[29
 
 <./ST537-Project-4.Rmd_files/figure-latex/murate4-1.pdf>]
-<ST537-Project-4.Rmd_files/figure-latex/QQ2-1.pdf, id=262, 469.755pt x 289.08pt>
+<ST537-Project-4.Rmd_files/figure-latex/QQ2-1.pdf, id=330, 469.755pt x 289.08pt>
 
 File: ST537-Project-4.Rmd_files/figure-latex/QQ2-1.pdf Graphic file (type pdf)
 <use ST537-Project-4.Rmd_files/figure-latex/QQ2-1.pdf>
 Package luatex.def Info: ST537-Project-4.Rmd_files/figure-latex/QQ2-1.pdf  used 
-on input line 87.
+on input line 94.
 (luatex.def)             Requested size: 469.75386pt x 289.07928pt.
-[25
+[30
 
 <./ST537-Project-4.Rmd_files/figure-latex/QQ2-1.pdf>]
-<ST537-Project-4.Rmd_files/figure-latex/hist-binding-1.pdf, id=272, 469.755pt x 
+<ST537-Project-4.Rmd_files/figure-latex/hist-binding-1.pdf, id=340, 469.755pt x 
 289.08pt>
 File: ST537-Project-4.Rmd_files/figure-latex/hist-binding-1.pdf Graphic file (ty
 pe pdf)
 <use ST537-Project-4.Rmd_files/figure-latex/hist-binding-1.pdf>
 Package luatex.def Info: ST537-Project-4.Rmd_files/figure-latex/hist-binding-1.p
-df  used on input line 94.
+df  used on input line 101.
 (luatex.def)             Requested size: 469.75386pt x 289.07928pt.
-[26
+[31
 
 <./ST537-Project-4.Rmd_files/figure-latex/hist-binding-1.pdf>]
-<ST537-Project-4.Rmd_files/figure-latex/QQ3-1.pdf, id=281, 469.755pt x 289.08pt>
+<ST537-Project-4.Rmd_files/figure-latex/QQ3-1.pdf, id=350, 469.755pt x 289.08pt>
 
 File: ST537-Project-4.Rmd_files/figure-latex/QQ3-1.pdf Graphic file (type pdf)
 <use ST537-Project-4.Rmd_files/figure-latex/QQ3-1.pdf>
 Package luatex.def Info: ST537-Project-4.Rmd_files/figure-latex/QQ3-1.pdf  used 
-on input line 101.
+on input line 108.
 (luatex.def)             Requested size: 469.75386pt x 289.07928pt.
-[27
+[32
 
 <./ST537-Project-4.Rmd_files/figure-latex/QQ3-1.pdf>]
-<ST537-Project-4.Rmd_files/figure-latex/QQbinding-1.pdf, id=291, 469.755pt x 289
+<ST537-Project-4.Rmd_files/figure-latex/QQbinding-1.pdf, id=360, 469.755pt x 289
 .08pt>
 File: ST537-Project-4.Rmd_files/figure-latex/QQbinding-1.pdf Graphic file (type 
 pdf)
 <use ST537-Project-4.Rmd_files/figure-latex/QQbinding-1.pdf>
 Package luatex.def Info: ST537-Project-4.Rmd_files/figure-latex/QQbinding-1.pdf 
- used on input line 108.
+ used on input line 115.
 (luatex.def)             Requested size: 469.75386pt x 289.07928pt.
-) [28
+[33
 
-<./ST537-Project-4.Rmd_files/figure-latex/QQbinding-1.pdf>] (./ST537-Project-4.
-Rmd.lot)
+<./ST537-Project-4.Rmd_files/figure-latex/QQbinding-1.pdf>]
+<ST537-Project-4.Rmd_files/figure-latex/mean-monkey-1.pdf, id=370, 469.755pt x 2
+89.08pt>
+File: ST537-Project-4.Rmd_files/figure-latex/mean-monkey-1.pdf Graphic file (typ
+e pdf)
+<use ST537-Project-4.Rmd_files/figure-latex/mean-monkey-1.pdf>
+Package luatex.def Info: ST537-Project-4.Rmd_files/figure-latex/mean-monkey-1.pd
+f  used on input line 122.
+(luatex.def)             Requested size: 469.75386pt x 289.07928pt.
+[34
+
+<./ST537-Project-4.Rmd_files/figure-latex/mean-monkey-1.pdf>]
+<ST537-Project-4.Rmd_files/figure-latex/variance-monkey-1.pdf, id=379, 469.755pt
+ x 289.08pt>
+File: ST537-Project-4.Rmd_files/figure-latex/variance-monkey-1.pdf Graphic file 
+(type pdf)
+<use ST537-Project-4.Rmd_files/figure-latex/variance-monkey-1.pdf>
+Package luatex.def Info: ST537-Project-4.Rmd_files/figure-latex/variance-monkey-
+1.pdf  used on input line 129.
+(luatex.def)             Requested size: 469.75386pt x 289.07928pt.
+[35
+
+<./ST537-Project-4.Rmd_files/figure-latex/variance-monkey-1.pdf>]
+<ST537-Project-4.Rmd_files/figure-latex/piecewise1-1.pdf, id=388, 469.755pt x 28
+9.08pt>
+File: ST537-Project-4.Rmd_files/figure-latex/piecewise1-1.pdf Graphic file (type
+ pdf)
+<use ST537-Project-4.Rmd_files/figure-latex/piecewise1-1.pdf>
+Package luatex.def Info: ST537-Project-4.Rmd_files/figure-latex/piecewise1-1.pdf
+  used on input line 136.
+(luatex.def)             Requested size: 469.75386pt x 289.07928pt.
+[36
+
+<./ST537-Project-4.Rmd_files/figure-latex/piecewise1-1.pdf>]
+<ST537-Project-4.Rmd_files/figure-latex/piecewise2-1.pdf, id=397, 469.755pt x 28
+9.08pt>
+File: ST537-Project-4.Rmd_files/figure-latex/piecewise2-1.pdf Graphic file (type
+ pdf)
+<use ST537-Project-4.Rmd_files/figure-latex/piecewise2-1.pdf>
+Package luatex.def Info: ST537-Project-4.Rmd_files/figure-latex/piecewise2-1.pdf
+  used on input line 143.
+(luatex.def)             Requested size: 469.75386pt x 289.07928pt.
+[37
+
+<./ST537-Project-4.Rmd_files/figure-latex/piecewise2-1.pdf>]
+<ST537-Project-4.Rmd_files/figure-latex/QQmodel-1.pdf, id=406, 469.755pt x 289.0
+8pt>
+File: ST537-Project-4.Rmd_files/figure-latex/QQmodel-1.pdf Graphic file (type pd
+f)
+<use ST537-Project-4.Rmd_files/figure-latex/QQmodel-1.pdf>
+Package luatex.def Info: ST537-Project-4.Rmd_files/figure-latex/QQmodel-1.pdf  u
+sed on input line 150.
+(luatex.def)             Requested size: 469.75386pt x 289.07928pt.
+) [38
+
+<./ST537-Project-4.Rmd_files/figure-latex/QQmodel-1.pdf>] (./ST537-Project-4.Rm
+d.lot)
 \tf@lot=\write7
 
 \openout7 = ST537-Project-4.Rmd.lot
-[29
+[39
 
 
-] (./ST537-Project-4.Rmd.ttt [30]
+] (./ST537-Project-4.Rmd.ttt [40]
 
 LaTeX Warning: Float too large for page by 291.30072pt on input line 148.
 
-) [31]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 787.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 787.
+[41] [42] [43] [44] [45] [46] [47]) [48]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1059.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1059.
 (./ST537-Project-4.Rmd.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 787.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 787.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1059.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 1059.
 )
 
 Here is how much of LuaTeX's memory you used:
- 20439 strings out of 481302
+ 20562 strings out of 481302
  125171,953878 words of node,token memory allocated
- 542 words of node memory still in use:
-   6 hlist, 2 vlist, 2 rule, 1 mark, 2 glue, 4 kern, 1 glyph, 10 attribute, 58 g
-lue_spec, 10 attribute_list, 4 write nodes
-   avail lists: 2:1170,3:673,4:86,5:133,6:46,7:4205,8:56,9:634,10:33,11:350
- 36846 multiletter control sequences out of 65536+200000
- 97 fonts using 42194359 bytes
- 59i,8n,121p,942b,531s stack positions out of 5000i,500n,10000p,200000b,50000s
-<C:/WINDOWS/Fonts/timesi.ttf><//?/c:/program files/miktex/fonts/opentype/public/
-lm/lmmono12-regular.otf><C:/Users/shihn/AppData/Roaming/MiKTeX/fonts/opentype/pu
-blic/lm-math/latinmodern-math.otf><C:/Users/shihn/AppData/Roaming/MiKTeX/fonts/o
-pentype/public/lm-math/latinmodern-math.otf><C:/WINDOWS/Fonts/times.ttf><C:/WIND
-OWS/Fonts/timesbd.ttf>
-Output written on ST537-Project-4.Rmd.pdf (31 pages, 1738887 bytes).
+ 715 words of node memory still in use:
+   6 hlist, 2 vlist, 2 rule, 1 mark, 2 glue, 4 kern, 1 glyph, 48 attribute, 58 g
+lue_spec, 48 attribute_list, 11 write nodes
+   avail lists: 2:1156,3:638,4:78,5:141,6:46,7:4205,8:124,9:634,10:33,11:350
+ 36901 multiletter control sequences out of 65536+200000
+ 102 fonts using 46025355 bytes
+ 59i,9n,121p,942b,467s stack positions out of 5000i,500n,10000p,200000b,50000s
+<C:/WINDOWS/Fonts/timesi.ttf><C:/WINDOWS/Fonts/timesbd.ttf><//?/c:/program files
+/miktex/fonts/opentype/public/lm/lmmono12-regular.otf><C:/Users/shihn/AppData/Ro
+aming/MiKTeX/fonts/opentype/public/lm-math/latinmodern-math.otf><C:/Users/shihn/
+AppData/Roaming/MiKTeX/fonts/opentype/public/lm-math/latinmodern-math.otf><C:/WI
+NDOWS/Fonts/times.ttf><C:/WINDOWS/Fonts/timesbd.ttf>
+Output written on ST537-Project-4.Rmd.pdf (48 pages, 2530724 bytes).
 
-PDF statistics: 403 PDF objects out of 1000 (max. 8388607)
- 88 named destinations out of 1000 (max. 131072)
- 105 words of extra memory for PDF output out of 10000 (max. 100000000)
+PDF statistics: 563 PDF objects out of 1000 (max. 8388607)
+ 120 named destinations out of 1000 (max. 131072)
+ 113 words of extra memory for PDF output out of 10000 (max. 100000000)
 
 
 ! lualatex: major issue: User/administrator updates are out-of-sync.

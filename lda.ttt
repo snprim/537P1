@@ -46,3 +46,45 @@ numDF & denDF & F.value & p.value\\
 \hline
 \end{tabular}
 \end{table}
+\efloatseparator
+ 
+\begin{table}
+
+\caption{\label{tab:L3-test}Test whether drug 1 = drug 2}
+\centering
+\begin{tabular}[t]{r|r}
+\hline
+Fstat & p\_value\\
+\hline
+1.065151 & 0.3626666\\
+\hline
+\end{tabular}
+\end{table}
+\efloatseparator
+ 
+\begin{table}
+
+\caption{\label{tab:L4-test}Test whether drug 1 = drug 3}
+\centering
+\begin{tabular}[t]{r|r}
+\hline
+Fstat & p\_value\\
+\hline
+1.231968 & 0.2964737\\
+\hline
+\end{tabular}
+\end{table}
+\efloatseparator
+ 
+\begin{table}
+
+\caption{\label{tab:L5-test}Test whether drug 2 = drug 3}
+\centering
+\begin{tabular}[t]{r|r}
+\hline
+Fstat & p\_value\\
+\hline
+1.255448 & 0.288075\\
+\hline
+\end{tabular}
+\end{table}

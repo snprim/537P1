@@ -146,3 +146,119 @@ Drug & TimePoint & Isotype & Freq\\
 \hline
 \end{tabular}
 \end{table}
+\efloatseparator
+ 
+\begin{table}
+
+\caption{\label{tab:outlier-tab}Summaries of standardized LCDR3}
+\centering
+\begin{tabular}[t]{l|l}
+\hline
+  &       V1\\
+\hline
+ & Min.   :-2.1860\\
+\hline
+ & 1st Qu.:-0.5361\\
+\hline
+ & Median :-0.5361\\
+\hline
+ & Mean   : 0.0000\\
+\hline
+ & 3rd Qu.: 0.2888\\
+\hline
+ & Max.   :30.8110\\
+\hline
+\end{tabular}
+\end{table}
+\efloatseparator
+ 
+\begin{table}
+
+\caption{\label{tab:AIC-tab1}AIC and BIC between two gls models}
+\centering
+\begin{tabular}[t]{l|r|r|r|r}
+\hline
+  & df & AIC & df.1 & BIC\\
+\hline
+fit.gls & 9 & 3323.050 & 9 & 3375.322\\
+\hline
+fit.gls2 & 8 & 3315.264 & 8 & 3361.730\\
+\hline
+\end{tabular}
+\end{table}
+\efloatseparator
+ 
+\begin{table}
+
+\caption{\label{tab:AIC-tab2}AIC and BIC for three models}
+\centering
+\begin{tabular}[t]{l|r|r|r|r}
+\hline
+  & df & AIC & df.1 & BIC\\
+\hline
+fit.gls2 & 8 & 3315.264 & 8 & 3361.730\\
+\hline
+fit.a1 & 11 & 3234.628 & 11 & 3298.520\\
+\hline
+fit.a2 & 11 & 3063.290 & 11 & 3127.182\\
+\hline
+\end{tabular}
+\end{table}
+\efloatseparator
+ 
+\begin{table}
+
+\caption{\label{tab:S4S5-slope}Inference of S4 ad S5 slopes}
+\centering
+\begin{tabular}[t]{r|r|r|r}
+\hline
+numDF & denDF & F.value & p.value\\
+\hline
+1 & 2442 & 244.2324506 & 0.0000000\\
+\hline
+1 & 2442 & 0.0317192 & 0.8586602\\
+\hline
+\end{tabular}
+\end{table}
+\efloatseparator
+ 
+\begin{table}
+
+\caption{\label{tab:L3-test}Test whether drug 1 = drug 2}
+\centering
+\begin{tabular}[t]{r|r}
+\hline
+Fstat & p\_value\\
+\hline
+1.065151 & 0.3626666\\
+\hline
+\end{tabular}
+\end{table}
+\efloatseparator
+ 
+\begin{table}
+
+\caption{\label{tab:L4-test}Test whether drug 1 = drug 3}
+\centering
+\begin{tabular}[t]{r|r}
+\hline
+Fstat & p\_value\\
+\hline
+1.231968 & 0.2964737\\
+\hline
+\end{tabular}
+\end{table}
+\efloatseparator
+ 
+\begin{table}
+
+\caption{\label{tab:L5-test}Test whether drug 2 = drug 3}
+\centering
+\begin{tabular}[t]{r|r}
+\hline
+Fstat & p\_value\\
+\hline
+1.255448 & 0.288075\\
+\hline
+\end{tabular}
+\end{table}

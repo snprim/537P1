@@ -29,7 +29,7 @@ library(nlme)
 library(emmeans)
 library(GGally)
 library(knitr)
-
+library(clubSandwich)
 library(bookdown)
 ```
 
@@ -66,11 +66,11 @@ Data2 <- Data %>% select(MonkeyID, Drug, Treatment, Time_Point, Isotype, H_VBase
 Data3 <- Data2[-972,]
 ```
 
-3. **How does the binding strength of the antibodies develop in response to the number of vaccine dosages by treatment?** This will be evaluated with a longitudinal analysis by test subject.  
-
 # Data Analysis  
 
 ## Longitudinal Data Analysis  
+
+To answer our research question Q2, **How does the binding strength of the antibodies develop in response to the number of vaccine dosages by treatment?**, we use longitudinal data analysis, including general linear models and linear mixed models.
 
 As seen in Figure \@ref(fig:mean-monkey) and Figure \@ref(fig:variance-monkey), the mean trend is not linear, and the different time points have different variances. This information suggests that we should use piecewise linear models and set variances as unequal over time.  
 
@@ -255,7 +255,7 @@ kable(data.frame(rbind(test1, test2)), caption = "Inference of S4 ad S5 slopes")
 
 As shown in Table \@ref(tab:S4S5-slope), the slop of S4 has a very small p-value, while the slope of S5 is quite large, indicating that the change in Binding rate between Time_Point 0 and Time_Point 2 is significant while the change between Time_Point 2 and Time_Point 3 is not significant. We conclude that Time_Point 2, when the monkeys had received two vaccines, had the highest Binding rate, while the last vaccine shot at Time_Point 3 did not make a difference to the Binding rate.  
 
-## With Drugs  
+## Add drugs as a covariate  
 
 Next we add drugs as a covariate to see if it has effects on Binding. We use two indicator variables: `D2` and `D3`, where  
 
@@ -311,69 +311,58 @@ Now we want to find whether the drugs have any effects. To see whether Drug 1 an
 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 
 \end{bmatrix}$$ and $\mathbf{\beta}=(\beta_1, \beta_2, \beta_3, \beta_4, \beta_5, \beta_6, \beta_7, \beta_8, \beta_9)^T$  
 
-Use F-test on p. 23 of lecture 11 notes
-
-### start from here
-
-
-The p-values for `Drug` and the interaction of `Drug` and `Time_Point` are large. So we try another model with `Time_Point` as the only predictor.  [This is skipping the part where we fit only main effect (not interaction) with Drug]
-
-$$Y_{ij} = \beta_0+ \beta_1 Time_{ij} + b_{0i} + b_{1i} Time_{ij} + e_{ij}$$  
-
-$$
-\underbrace{\begin{bmatrix}
-Y_{i1} \\
-\vdots \\
-Y_{im_i}
-\end{bmatrix}}_{\mathbf{Y_i}}
-=
-\underbrace{\begin{bmatrix}
-1 & Time_{i1} \\
-\vdots & \vdots & \vdots \\
-1 & Time_{im_i} & 
-\end{bmatrix}}_{\mathbf{X_i}}
-\underbrace{\begin{bmatrix}
-\beta_0 \\
-\beta_1 
-\end{bmatrix}}_{\mathbf{\beta}}
-+
-\underbrace{\begin{bmatrix}
-1 & Time_{i1} \\
-\vdots & \vdots \\
-1 & Time_{im_i}
-\end{bmatrix}}_{\mathbf{Z_i}} 
-\underbrace{\begin{bmatrix}
-b_{0i} \\
-b_{1i}
-\end{bmatrix}}_{\mathbf{b_i}}
-+ 
-\underbrace{\begin{bmatrix}
-e_{i1} \\
-\vdots \\
-e_{im_i}
-\end{bmatrix}}_{\mathbf{e_i}}$$
-
-$$\mathbf{b_i} \sim N \left(0, \mathbf{D}=
+To see whether Drug 1 and Drug 3 have any difference, we want to perform a hypothesis test on $H_0: \beta_7 = \beta_8 = \beta_9 = 0$, thus we can do the test $$\mathbf{L_4 \beta}=0$$ where $$\mathbf{L_4}=
 \begin{bmatrix}
-D_{11} & D_{12} \\
-D_{12} & D_{22} 
-\end{bmatrix}
-\right)$$  
+0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 
+\end{bmatrix}$$ and $\mathbf{\beta}=(\beta_1, \beta_2, \beta_3, \beta_4, \beta_5, \beta_6, \beta_7, \beta_8, \beta_9)^T$  
 
-$$\mathbf{e}_{ij} \sim N(0, \mathbf{R}_i = \sigma^2 I_{mi})$$
+To see whether Drug 2 and Drug 3 have any difference, we want to perform a hypothesis test on $H_0: \beta_4 = \beta_7, \beta_5 = \beta_8, \beta_6 = \beta_9$, thus we can do the test $$\mathbf{L_5 \beta}=0$$ where $$\mathbf{L_5}=
+\begin{bmatrix}
+0 & 0 & 0 & 1 & 0 & 0 & -1 & 0 & 0 \\
+0 & 0 & 0 & 0 & 1 & 0 & 0 & -1 & 0 \\
+0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 1 
+\end{bmatrix}$$ and $\mathbf{\beta}=(\beta_1, \beta_2, \beta_3, \beta_4, \beta_5, \beta_6, \beta_7, \beta_8, \beta_9)^T$  
 
-[need to consider whether time point 2 is the optimal point]
+We found that, as shown in Table \@ref(tab:L3-test), Drug 1 and Drug 2 do not have significantly different effects on Binding rates. As shown in Table \@ref(tab:L4-test), Drug 1 and Drug 3 do not have significantly different effects on Binding rates. Also, as shown in Table \@ref(tab:L5-test), Drug 2 and Drug 3 do not have significantly different effects on Binding rates. In other words, drug groups do not have signifant effects on our longitudinal model. Thus we will retain `fit.a2` as our best model.  
 
 ```{r}
-lda2 <- lme(fixed = binding ~ time,
-           random = ~ time | id, weights = varIdent(form = ~ 1 | time), data = dataLDA1, method = "REML")
-summary(lda2)
+betahat <- fit.a3$coefficients$fixed
+V.robust <- vcovCR(fit.a3, type = "CR0")
+df <- nrow(dataLDA1) - length(betahat)
 ```
 
-This simpler model has lower AIC and BIC, as shown below. So we prefer the model with `Time_Point` as the predictor and, with the low p-values of the slope of `Time_Point`, conclude that the binding rates vary over time. In other words, the number of HIV vaccines given do affect the binding rate, but the drugs given do not have significant effects. As seen in Table \@ref(tab:AIC-table), blah blah...  
+```{r, L3-test}
+# F-test
+L3 <- matrix(c(0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0), byrow = TRUE, nrow = 3)
+varmat3 <- L3 %*% V.robust %*% t(L3)
+c3 <- nrow(L3)
+est_L3 <- L3 %*% betahat
+Fstat_L3 <- c( t(est_L3) %*% solve(varmat3) %*% est_L3 ) / c3
+p.value <- pf(q = Fstat_L3, df1 = c3, df2 = df, lower.tail = FALSE)
+knitr::kable(data.frame(Fstat = Fstat_L3, p_value = p.value), caption = "Test whether drug 1 = drug 2")
+```
 
+```{r, L4-test}
+# F-test
+L4 <- matrix(c(0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1), byrow = TRUE, nrow = 3)
+varmat4 <- L4 %*% V.robust %*% t(L4)
+c4 <- nrow(L4)
+est_L4 <- L4 %*% betahat
+Fstat_L4 <- c( t(est_L4) %*% solve(varmat4) %*% est_L4 ) / c4
+p.value <- pf(q = Fstat_L4, df1 = c4, df2 = df, lower.tail = FALSE)
+knitr::kable(data.frame(Fstat = Fstat_L4, p_value = p.value), caption = "Test whether drug 1 = drug 3")
+```
 
-```{r, AIC-table}
-#knitr::kable(data.frame(cbind(AIC(lda, lda2), BIC(lda, lda2))), caption = "AIC and BIC for Longitudinal Models")
+```{r, L5-test}
+# F-test
+L5 <- matrix(c(0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 1, 0, 0, -1), byrow = TRUE, nrow = 3)
+varmat5 <- L5 %*% V.robust %*% t(L5)
+c5 <- nrow(L5)
+est_L5 <- L5 %*% betahat
+Fstat_L5 <- c( t(est_L5) %*% solve(varmat5) %*% est_L5 ) / c5
+p.value <- pf(q = Fstat_L5, df1 = c5, df2 = df, lower.tail = FALSE)
+knitr::kable(data.frame(Fstat = Fstat_L5, p_value = p.value), caption = "Test whether drug 2 = drug 3")
 ```
 

@@ -1,2 +1,9 @@
-\contentsline {table}{\numberline {1}{\ignorespaces Frequency tables of drug vs. timepoints}}{30}{table.1}%
-\contentsline {table}{\numberline {2}{\ignorespaces Frequency tables of drug vs. timepoints vs. isotypes}}{31}{table.2}%
+\contentsline {table}{\numberline {1}{\ignorespaces Frequency tables of drug vs. timepoints}}{40}{table.1}%
+\contentsline {table}{\numberline {2}{\ignorespaces Frequency tables of drug vs. timepoints vs. isotypes}}{41}{table.2}%
+\contentsline {table}{\numberline {3}{\ignorespaces Summaries of standardized LCDR3}}{42}{table.3}%
+\contentsline {table}{\numberline {4}{\ignorespaces AIC and BIC between two gls models}}{43}{table.4}%
+\contentsline {table}{\numberline {5}{\ignorespaces AIC and BIC for three models}}{44}{table.5}%
+\contentsline {table}{\numberline {6}{\ignorespaces Inference of S4 ad S5 slopes}}{45}{table.6}%
+\contentsline {table}{\numberline {7}{\ignorespaces Test whether drug 1 = drug 2}}{46}{table.7}%
+\contentsline {table}{\numberline {8}{\ignorespaces Test whether drug 1 = drug 3}}{47}{table.8}%
+\contentsline {table}{\numberline {9}{\ignorespaces Test whether drug 2 = drug 3}}{48}{table.9}%

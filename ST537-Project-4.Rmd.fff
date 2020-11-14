@@ -21,6 +21,13 @@
  
 \begin{figure}
 \centering
+\includegraphics{ST537-Project-4.Rmd_files/figure-latex/outlier-d2-1.pdf}
+\caption{\label{fig:outlier-d2}Mahalanobis distances and Z scores}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
 \includegraphics{ST537-Project-4.Rmd_files/figure-latex/hist-HCDR3-trt-1.pdf}
 \caption{\label{fig:hist-HCDR3-trt}Histogram H\_CDR3}
 \end{figure}
@@ -107,4 +114,39 @@
 \centering
 \includegraphics{ST537-Project-4.Rmd_files/figure-latex/QQbinding-1.pdf}
 \caption{\label{fig:QQbinding}Plots of response variables}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-4.Rmd_files/figure-latex/mean-monkey-1.pdf}
+\caption{\label{fig:mean-monkey}Mean trend by monkey}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-4.Rmd_files/figure-latex/variance-monkey-1.pdf}
+\caption{\label{fig:variance-monkey}Variances over time by monkey}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-4.Rmd_files/figure-latex/piecewise1-1.pdf}
+\caption{\label{fig:piecewise1}Piecewise Linear Function--three segments}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-4.Rmd_files/figure-latex/piecewise2-1.pdf}
+\caption{\label{fig:piecewise2}Piecewise Linear Function--two segments}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-4.Rmd_files/figure-latex/QQmodel-1.pdf}
+\caption{\label{fig:QQmodel}Q-Q plots of models: GLS, compound symmetry, AR1}
 \end{figure}
