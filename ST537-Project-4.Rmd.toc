@@ -11,7 +11,7 @@
 \contentsline {subsection}{\numberline {2.2}Multivariate Data Analysis}{6}{subsection.2.2}%
 \contentsline {subsubsection}{\numberline {2.2.1}MANOVA}{6}{subsubsection.2.2.1}%
 \contentsline {subsubsection}{\numberline {2.2.2}Pairwise comparison}{7}{subsubsection.2.2.2}%
-\contentsline {subsection}{\numberline {2.3}Longitudinal Analysis}{11}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.3}Longitudinal Analysis}{12}{subsection.2.3}%
 \contentsline {subsubsection}{\numberline {2.3.1}One Covariate: Time Point}{12}{subsubsection.2.3.1}%
 \contentsline {subsubsection}{\numberline {2.3.2}Two Covariates: Time Point and Drug}{15}{subsubsection.2.3.2}%
 \contentsline {section}{\numberline {3}Results}{17}{section.3}%

@@ -65,11 +65,10 @@ Data2 <- Data %>% select(MonkeyID, Drug, Treatment, Time_Point, Isotype, H_VBase
 ```
 
 ```{r}
-#To do:  
-
-#Introduction
-#Conclusion
-#Put output at the end
+# Introduction
+# Conclusion
+# Put output at the end
+# check assumptions for MANOVA
 ```
 
 
@@ -335,11 +334,12 @@ To answer **Q1** (Do drugs and isotypes have effects on the mutation frequency a
 
 ### MANOVA
 
-We used MANOVA due to large sample size (n = 2464) without worrying about the normality assumption. In the output, we noticed that both the main effects of `Drug` and `Isotype` are significant.  
+Since there are more than two populations we are comparing, we use MANOVA to test for effects. We check that the normality assumption is met due to large sample size (n = 2464). Each antibody is assumed to be independent. [equal variances?] 
+
+Our formula for the MANOVA test is **(H_CDR3, HMuFreq, L_CDR3, LMuFreq, Binding)^T^ ~ Drug + Isotype.** In the output, both the main effects of `Drug` and `Isotype` have very low p-values, suggesting that both main effects are significant.  
 
 ```{r}
 ID <- as.factor(Data3$MonkeyID)
-trt <- as.factor(Data3$Treatment)
 drug <- as.factor(Data3$Drug)
 tp <- as.factor(Data3$Time_Point)
 it <- as.factor(Data3$Isotype)
@@ -540,10 +540,10 @@ knitr::kable(data.frame(cbind(AIC(fit.gls, fit.gls2), BIC(fit.gls, fit.gls2))), 
 
 Next we check whether adding random effects improve our second complete model (`fit.gls2`). We assume that random effects exist in the intercept and slope. Our linear mixed model is then: $Y_{ij}= \beta_1(-2S4 + S4 Time_{ij}) + \beta_2(S4 + S5) + \beta_3(2S4 + S5 Time_{ij}) + b_{0i} + b{1i} Time_{ij} + e_{ij}$  
 where $$\mathbf{b}_i \sim N \left( 0, \mathbf{D} = 
-\begin{pmatrix}
+\begin{bmatrix}
 D_{11} & D_{12} \\
  & D_{22}
- \end{pmatrix} \right)$$ and $$\mathbf{e}_i \sim N(0, \sigma^2I)$$  
+ \end{bmatrix} \right)$$ and $$\mathbf{e}_i \sim N(0, \sigma^2I)$$  
 
 ```{r}
 # with random intercept and slope, compound symmetry, unequal variances
@@ -610,10 +610,10 @@ $$\beta_4 D2 (-2S4 + S4 Time_{ij}) + \beta_5 D2 (S4 + S5) + \beta_6 D2(2S4 + S5 
 $$\beta_7 D3(-2S4 + S4 Time_{ij}) + \beta_8 D3(S4 + S5) + \beta_9 D3 (2S4 + S5 Time_{ij}) + b_{0i} + b{1i} Time_{ij} + e_{ij}$$  
 
 where $$\mathbf{b}_i \sim N \left( 0, \mathbf{D} = 
-\begin{pmatrix}
+\begin{bmatrix}
 D_{11} & D_{12} \\
  & D_{22}
- \end{pmatrix} \right)$$ and $$\mathbf{e}_i \sim N(0, \sigma^2I)$$  
+ \end{bmatrix} \right)$$ and $$\mathbf{e}_i \sim N(0, \sigma^2I)$$  
  
 ```{r}
 dataLDA1$D2 <- as.numeric(Data3$Drug == 2)
@@ -654,7 +654,7 @@ To see whether Drug 2 and Drug 3 have any difference, we want to perform a hypot
 \begin{bmatrix}
 0 & 0 & 0 & 1 & 0 & 0 & -1 & 0 & 0 \\
 0 & 0 & 0 & 0 & 1 & 0 & 0 & -1 & 0 \\
-0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 1 
+0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & -1 
 \end{bmatrix}$$ and $\mathbf{\beta}=(\beta_1, \beta_2, \beta_3, \beta_4, \beta_5, \beta_6, \beta_7, \beta_8, \beta_9)^T$  
 
 We found that, as shown in Table \@ref(tab:L3-test), Drug 1 and Drug 2 do not have significantly different effects on Binding rates. As shown in Table \@ref(tab:L4-test), Drug 1 and Drug 3 do not have significantly different effects on Binding rates. Also, as shown in Table \@ref(tab:L5-test), Drug 2 and Drug 3 do not have significantly different effects on Binding rates. In other words, drug groups do not have signifant effects on our longitudinal model. Thus we will retain `fit.a2` as our best model.  
@@ -704,10 +704,10 @@ For multivariate analyses, we performed a MANOVA test on the main effects of `Is
 
 For longitudinal analyses, we found that the best linear mixed model is $Y_{ij}= \beta_1(-2S4 + S4 Time_{ij}) + \beta_2(S4 + S5) + \beta_3(2S4 + S5 Time_{ij}) + b_{0i} + b{1i} Time_{ij} + e_{ij}$  
 where $$\mathbf{b}_i \sim N \left( 0, \mathbf{D} = 
-\begin{pmatrix}
+\begin{bmatrix}
 D_{11} & D_{12} \\
  & D_{22}
- \end{pmatrix} \right)$$ and $$\mathbf{e}_i \sim N(0, \sigma^2I)$$  
+ \end{bmatrix} \right)$$ and $$\mathbf{e}_i \sim N(0, \sigma^2I)$$  
  
 Using inferences on $\boldsymbol{\beta}$ for the two line segments, We rejected the hypothesis that the slope of the first line segment (between time points 0 and 2) is zero, but we failed to reject the hypothesis that the slope of hte second line segment (between time points 2 and 3) is zero. We then added `Drug` as another covariate to the above model and made inference on $\boldsymbol{\beta}$. The comparison between three drug groups was done with three F-tests (between Drug grups 1 and 2, 2 and 3, and 1 and 3), which led to three p-values greater than 0.05. Thus We failed to reject the null hypotheses that the mean trend of either of the two drug groups was equal.  
 
