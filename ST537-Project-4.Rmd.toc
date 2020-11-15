@@ -1,15 +1,15 @@
 \contentsline {section}{\numberline {1}Introduction}{1}{section.1}%
 \contentsline {subsection}{\numberline {1.1}About the Study}{1}{subsection.1.1}%
 \contentsline {subsection}{\numberline {1.2}About the Dataset}{2}{subsection.1.2}%
-\contentsline {subsection}{\numberline {1.3}List of variables}{2}{subsection.1.3}%
-\contentsline {subsection}{\numberline {1.4}Research questions}{3}{subsection.1.4}%
-\contentsline {section}{\numberline {2}Methods}{3}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Data Summaries}{4}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}Multivariate Data Analysis}{5}{subsection.2.2}%
-\contentsline {subsubsection}{\numberline {2.2.1}Pairwise comparison}{6}{subsubsection.2.2.1}%
-\contentsline {subsection}{\numberline {2.3}Longitudinal Analysis}{9}{subsection.2.3}%
-\contentsline {subsubsection}{\numberline {2.3.1}Add drugs as a covariate}{12}{subsubsection.2.3.1}%
-\contentsline {section}{\numberline {3}Results}{15}{section.3}%
-\contentsline {section}{\numberline {4}Discussion}{15}{section.4}%
-\contentsline {section}{\numberline {5}Conclusions}{15}{section.5}%
-\contentsline {section}{\numberline {6}References}{15}{section.6}%
+\contentsline {subsection}{\numberline {1.3}List of variables}{3}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}Research questions}{4}{subsection.1.4}%
+\contentsline {section}{\numberline {2}Methods}{4}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Data Summaries}{5}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Multivariate Data Analysis}{7}{subsection.2.2}%
+\contentsline {subsubsection}{\numberline {2.2.1}Pairwise comparison}{8}{subsubsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.3}Longitudinal Analysis}{12}{subsection.2.3}%
+\contentsline {subsubsection}{\numberline {2.3.1}Add drugs as a covariate}{16}{subsubsection.2.3.1}%
+\contentsline {section}{\numberline {3}Results}{20}{section.3}%
+\contentsline {section}{\numberline {4}Discussion}{20}{section.4}%
+\contentsline {section}{\numberline {5}Conclusions}{20}{section.5}%
+\contentsline {section}{\numberline {6}References}{20}{section.6}%
