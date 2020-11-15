@@ -2,22 +2,22 @@
 
 \caption{\label{tab:ft-drug-timepoint}Frequency tables of drug vs. timepoints}
 \centering
-\begin{tabular}[t]{r|r|r|r}
+\begin{tabular}[t]{l|r|r|r|r}
 \hline
-0 & 1 & 2 & 3\\
+  & 0 & 1 & 2 & 3\\
 \hline
-129 & 346 & 251 & 122\\
+1 & 129 & 346 & 251 & 122\\
 \hline
-90 & 533 & 225 & 101\\
+2 & 90 & 533 & 225 & 101\\
 \hline
-54 & 125 & 347 & 142\\
+3 & 54 & 125 & 347 & 142\\
 \hline
 \end{tabular}
 \end{table}
 \efloatseparator
  
 \begin{table}
-\caption{\label{tab:ft-drug-timepoint-isotype}Frequency tables of timepoints vs. isotypes for drug = 1, 2, 3, respectively}
+\caption{\label{tab:ft-drug-timepoint-isotype}Frequency tables of timepoints vs. isotypes for drug = 1 (left), 2 (middle), 3 (right)}
 
 \centering
 \begin{tabular}[t]{l|r|r|r|r|r}
@@ -90,7 +90,7 @@
  
 \begin{table}
 
-\caption{\label{tab:pair-tab}Pair comparison of Isotype and Drug}
+\caption{\label{tab:pctab}Pair comparison of Isotype and Drug}
 \centering
 \begin{tabular}[t]{l|l|l}
 \hline

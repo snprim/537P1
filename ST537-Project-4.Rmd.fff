@@ -28,8 +28,8 @@
  
 \begin{figure}
 \centering
-\includegraphics{ST537-Project-4.Rmd_files/figure-latex/hist-HCDR3-trt-1.pdf}
-\caption{\label{fig:hist-HCDR3-trt}Histogram H\_CDR3}
+\includegraphics{ST537-Project-4.Rmd_files/figure-latex/hist-HCDR3T-1.pdf}
+\caption{\label{fig:hist-HCDR3T}Histogram H\_CDR3}
 \end{figure}
 \efloatseparator
  
@@ -42,15 +42,15 @@
  
 \begin{figure}
 \centering
-\includegraphics{ST537-Project-4.Rmd_files/figure-latex/hist-LCDR3-1.pdf}
-\caption{\label{fig:hist-LCDR3}Histogram L\_CDR3}
+\includegraphics{ST537-Project-4.Rmd_files/figure-latex/hist-LCDR3T-1.pdf}
+\caption{\label{fig:hist-LCDR3T}Histogram L\_CDR3}
 \end{figure}
 \efloatseparator
  
 \begin{figure}
 \centering
-\includegraphics{ST537-Project-4.Rmd_files/figure-latex/hist-LCDR3-trt-1.pdf}
-\caption{\label{fig:hist-LCDR3-trt}Histograms of L\_CDR3 vs Treatment and Timepoint}
+\includegraphics{ST537-Project-4.Rmd_files/figure-latex/hist-LCDR3-1.pdf}
+\caption{\label{fig:hist-LCDR3}Histograms of L\_CDR3 vs Treatment and Timepoint}
 \end{figure}
 \efloatseparator
  

@@ -9,12 +9,13 @@ linestretch: 1.5
 fig_caption: yes
 indent: true
 header-includes:
-  - \usepackage{endfloat}  
-#  - \usepackage[nomarkers]{endfloat}
+#  - \usepackage{endfloat}  
+  - \usepackage[nomarkers]{endfloat}
 output: 
   bookdown::pdf_document2:
     latex_engine: lualatex
     toc: true
+    toc_depth: 4
     fig_width: 6.5
     fig_height: 4
     df_print: kable
@@ -63,6 +64,15 @@ Data$Reactivity <- ifelse(Data$Binding > 0.1, 1, 0)
 Data2 <- Data %>% select(MonkeyID, Drug, Treatment, Time_Point, Isotype, H_VBase, H_Substitutions, H_Insertions, H_Deletions, HMuFreq, H_CDR3, L_VBase, L_Substitutions, L_Insertions, L_Deletions, LMuFreq, L_CDR3, Binding, Reactivity)
 ```
 
+```{r}
+#To do:  
+
+#Introduction
+#Conclusion
+#Put output at the end
+```
+
+
 # Introduction  
 
 ## About the Study  
@@ -102,21 +112,21 @@ Below is the list of variables with a brief description from our dataset. Please
 
 ## Research questions  
 
-In the current report, we test if the different Treg treatments and number of vaccine injections(? which variables indicates this) cause changes in the antibody characteristics and if the changes are related to immunization/treatment time points.  
+The main focus of the current project is to understand whether isotypes, the number of vaccine injections, and the different Treg treatments cause changes in the antibody characteristics and if the changes are related to the immune responses against HIV virus. Specifically, we evaluate:  
 
-Specifically, we evaluate:  
-
-$Q1$. Do treatments, and/or isotypes have effects on the mutation frequency and/or the amino acid count in the third complementarity determining region (CDR3)?
+**Q1**: Do drugs and isotypes have effects on the mutation frequency and/or the amino acid count in the third complementarity determining region (CDR3)?
   
-$Q2$. How does the binding strength of the antibodies develop in response to the number of vaccine dosages by treatment? This will be evaluated with a longitudinal analysis by test subject.[NEEDS TO BE UPDATED]  
+**Q2**: How does the binding strength of the antibodies develop in response to the number of vaccine dosages by treatment and drug types?   
 
 # Methods  
 
-For exploratory data analysis we used histograms and Q-Q plots. We also computed correlations among variables. 
+This section first presents some exploratory data analyses and summaries; then it uses multivariate and longitudinal data analyses to address two research questions.  
 
 ## Data Summaries  
 
-The dataset has `r nrow(Data2)` antibodies collected from 20 rhesus monkeys. We first present our exploratory data analysis and summaries. An overview of the number of antibodies collected per treatment at each time-point is given below (Figure \@ref(fig:hist-antibodies)) along with tables for treatment counts per time-point and Isoptype per treatment for individual time-points.  
+### An Overview of Antibodies by Time Points, Drug Types, and Isotypes  
+
+A total of `r nrow(Data2)` antibodies, from 20 rhesus monkeys, were collected at four different time points (0, 1, 2, 3) and each monkey was given one of three drugs (1 and 2 are immuno-suppressing drugs and 3 is the control). Figure \@ref(fig:hist-antibodies) shows the histograms of antibody counts, and Table \@ref(tab:ft-drug-timepoint) and Table \@ref(tab:ft-drug-timepoint-isotype) show the antibody counts in different combinations of  drugs, time points, and isoptypes.  
 
 ```{r}
 Data2Summary<- Data2 %>% group_by(Drug, Time_Point, MonkeyID) %>% summarize(nObs = n())
@@ -129,14 +139,13 @@ ggplot(data = Data2Summary, mapping = aes(x = nObs, color = Drug)) + geom_histog
 ```
 
 ```{r, ft-drug-timepoint}
-knitr::kable(table(Data2$Drug, Data2$Time_Point, dnn= c('Drug', 'TimePoint')), caption = "Frequency tables of drug vs. timepoints")
+knitr::kable(table(Data2$Drug, Data2$Time_Point), row.names = TRUE, caption = "Frequency tables of drug vs. timepoints")
+#dnn= c('Drug', 'TimePoint')
 ```
 ```{r, ft-drug-timepoint-isotype}
 dti <- table(Data2$Drug, Data2$Time_Point, Data2$Isotype, dnn= c('Drug', 'TimePoint', 'Isotype'))
-knitr::kable(list(dti[1,,], dti[2,,], dti[3,,]), caption = "Frequency tables of timepoints vs. isotypes for drug = 1, 2, 3, respectively")
+knitr::kable(list(dti[1,,], dti[2,,], dti[3,,]), caption = "Frequency tables of timepoints vs. isotypes for drug = 1 (left), 2 (middle), 3 (right)")
 ```
-
-Next, the histogram of `Isotype` is presented in Figure \@ref(fig:isotype-plot).  
 
 ```{r, isotype-plot, fig.cap = "Histograms of Isotypes"}
 # Histogram 
@@ -158,21 +167,15 @@ g1 <- ggplot(Data, aes(x=factor(Isotype, levels = Iso.order), fill=as.factor(Dru
     )
 ```
 
-As expected, we observed that IgG and IgM occupied the biggest proportion of all antibodies in all time points. Before immunization (time point 0), there were similar weight of IgG and IgM found in blood. After the 1st immunization (time point 1), primary immune response resulted an increase of IgM, followed with IgG increase at later time point 2 and 3.  
+As shown in Figure \@ref(fig:isotype-plot), the histograms of `Isotype`, we observed that IgG and IgM occupied the biggest proportion of antibodies in all time points. Before immunization (time point 0), there were similar weight of IgG and IgM found in blood. After the first immunization (time point 1), primary immune response resulted an increase of IgM, followed by an IgG increase at later time points 2 and 3.  
 
-For the response variables, we began with an outlier check, and then reviewed their distributions across treatment and time-points.  
+### Outlier Detection  
 
-```{r}
-tibContinuous <- gather(Data2, key = "Variable", value = "value", 
-                        H_CDR3, HMuFreq, L_CDR3, LMuFreq, Binding)
-```
-
+Our response variables for the multivariate analysis include five variables: `Binding`, `H_CDR3`, `HMuFreq`, `L_CDR3`, and `LMuFreq`. As shown in Figure \@ref(fig:outlier-review), `L_CDR3` in one point seems an outlier. As the summary statistics of standardized `L_CDR3` shown in Table \@ref(tab:outlier-tab), the maximum value is greater than 30, which is quite unusal. Figure \@ref(fig:outlier-d2) shows the Mahalanobis ditances and Z scores of `L_CDR3`, and the data point again appears to be an apparent outlier. The value for `L_CDR3` is quite unlikely. Since we can't go back to the original data, we remove the data point and will use the new dataset `Data3`.  
 
 ```{r, outlier-review, fig.cap = "Histogram of Response Variables"}
-#histograms of continuous variables
-ggplot(data = tibContinuous, aes(x = value)) + 
-  geom_histogram(bins = 20) +
-  facet_wrap(~Variable, scales = 'free')
+cont_subset <- Data2 %>% select(H_CDR3, HMuFreq, L_CDR3, LMuFreq, Binding)
+GGally::ggpairs(cont_subset)
 ```
 
 
@@ -194,21 +197,17 @@ plot(subset1$Z, pch = 19)
 
 ```{r}
 subset2 <- subset1 %>% arrange(desc(d2), desc(Z)) 
-subset2[1,]
-which(subset1$L_CDR3 == 47)
-```
-
-Row 972 from `Data2` is in fact an outlier, as shown in the summary and Table \@ref(tab:outlier-tab), Figure \@ref(fig:outlier-review), and Figure \@ref(fig:outlier-d2). The value for `L_CDR3` is quite unlikely. Since we can't go back to the original data, we remove the data point and will use the new dataset `Data3`.  
-
-```{r}
+# subset2[1,]
+out <- which(subset1$L_CDR3 == 47)
+# out
 Data3 <- Data2[-972,]
 ```
 
-We examined our responses: `H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq` and `Binding`.  
+### Response Variables  
 
-We observed that for `H_CDR3` the distributions were roughly normal with the center around 13 at different time-points (Figure 4) without taking into account different treatments. Figure 5 represents the distribution of `H_CDR3` with respect to treatments at different time-points, and slightly centered around 9 for `L_CDR3` at different time- points (Figure 5).  
+We examined our responses: `H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq` and `Binding`. We observed that for `H_CDR3` the distributions were roughly normal with the center around 13 at different time-points (Figure \@ref(fig:hist-HCDR3T)) without taking into account different treatments. Figure \@ref(fig:hist-HCDR3) represents the distribution of `H_CDR3` with respect to treatments at different time-points, and slightly centered around 9 for `L_CDR3` at different time points. With `L_CDR3`, Figure \@ref(fig:hist-LCDR3T) and Figure \@ref(fig:hist-LCDR3) show approximately normal distribution with a longer right tail. The Q-Q plots in Figure \@ref(fig:QQ) show that `H_CDR3` and `L_CDR3` are both approximately normal.  
 
-```{r, hist-HCDR3-trt, fig.cap = "Histogram H_CDR3"}
+```{r, hist-HCDR3T, fig.cap = "Histogram H_CDR3"}
 g3.1 <- ggplot(Data3, aes(H_CDR3))
   g3.1 + geom_bar(stat = "count", width = 0.7, fill = "#012169") +
     facet_grid(Time_Point~., labeller = label_both) + #by subgroups
@@ -231,9 +230,7 @@ ggplot(data = Data3, mapping = aes(x = H_CDR3, color = as.factor(Drug))) +
 ```
 
 
-Figures for `L_CDR3` are shown next.  
-
-```{r, hist-LCDR3, fig.cap = "Histogram L_CDR3"}
+```{r, hist-LCDR3T, fig.cap = "Histogram L_CDR3"}
 g5 <- ggplot(Data3, aes(L_CDR3))
   g5 + geom_bar(stat = "count", width = 0.7, fill = "#012169") +
     facet_grid(Time_Point~., labeller = label_both) + #by subgroups
@@ -250,13 +247,11 @@ g5 <- ggplot(Data3, aes(L_CDR3))
 ```
 
 
-```{r, hist-LCDR3-trt, fig.cap = "Histograms of L_CDR3 vs Treatment and Timepoint"}
+```{r, hist-LCDR3, fig.cap = "Histograms of L_CDR3 vs Treatment and Timepoint"}
 ggplot(data = Data3, mapping = aes(x = L_CDR3, color = as.factor(Drug))) + 
   geom_histogram(bins = 10, fill = 'white', aes(y=..density..) ) + facet_grid(Drug~Time_Point, labeller = label_both) + 
   labs(xlab = 'L_CDR3', ylab = 'Count')
 ```
-
-Q-Q plots of `H_CDR3` and `L_CDR3` are shown below.  
 
 ```{r, QQ, fig.cap = "Q-Q Plots of H_CDR3 and L_CDR3"}
 par(mfrow = c(1,2))
@@ -264,7 +259,7 @@ qqnorm(Data3$H_CDR3, pch = 19, cex = 1)
 qqnorm(Data3$L_CDR3, pch = 19, cex = 1)
 ```
 
-`HMuFreq` and `LMuFreq` were calculated by dividing `H_Substitution` by `H_VBase` for heavy chain and similarly for light chain. These two variables show how much the antibodies mutate. A higher mutation rate is usually indicative of better virus neutralization. Below we present comparison of mutation rate between heavy chain and light chain.  
+`HMuFreq` and `LMuFreq` were calculated by dividing `H_Substitution` by `H_VBase` for heavy chain and similarly for light chain. These two variables show how much the antibodies mutate. A higher mutation rate is usually indicative of better virus neutralization. Below we present comparison of mutation rate between heavy chain and light chain. Figure \@ref(fig:murate1), Figure \@ref(fig:murate2), Figure \@ref(fig:murate3), and Figure \@ref(fig:murate4) show that `HMuFreq` and `LMuFreq` are both approximately normally distributed, each with a longer right tail. The Q-Q plots in Figure \@ref(fig:QQ2) confirm the approximate normality of `HMuFreq` and `LMuFreq`.  
 
 ```{r, murate1, fig.cap = "Histogram HMuFreq"}
 #par(mfrow = c(1,2))
@@ -311,16 +306,13 @@ ggplot(data = Data3, mapping = aes(x = LMuFreq, color = as.factor(Drug))) +
   labs(xlab = 'LMuFreq', ylab = 'n Monkeys')
 ```
 
-
-Next, the Q-Q plots of `HMuFreq` and `LMuFreq` are shown.
-
 ```{r, QQ2, fig.cap = "Q-Q Plot of HMuFreq and LMuFreq"}
 par(mfrow = c(1,2))
 qqnorm(Data3$HMuFreq, pch = 19, cex = 1)
 qqnorm(Data3$LMuFreq, pch = 19, cex = 1)
 ```
 
-Lastly, Histogram of `Binding` with respect to treatments at different time points and Q-Q plot are shown. We observed that `Binding` was not normally distributed. However, since our sample size is larger than 2000, we can use the Central Limit Theorem and assume normality.  
+Next, a histogram of `Binding` with respect to treatments at different time points and Q-Q plot are shown in Figure \@ref(fig:hist-binding) and Figure \@ref(fig:QQ3). We observe that `Binding` was not normally distributed, because the binding rate ranges between 0 and 1. However, since our sample size is larger than 2000, we can use the Central Limit Theorem and assume normality. Lastly, we check whether response variables could be correlated, as shown in Figure \@ref(fig:QQbinding). In these plots, we observe that none of the response variables were highly correlated.  
 
 ```{r, hist-binding, fig.cap = "Histograms of Binding Strength vs Treatment and Timepoint"}
 ggplot(data = Data3, mapping = aes(x = Binding, color = as.factor(Drug))) + 
@@ -333,15 +325,17 @@ qqnorm(Data3$Binding, pch = 19, cex = 1)
 ```
 
 
-We checked whether response variables could be correlated. In the plot below, we observed that none of the response variables were highly correlated.
-
 ```{r, QQbinding, fig.cap = "Plots of response variables"}
 Data3 %>% select(LMuFreq, HMuFreq, L_CDR3, H_CDR3, Binding) %>% ggpairs()
 ```
 
 ## Multivariate Data Analysis  
 
-For $Q1$ We wanted to test whether predictors `Drug` and `Isotype` had effects on the five responses: `H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq`, and `Binding`. We used $MANOVA$ due to large sample size (n = 2464) without worrying about the normality assumption. In the output, we noticed that both the main effects of `Drug` and `Isotype` are significant.  
+To answer **Q1** (Do drugs and isotypes have effects on the mutation frequency and/or the amino acid count in the third complementarity determining region (CDR3)?), we test whether predictors `Drug` and `Isotype` had effects on the five responses: `H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq`, and `Binding`. 
+
+### MANOVA
+
+We used MANOVA due to large sample size (n = 2464) without worrying about the normality assumption. In the output, we noticed that both the main effects of `Drug` and `Isotype` are significant.  
 
 ```{r}
 ID <- as.factor(Data3$MonkeyID)
@@ -350,12 +344,12 @@ drug <- as.factor(Data3$Drug)
 tp <- as.factor(Data3$Time_Point)
 it <- as.factor(Data3$Isotype)
 fit.manova <- manova(cbind(Data3$H_CDR3, Data3$HMuFreq, Data3$L_CDR3, Data3$LMuFreq, Data3$Binding) ~ drug + it)
-summary(fit.manova)
+summary(fit.manova, test = "Wilks")
 ```
 
 ### Pairwise comparison
 
-To know more details about which groups have different means, we use pairwise comparisons for each treatment group, drug, and Isotype. (We set $\alpha$ as 0.05, and use a Bonferroni correction.)  
+To know more details about which groups have different means, we use pairwise comparisons for each drug group and Isotype. (We set $\alpha$ as 0.05, and use a Bonferroni correction.)  
 
 ```{r}
 respMat <- as.matrix(Data3[,c("L_CDR3", "LMuFreq", "H_CDR3", "HMuFreq", "Binding")])
@@ -363,7 +357,7 @@ respMat <- as.matrix(Data3[,c("L_CDR3", "LMuFreq", "H_CDR3", "HMuFreq", "Binding
 vars <- c("L_CDR3", "LMuFreq", "H_CDR3", "HMuFreq", "Binding")
 ```
 
-```{r}
+```{r, pcdrug}
 # pairwise comparison among drug groups
 fit2 <- manova(respMat[,1:5] ~ drug)
 # summary(fit2)
@@ -401,9 +395,7 @@ for (i in 1:5){
 }
 ```
 
-Table \@ref(tab:pair-tab) presents the pairs that have significant differences:  
-
-```{r, pair-tab}
+```{r, pctab}
 col_drug <- t(data.frame(L_CDR3 = "none", LMuFreq = "none", H_CDR3 = "1 > 2", HMuFreq = "1 < 2, 1 > 3, 2 > 3", Binding = "1 < 3, 2 < 3"))
 col_isotype <- t(data.frame(L_CDR3 = "none", LMuFreq = "none", H_CDR3 = "IgD < IgG", HMuFreq = "IgD < IgG, IgG > IgM", Binding = "IgA < IgG, IgD < IgG, IgG > IgM"))
 pairTab <- cbind(col_drug, col_isotype)
@@ -411,20 +403,15 @@ colnames(pairTab) <- c("Drug", "Isotype")
 kable(pairTab, caption = "Pair comparison of Isotype and Drug")
 ```
 
-In short, `L_CDR3` and `LMuFreq` do not have significant paired differences.  
+Table \@ref(tab:pctab) presents the pairs that have significant differences. We can see that `L_CDR3` and `LMuFreq` do not have significant paired differences for any drug groups and isotypes. For `H_CDR3`, drug 1 has a higher mean than drug 2, and IgG has a higher mean than IgD. For `HMuFreq`, drug 2 has the highest mean, followed by drug 1 and drug 3 (control), and IgG has higher mutation rate than IgD and IgM. For `Binding`, drug 3 (control) has the highest mean, but drug 1 and drug 2 do not have significant differences. IgG has higher binding rate than IgA, IgD, and IgM. [Kan, how to interpret pairwise comparisons?]  
 
-For `HMuFreq`, drug 2 has the highest mean, followed by drug 1 and control. More specifically, treatment groups 5 and 6 (two doses in drug 2) have the highest mutation rates. IgG has higher mutation rate than IgD.  
-
-For `Binding`, drug 3 has the highest mean, but drug 1 and drug 2 do not have significant differences. IgG has higher binding rate than IgA, IgD, and IgM.  
-
-We could conclude that the drug groups do increase mutation rate; however, they do not increase binding rate. That is to say, although the treatments do help increase the diversity of antibodies, they are not specific to the HIV antigens and thus do not increase binding. 
+The results show that the drug groups do increase mutation rate for heavy chain; however, they do not increase binding rate. Among all isotypes, IgG has the highest mutation rate for heavy chain and binding rate. We conclude that, although the treatments do help increase the diversity of antibodies, they are not specific to the HIV antigens and thus do not increase binding.  
 
 ## Longitudinal Analysis  
 
-For the longitudinal analysis of binding strength vs number of vaccine doses, we will be using the `gls` and `lme` functions from the nlme package$^{[7]}.$ To answer our research question Q2, **How does the binding strength of the antibodies develop in response to the number of vaccine dosages by treatment?**, we use longitudinal data analysis, including general linear models and linear mixed models.  
+To answer our **Q2** (How does the binding strength of the antibodies develop in response to the number of vaccine dosages by treatment and drug types?), we use longitudinal data analysis, including general linear models and linear mixed models. For the longitudinal analysis of binding strength vs number of vaccine doses, we use the `gls` and `lme` functions from the nlme package$^{[7]}.$  
 
-As seen in Figure \@ref(fig:mean-monkey) and Figure \@ref(fig:variance-monkey), the mean trend is not linear, and the different time points have different variances. This information suggests that we should use piecewise linear models and set variances as unequal over time.  
-
+### One Covariate: Time Point  
 
 ```{r, mean-monkey, fig.cap = "Mean trend by monkey"}
 ggplot(Data3, aes(x = Time_Point, y = Binding, colour = as.factor(MonkeyID))) + geom_point() + stat_summary(fun = mean, geom = "line")
@@ -434,11 +421,11 @@ ggplot(Data3, aes(x = Time_Point, y = Binding, colour = as.factor(MonkeyID))) + 
 ggplot(Data3, aes(x = Time_Point, y = Binding, colour = as.factor(MonkeyID))) + geom_point() + stat_summary(fun = var, geom = "line")
 ```
 
+We first take a look at the data over time. As seen in Figure \@ref(fig:mean-monkey) and Figure \@ref(fig:variance-monkey), the mean trend is not linear, and the different time points have different variances. This information suggests that we should use piecewise linear models and set variances as unequal over time.  
 
 We first consider a model with time point as the only covariate: $$Y_{ij}=\beta_0+\beta_1 Time_{ij}+e_{ij}$$  
 
-
-Thus we will use a piecewise linear model, in which each segment has different intercepts and slopes. We use three indicator variables: $S1, S2, S3$ as the indicator variables, where 
+We then turn the model above into a piecewise linear model, in which each segment has different intercepts and slopes. We use three indicator variables: $S1, S2, S3$ as the indicator variables, where 
 $$S1=
 \begin{cases}
 1 & \text{if } 0 \le \text{Timepoint} < 1 \\
@@ -460,9 +447,7 @@ $$
 
 The new model is thus $$Y_{ij}=S1(\beta_0+\beta_1 Time_{ij})+S2(\beta_2+\beta_3 Time_{ij})+S3(\beta_4+\beta_5 Time_{ij})+e_{ij}$$  
 
-We also want to make sure that the trend is continuous at timepoint = 1 and 2.  
-
-Our model is $Y_{ij} = \beta_0(S1 + 2S2 - S2 Time_{ij}) + \beta_1 (S1 Time_{ij} + 2S2 - S2 Time_{ij}) + \beta_4(-S2 + S2 Time_{ij} + S3) + \beta_5(-2S2 + 2S2 Time_{ij} + S3 Time_{ij}) + e_{ij}$ where $$\mathbf{e}_i \sim N(0, \sigma^2I)$$  
+We also want to make sure that the trend is continuous at time points = 1 and 2. Our first complete model (`fit.gls`) is now $Y_{ij} = \beta_0(S1 + 2S2 - S2 Time_{ij}) + \beta_1 (S1 Time_{ij} + 2S2 - S2 Time_{ij}) + \beta_4(-S2 + S2 Time_{ij} + S3) + \beta_5(-2S2 + 2S2 Time_{ij} + S3 Time_{ij}) + e_{ij}$ where $$\mathbf{e}_i \sim N(0, \sigma^2I)$$  
 
 ```{r}
 S1 <- as.numeric(Data3$Time_Point >= 0 & Data3$Time_Point < 1)
@@ -474,15 +459,9 @@ fit.gls <- gls(model = meanform, data = dataLDA1, weights = varIdent(form = ~ 1 
 # summary(fit.gls)
 ```
 
-Again, our final mean model is 
-$$Y_{ij} = \beta_0(S1 + 2S2 - S2 Time_{ij}) + \beta_1 (S1 Time_{ij} + 2S2 - S2 Time_{ij})+$$
-$$\beta_4(-S2 + S2 Time_{ij} + S3) + \beta_5(-2S2 + 2S2 Time_{ij} + S3 Time_{ij}) + e_{ij}$$ which can be written as $$Y_{ij} = S1(\beta_0) + S1 Time_{ij} (\beta_1) + S2( 2\beta_0 + 2\beta_1 - \beta_4 -2\beta_5) + S2 Time_{ij}(-\beta_0 -\beta_1 + \beta_4 + 2\beta_5)$$
+The model can also be written as $$Y_{ij} = S1(\beta_0) + S1 Time_{ij} (\beta_1) + S2( 2\beta_0 + 2\beta_1 - \beta_4 -2\beta_5) + S2 Time_{ij}(-\beta_0 -\beta_1 + \beta_4 + 2\beta_5)$$
 $$ + S3(\beta_4) + S3 Time_{ij} (\beta_5) + e_{ij}$$  
-From the model above, we can find the intercepts and slopes for all three segments of the mean trend and make a plot, as seen in Figure \@ref(fig:piecewise1):  
 
-S1: $-0.2221651+0.2432183*time$  
-S2: $(2*-0.2221651+2*0.2432183-0.7699600+2*0.2432756)+(0.2221651-0.2432183+0.7699600-2*0.2432756)*time = -0.2413024 + 0.2623556*time$  
-S3: $0.7699600-0.2432756*time$  
 
 ```{r}
 # when S1 = 1
@@ -500,7 +479,13 @@ ggplot(Data3, aes(x = Time_Point, y = Binding, colour = as.factor(MonkeyID))) +
   stat_function(fun = f3, xlim = c(2, 3), geom = "line")
 ```
 
-As shown in Figure \@ref(fig:piecewise1), the two segments S1 and S2 look linear. So now we'll refit the model with only two piecewise sections; we'll call them S4 and S5. The new model is therefore $$Y_{ij}=S4(\beta_0+\beta_1 Time_{ij})+S5(\beta_2+\beta_3 Time_{ij})+e_{ij}$$  
+From the model above, we can find the intercepts and slopes for all three segments of the mean trend:  
+
+* S1: $-0.2221651+0.2432183*time$
+* S2: $(2*-0.2221651+2*0.2432183-0.7699600+2*0.2432756)+(0.2221651-0.2432183+0.7699600-2*0.2432756)*time = -0.2413024 + 0.2623556*time$
+* S3: $0.7699600-0.2432756*time$  
+
+We make a plot of the line segments in Figure \@ref(fig:piecewise1), which shows the two segments S1 and S2 have very similar slopes. So we can refit the model with only two piecewise sections between time points 0 and 2 and between time points 2 and 3. We'll call them S4 and S5. The new model is therefore $$Y_{ij}=S4(\beta_0+\beta_1 Time_{ij})+S5(\beta_2+\beta_3 Time_{ij})+e_{ij}$$  
 
 $$S4=
 \begin{cases}
@@ -515,9 +500,7 @@ $$S5=
 \end{cases}
 $$
 
-We also want to make sure that the trend is continuous at Time_Point = 2.  
-
-Our model is then $Y_{ij} = \beta_1(-2S4 + S4 Time_{ij}) + \beta_2(S4 + S5) + \beta_3(2S4 + S5 Time_{ij}) + e_{ij}$ where $$\mathbf{e}_i \sim N(0, \sigma^2I)$$  
+Again, we want to make sure that the trend is continuous at Time_Point = 2. Our second complete model (`fit.gls2`) is then $Y_{ij} = \beta_1(-2S4 + S4 Time_{ij}) + \beta_2(S4 + S5) + \beta_3(2S4 + S5 Time_{ij}) + e_{ij}$ where $$\mathbf{e}_i \sim N(0, \sigma^2I)$$  
 
 ```{r}
 S4 <- as.numeric(Data3$Time_Point < 2)
@@ -529,14 +512,14 @@ fit.gls2 <- gls(model = meanform2, data = dataLDA1, weights = varIdent(form = ~ 
 # summary(fit.gls2)
 ```
 
-Again, our model is $Y_{ij}= \beta_1(-2S4 + S4 Time_{ij}) + \beta_2(S4 + S5) + \beta_3(2S4 + S5 Time_{ij}) + e_{ij}$, which can be written as $Y_{ij} = S4(-2 \beta_1 + \beta_2 + 2\beta_3) + S4 Time_{ij}(\beta_1) + S5(\beta_2) + S5 Time_{ij}(\beta_3) + e_{ij}$  
+The model can also be written as $Y_{ij} = S4(-2 \beta_1 + \beta_2 + 2\beta_3) + S4 Time_{ij}(\beta_1) + S5(\beta_2) + S5 Time_{ij}(\beta_3) + e_{ij}$  
 
 We first find the mean trend for S4 and S5:  
 
-S4: $(-2*0.5310975 + 0.5720853 + 2*-0.0000723) + 0.5310975*time = -0.4902543 + 0.5310975*time$
-S5: $0.5720853 - 0.0000723*time$
+* S4: $(-2*0.5310975 + 0.5720853 + 2*-0.0000723) + 0.5310975*time = -0.4902543 + 0.5310975*time$
+* S5: $0.5720853 - 0.0000723*time$  
 
-We can make the plot again to see if the model is reasonable, as shown in Figure \@ref(fig:piecewise2). Indeed, there is a linear line between Time_Point 0 and 2 and one between Time_Point 2 and 3. The two lines are contiuous at Time_Point 2. A comparison of AIC And BIC of these two models, shown in Table \@ref(tab:AIC-tab1), indicates that the second model (`fit.gls2`) is indeed a better model. We'll add random effects to it.  
+We can make the plot again to see if the model is reasonable, as shown in Figure \@ref(fig:piecewise2). Indeed, there is a linear line between Time_Point 0 and 2 and one between Time_Point 2 and 3. The two lines are contiuous at Time_Point 2. A comparison of AIC And BIC of these two models, shown in Table \@ref(tab:AIC-tab1), indicates that the second model (`fit.gls2`) is indeed a better model.  
 
 ```{r}
 # when S4 = 1
@@ -555,8 +538,7 @@ ggplot(Data3, aes(x = Time_Point, y = Binding, colour = as.factor(MonkeyID))) +
 knitr::kable(data.frame(cbind(AIC(fit.gls, fit.gls2), BIC(fit.gls, fit.gls2))), caption = "AIC and BIC between two gls models")
 ```
 
-
-Next we check whether adding random effects improve the model. We assume that random effects exist in the intercept and slope. Our linear mixed model is then: $Y_{ij}= \beta_1(-2S4 + S4 Time_{ij}) + \beta_2(S4 + S5) + \beta_3(2S4 + S5 Time_{ij}) + b_{0i} + b{1i} Time_{ij} + e_{ij}$  
+Next we check whether adding random effects improve our second complete model (`fit.gls2`). We assume that random effects exist in the intercept and slope. Our linear mixed model is then: $Y_{ij}= \beta_1(-2S4 + S4 Time_{ij}) + \beta_2(S4 + S5) + \beta_3(2S4 + S5 Time_{ij}) + b_{0i} + b{1i} Time_{ij} + e_{ij}$  
 where $$\mathbf{b}_i \sim N \left( 0, \mathbf{D} = 
 \begin{pmatrix}
 D_{11} & D_{12} \\
@@ -578,7 +560,7 @@ fit.a2 <- lme(fixed = meanform2, random = ~ time | id, data = dataLDA1, weights 
 kable(data.frame(AIC(fit.gls2, fit.a1, fit.a2), BIC(fit.gls2, fit.a1, fit.a2)), caption = "AIC and BIC for three models")
 ```
 
-As shown in Table \@ref(tab:AIC-tab2), the model `fit.a2` (random intercept and slope, AR1 correlation, unequal variances) has the lowest AIC And BIC, so it seems the best model. We now check residuals for both models.  
+We fit two models with random effects: `fit.a1` assumes random intercept and slope for time point, compound symmetric correlation structure, and unequal variances over time; and `fit.a2` assumes random intercept and slope for time point, AR1 correlation structure, and uneuqal variances over time. As shown in Table \@ref(tab:AIC-tab2), the model `fit.a2` has the lowest AIC And BIC, so it seems the best model. We now check residuals for three models: `fit.gls2`, `fit.a1`, `fit.a2`, as shown in Figure \@ref(fig:QQmodel). All three Q-Q plots show approximate normality. To further investigate the effects of drugs, We now use `fit.a2` for further analysis.  
 
 ```{r, QQmodel, fig.cap = "Q-Q plots of models: GLS, compound symmetry, AR1"}
 par(mfrow = c(1,3))
@@ -590,7 +572,6 @@ lme.res2 <- residuals(fit.a2, level = 1, type = "normalized")
 qqnorm(lme.res2)
 ```
 
-All of the Q-Q plots in Figure \@ref(fig:QQmodel) are reasonable, so we'll use `fit.a2` for further analysis.  
 
 Now we would like to know if the slopes between Time_Point 0 and 2 and between Time_Point 2 and 3 equal zero. $H_0: \text{ slope of } S4=0 \text{ and slope of } S5=0$, which means $H_0: \beta_1 = 0 \text{ and } \beta_3=0$  
 
@@ -606,9 +587,9 @@ kable(data.frame(rbind(test1, test2)), caption = "Inference of S4 ad S5 slopes")
 
 As shown in Table \@ref(tab:S4S5-slope), the slop of S4 has a very small p-value, while the slope of S5 is quite large, indicating that the change in Binding rate between Time_Point 0 and Time_Point 2 is significant while the change between Time_Point 2 and Time_Point 3 is not significant. We conclude that Time_Point 2, when the monkeys had received two vaccines, had the highest Binding rate, while the last vaccine shot at Time_Point 3 did not make a difference to the Binding rate.  
 
-### Add drugs as a covariate  
+### Two Covariates: Time Point and Drug  
 
-Next we add drugs as a covariate to see if it has effects on Binding. We use two indicator variables: `D2` and `D3`, where  
+Next we add `Drug` as a covariate to the model `gls.a2` to see if it has effects on Binding. We use two indicator variables: `D2` and `D3`, where  
 
 $$D2=
 \begin{cases}
@@ -624,7 +605,7 @@ $$D3=
 \end{cases}
 $$
 
-Assuming that the random effects are the same for each drug, our full model is: $$Y_{ij}= \beta_1(-2S4 + S4 Time_{ij}) + \beta_2(S4 + S5) + \beta_3(2S4 + S5 Time_{ij}) +$$ 
+Assuming that the random effects are the same for each drug, our model (`fit.a3`) with the extra covariate `Drug` is: $$Y_{ij}= \beta_1(-2S4 + S4 Time_{ij}) + \beta_2(S4 + S5) + \beta_3(2S4 + S5 Time_{ij}) +$$ 
 $$\beta_4 D2 (-2S4 + S4 Time_{ij}) + \beta_5 D2 (S4 + S5) + \beta_6 D2(2S4 + S5 Time_{ij}) +$$ 
 $$\beta_7 D3(-2S4 + S4 Time_{ij}) + \beta_8 D3(S4 + S5) + \beta_9 D3 (2S4 + S5 Time_{ij}) + b_{0i} + b{1i} Time_{ij} + e_{ij}$$  
 
@@ -652,10 +633,10 @@ meanform3 <- binding ~ -1 + v1 + v2 + v3 + v4 + v5 + v6 + v7 + v8 + v9
 
 fit.a3 <- lme(fixed = meanform3, random = ~ time | id, data = dataLDA1, weights = varIdent(form = ~ 1 | time), correlation = corAR1(form = ~1 | id))
 
-summary(fit.a3)
+# summary(fit.a3)
 ```
 
-Now we want to find whether the drugs have any effects. To see whether Drug 1 and Drug 2 have any difference, we want to perform a hypothesis test on $H_0: \beta_4 = \beta_5 = \beta_6 = 0$, thus we can do the test $$\mathbf{L_3 \beta}=0$$ where $$\mathbf{L_3}=
+With the model constructed, we want to make inference on $\boldsymbol{\beta}$ to find whether the drugs have any effects. To see whether Drug 1 and Drug 2 have any difference, we want to perform a hypothesis test on $H_0: \beta_4 = \beta_5 = \beta_6 = 0$, thus we can do the test $$\mathbf{L_3 \beta}=0$$ where $$\mathbf{L_3}=
 \begin{bmatrix}
 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 \\
@@ -719,10 +700,15 @@ knitr::kable(data.frame(Fstat = Fstat_L5, p_value = p.value), caption = "Test wh
 
 # Results  
 
+The above analyses provide answers to our two research questions. We performed a MANOVA test to our first research question, "Do drugs and isotypes have effects on the mutation frequency and/or the amino acid count in the third complementarity determining region (CDR3)?" and found significant main effects for both drugs and isotypes. However, pairwise comparisons reveal that drugs increased mutation rates for heavy chain but did not increase binding rates, which are the key to better efficacy of vaccines. [Kan: how to interpret IgG's higher mutation rates and binding rates?]
+  
+To answer our second research question, How does the binding strength of the antibodies develop in response to the number of vaccine dosages by treatment and drug types?", we first used time point as the only covariate and constructed with two general linear models with two and three line segments. We then added random effects for intercept and slope for time point as well as different correlation structure--compound symmetry and AR1--and found the model with two line segments (time points 0 to 2 and time points 2 to 3), random effects of intercept and slope of time point, AR1 correlation structure, and unequal variances over time performs best. F-tests for inferences for $\boldsymbol{\beta}$ reveals that time point 2 have the highest binding rates, suggesting that two vaccine injections improved the binding rates while the third injection did not make a difference. We also found that adding drug as a covariate did not improve the model.  
+
 # Discussion  
-**Test Assumptions**
-**Results**
-**Implications (Interpretation for practical significance**)
+
+While our analyses reached some findings, some further investigations could improve our analyses. A common method to analyze antibody traits is to treat antibodies (rows in our data) as independent from each other. We considered perform statistical analyses to prove or disprove such a convention, but it requires more biological knowledge and the investigation would most likely be beyond the scope of a final report. However, this remains an interesting topic that could be explored.  
+
+For longitudinal data analyses, we did not try out more combinations for models. For example, we only tried two correlation structures (compound symmetry and AR1); other structures might achieve better results. When we added drug as another covariate, we did not go back to test which correlation structure might perform better or whether the piecewise model should include two or three line segments.  
 
 # Conclusions  
 
