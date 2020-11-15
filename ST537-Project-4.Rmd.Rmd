@@ -312,7 +312,7 @@ qqnorm(Data3$HMuFreq, pch = 19, cex = 1)
 qqnorm(Data3$LMuFreq, pch = 19, cex = 1)
 ```
 
-Next, a histogram of `Binding` with respect to treatments at different time points and Q-Q plot are shown in Figure \@ref(fig:hist-binding) and Figure \@ref(fig:QQ3). We observe that `Binding` was not normally distributed, because the binding rate ranges between 0 and 1. However, since our sample size is larger than 2000, we can use the Central Limit Theorem and assume normality. Lastly, we check whether response variables could be correlated, as shown in Figure \@ref(fig:QQbinding). In these plots, we observe that none of the response variables were highly correlated.  
+Next, a histogram of `Binding` with respect to treatments at different time points and Q-Q plot are shown in Figure \@ref(fig:hist-binding) and Figure \@ref(fig:QQ3). We observe that `Binding` was not normally distributed. However, since our sample size is larger than 2000, we can use the Central Limit Theorem and assume normality. Lastly, we check whether response variables could be correlated, as shown in Figure \@ref(fig:QQbinding). In these plots, we observe that none of the response variables were highly correlated.  
 
 ```{r, hist-binding, fig.cap = "Histograms of Binding Strength vs Treatment and Timepoint"}
 ggplot(data = Data3, mapping = aes(x = Binding, color = as.factor(Drug))) + 
