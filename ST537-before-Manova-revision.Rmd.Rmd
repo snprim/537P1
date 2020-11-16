@@ -334,20 +334,22 @@ To answer **Q1** (Do drugs and isotypes have effects on the mutation frequency a
 
 ### MANOVA
 
-Since there are more than two populations we are comparing, we use MANOVA to test for effects. We check that the normality assumption is met due to large sample size (n = 2464). Each antibody is assumed to be independent. However, when we check for equal variance-covariance structures--by Fligner-Killeen Test of Homogeneity of Variances and by checking the variance-covariance matrices of different populations--many of the response variables do not meet the equal variance-covariance matrix assumption. The only populations that meet the assumption is the response variable vector (`L_CDR3`, `LMuFreq`)^T^. Thus we perform a MANOVA test on **(L_CDR3, LMuFreq)^T^ ~ Time_Point + Drug + Isotype** The output below shows that the main effects of `Drug` and `Isotype` have p-values greater than 0.05, suggesting that these main effects are not significant to the two traits, `L_CDR3` and `LMuFreq`, of antibodies. The p-value for `Time_Point` is quite small. Thus we conclude that `Time_Point` has significant effect to the two traits, `L_CDR3` and `LMuFreq`, of antibodies. The next section, longitudinal data analysis, will examine the effects of time points and reach a similar conclusion.  
+Since there are more than two populations we are comparing, we use MANOVA to test for effects. We check that the normality assumption is met due to large sample size (n = 2464). Each antibody is assumed to be independent. [equal variances?] 
+
+Our formula for the MANOVA test is **(H_CDR3, HMuFreq, L_CDR3, LMuFreq, Binding)^T^ ~ Drug + Isotype.** In the output, both the main effects of `Drug` and `Isotype` have very low p-values, suggesting that both main effects are significant.  
 
 ```{r}
+ID <- as.factor(Data3$MonkeyID)
+drug <- as.factor(Data3$Drug)
 tp <- as.factor(Data3$Time_Point)
 it <- as.factor(Data3$Isotype)
-drug <- as.factor(Data3$Drug)
-fit.manova <- manova(cbind(Data3$L_CDR3, Data3$LMuFreq) ~ drug + it + tp)
+fit.manova <- manova(cbind(Data3$H_CDR3, Data3$HMuFreq, Data3$L_CDR3, Data3$LMuFreq, Data3$Binding) ~ drug + it)
 summary(fit.manova, test = "Wilks")
-
-# fit.manova2 <- manova(cbind(Data3$H_CDR3, Data3$HMuFreq, Data3$L_CDR3, Data3$LMuFreq) ~ drug + it + tp)
-# summary(fit.manova2, test = "Wilks")
 ```
 
-### Pairwise Comparison  
+### Pairwise comparison
+
+To know more details about which groups have different means, we use pairwise comparisons for each drug group and Isotype. (We set $\alpha$ as 0.05, and use a Bonferroni correction.)  
 
 ```{r}
 respMat <- as.matrix(Data3[,c("L_CDR3", "LMuFreq", "H_CDR3", "HMuFreq", "Binding")])
@@ -357,24 +359,53 @@ vars <- c("L_CDR3", "LMuFreq", "H_CDR3", "HMuFreq", "Binding")
 
 ```{r, pcdrug}
 # pairwise comparison among drug groups
-fit <- manova(respMat[,1:5] ~ tp)
+fit2 <- manova(respMat[,1:5] ~ drug)
 # summary(fit2)
 p <- 5
-q <- length(unique(tp))
+q2 <- length(unique(drug))
 alpha.old <- 0.05
-nc <- p*q*(q-1)/2
-alpha.new <- alpha.old/nc
+nc2 <- p*q2*(q2-1)/2
+alpha.new2 <- alpha.old/nc2
 for (i in 1:5){
   w <- c(0, 0, 0, 0, 0)
   w[i] <- 1
   print(paste(vars[i], " pairwise CI's"))
-  cont <- contrast(emmeans(fit, "tp", weights = w), "pairwise")
-  bb <- confint(cont, level = 1 - alpha.new, adj = "none")
+  cont <- contrast(emmeans(fit2, "drug", weights = w), "pairwise")
+  bb <- confint(cont, level = 1 - alpha.new2, adj = "none")
   print(bb)
 }
 ```
 
-The pairwise comparison results show that the changes in `LMuFreq` are significant between time points 0 and 2, 0 and 3, and 1 and 3.  
+```{r}
+# pairwise comparison among time point
+fit3 <- manova(respMat[,1:5] ~ it)
+# summary(fit3)
+p <- 5
+q3 <- length(unique(it))
+alpha.old <- 0.05
+nc3 <- p*q3*(q3-1)/2
+alpha.new3 <- alpha.old/nc3
+for (i in 1:5){
+  w <- c(0, 0, 0, 0, 0)
+  w[i] <- 1
+  print(paste(vars[i], " pairwise CI's"))
+  cont <- contrast(emmeans(fit3, "it", weights = w), "pairwise")
+  bb <- confint(cont, level = 1 - alpha.new3, adj = "none")
+  print(bb)
+}
+```
+
+```{r, pctab}
+col_drug <- t(data.frame(L_CDR3 = "none", LMuFreq = "none", H_CDR3 = "1 > 2", HMuFreq = "1 < 2, 1 > 3, 2 > 3", Binding = "1 < 3, 2 < 3"))
+col_isotype <- t(data.frame(L_CDR3 = "none", LMuFreq = "none", H_CDR3 = "IgD < IgG", HMuFreq = "IgD < IgG, IgG > IgM", Binding = "IgA < IgG, IgD < IgG, IgG > IgM"))
+pairTab <- cbind(col_drug, col_isotype)
+colnames(pairTab) <- c("Drug", "Isotype")
+kable(pairTab, caption = "Pair comparison of Isotype and Drug")
+```
+
+Table \@ref(tab:pctab) presents the pairs that have significant differences. We can see that `L_CDR3` and `LMuFreq` do not have significant paired differences for any drug groups and isotypes. For `H_CDR3`, drug 1 has a higher mean than drug 2, and IgG has a higher mean than IgD. For `HMuFreq`, drug 2 has the highest mean, followed by drug 1 and drug 3 (control), and IgG has higher mutation rate than IgD and IgM. For `Binding`, drug 3 (control) has the highest mean, but drug 1 and drug 2 do not have significant differences. IgG has higher binding rate than IgA, IgD, and IgM. [Kan, how to interpret pairwise comparisons?]  
+
+The results show that the drug groups do increase mutation rate for heavy chain; however, they do not increase binding rate. Among all isotypes, IgG has the highest mutation rate for heavy chain and binding rate. We conclude that, although the treatments do help increase the diversity of antibodies, they are not specific to the HIV antigens and thus do not increase binding.  
 
 ## Longitudinal Analysis  
 

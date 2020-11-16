@@ -31,6 +31,7 @@ library(GGally)
 library(knitr)
 library(clubSandwich)
 library(bookdown)
+library(caret)
 ```
 
 ```{r readin Data, results = 'hide'}
@@ -65,56 +66,6 @@ Data2 <- Data %>% select(MonkeyID, Drug, Treatment, Time_Point, Isotype, H_VBase
 # final data 
 Data3 <- Data2[-972,]
 ```
-
-```{r}
-Data4 <- Data3 %>% select(H_CDR3, HMuFreq, L_CDR3, LMuFreq, Binding, Drug, Isotype, Time_Point)
-Data4_drug1 <- Data4 %>% filter(Drug == 1)
-cov1 <- Data4_drug1 %>% select(H_CDR3, HMuFreq, L_CDR3, LMuFreq, Binding) %>% cov()
-Data4_drug2 <- Data4 %>% filter(Drug == 2)
-cov2 <- Data4_drug2 %>% select(H_CDR3, HMuFreq, L_CDR3, LMuFreq, Binding) %>% cov()
-Data4_drug3 <- Data4 %>% filter(Drug == 3)
-cov3 <- Data4_drug3 %>% select(H_CDR3, HMuFreq, L_CDR3, LMuFreq, Binding) %>% cov()
-cov1 / cov2
-cov1 / cov3
-cov2 / cov3
-Data4_isog <- Data4 %>% filter(Isotype == "G")
-covg <- Data4_isog %>% select(H_CDR3, HMuFreq, L_CDR3, LMuFreq, Binding) %>% cov()
-Data4_isom <- Data4 %>% filter(Isotype == "M")
-covm <- Data4_isom %>% select(H_CDR3, HMuFreq, L_CDR3, LMuFreq, Binding) %>% cov()
-covg / covm
-
-Data5 <- Data3 %>% select(Drug, Isotype)
-Data5$Binding <- scale(Data3$Binding)
-Data5$H_CDR3 <- scale(Data3$H_CDR3)
-Data5$HMuFreq <- scale(Data3$HMuFreq)
-Data5$L_CDR3 <- scale(Data3$L_CDR3)
-Data5$LMuFreq <- scale(Data3$LMuFreq)
-bartlett.test(Binding ~ Drug, data = Data5)
-bartlett.test(H_CDR3 ~ Drug, data = Data5)
-bartlett.test(HMuFreq ~ Drug, data = Data5)
-# only these two are not significant 
-bartlett.test(L_CDR3 ~ Drug, data = Data5)
-bartlett.test(LMuFreq ~ Drug, data = Data5)
-##
-bartlett.test(Binding ~ Isotype, data = Data5)
-bartlett.test(H_CDR3 ~ Isotype, data = Data5)
-bartlett.test(HMuFreq ~ Isotype, data = Data5)
-bartlett.test(L_CDR3 ~ Isotype, data = Data5)
-bartlett.test(LMuFreq ~ Isotype, data = Data5)
-bartlett.test(Binding ~ Data3$Time_Point, data = Data5)
-bartlett.test(H_CDR3 ~ Data3$Time_Point, data = Data5)
-bartlett.test(HMuFreq ~ Data3$Time_Point, data = Data5)
-bartlett.test(L_CDR3 ~ Data3$Time_Point, data = Data5)
-bartlett.test(LMuFreq ~ Data3$Time_Point, data = Data5)
-
-
-tp <- as.factor(Data3$Time_Point)
-it <- as.factor(Data3$Isotype)
-drug <- as.factor(Data3$Drug)
-fit.manova1 <- manova(cbind(Data3$L_CDR3, Data3$LMuFreq) ~ drug)
-summary(fit.manova1, test = "Wilks")
-```
-
 
 # Data Analysis  
 

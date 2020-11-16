@@ -90,28 +90,6 @@
  
 \begin{table}
 
-\caption{\label{tab:pctab}Pair comparison of Isotype and Drug}
-\centering
-\begin{tabular}[t]{l|l|l}
-\hline
-  & Drug & Isotype\\
-\hline
-L\_CDR3 & none & none\\
-\hline
-LMuFreq & none & none\\
-\hline
-H\_CDR3 & 1 > 2 & IgD < IgG\\
-\hline
-HMuFreq & 1 < 2, 1 > 3, 2 > 3 & IgD < IgG, IgG > IgM\\
-\hline
-Binding & 1 < 3, 2 < 3 & IgA < IgG, IgD < IgG, IgG > IgM\\
-\hline
-\end{tabular}
-\end{table}
-\efloatseparator
- 
-\begin{table}
-
 \caption{\label{tab:AIC-tab1}AIC and BIC between two gls models}
 \centering
 \begin{tabular}[t]{l|r|r|r|r}

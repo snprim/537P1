@@ -1,0 +1,125 @@
+---
+title: "MANOVA and equal variances"
+author: "Shih-Ni Prim"
+date: "11/15/2020"
+output: pdf_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE, message = FALSE, warning = FALSE)
+library(httr)
+library(readxl)
+library(tidyverse)
+library(ggplot2)
+library(emmeans)
+```
+
+```{r readin Data, results = 'hide', echo = FALSE}
+#Readin data from Github url address
+url1 <- 'https://github.com/luokan1227/537P1/raw/master/Data.xlsx'  # main data
+url2 <- 'https://github.com/luokan1227/537P1/raw/master/MonkeyID.xlsx'  # Monkey ID
+GET(url1, write_disk(tf1 <- tempfile(fileext = ".xlsx")))
+GET(url2, write_disk(tf2 <- tempfile(fileext = ".xlsx")))
+Rawdata <- read_excel(tf1)
+MonkeyID <-  read_excel(tf2)
+#Add Monkey ID to raw data
+Rawdata <- inner_join(Rawdata, MonkeyID, by = "H_ID")
+colnames(Rawdata)[2] <- "Time_Point"
+#-----------------------
+#Adjust or add variables
+#-----------------------
+
+# Final data set for all following analysis
+Data <- Rawdata
+
+# add drug type and reactivity
+Data$Drug <- ifelse(Data$Treatment == "group 7", 3, 
+                      ifelse(Data$Treatment == "group 1", 1, 
+                      ifelse(Data$Treatment == "group 2", 1, 
+                      ifelse(Data$Treatment == "group 3", 1, 2))))
+
+Data$Reactivity <- ifelse(Data$Binding > 0.1, 1, 0)
+
+# create a subset with the variables we need plus the extracted information
+Data2 <- Data %>% select(MonkeyID, Drug, Treatment, Time_Point, Isotype, H_VBase, H_Substitutions, H_Insertions, H_Deletions, HMuFreq, H_CDR3, L_VBase, L_Substitutions, L_Insertions, L_Deletions, LMuFreq, L_CDR3, Binding, Reactivity)
+
+# final data 
+Data3 <- Data2[-972,]
+```
+
+We want to use a MANOVA test to see if the predictors `Time_Point`, `Drug`, and `Isotype` have any effects on the response variable vector that includes `H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq`, and `Binding`. 
+
+We first check assumptions. I beieve our large sample size n = `r nrow(Data3)` allows us to bypass the normality assumption. Each row is assume to be independent. However, we run into some problems when we check the equal variance-covariance matrices assumption. 
+
+I ran the Fligner-Killeen Test of Homogeneity of Variances on all these variables. As shown in the output below, most of the p-values are very small, meaning the null hypothesis of equal variance is reject. In most cases, `H_CDR3`, `HMuFreq`, and `Binding` do not meet the equal variance-covariance matrices assumption.
+
+```{r, echo = FALSE}
+Data5 <- Data3 %>% select(Drug, Isotype, Time_Point, H_CDR3, HMuFreq, L_CDR3, LMuFreq, Binding)
+
+fligner.test(Binding ~ Drug, data = Data5)
+fligner.test(H_CDR3 ~ Drug, data = Data5)
+fligner.test(HMuFreq ~ Drug, data = Data5)
+fligner.test(L_CDR3 ~ Drug, data = Data5)
+fligner.test(LMuFreq ~ Drug, data = Data5)
+
+fligner.test(Binding ~ Isotype, data = Data5)
+fligner.test(H_CDR3 ~ Isotype, data = Data5)
+fligner.test(HMuFreq ~ Isotype, data = Data5)
+fligner.test(L_CDR3 ~ Isotype, data = Data5)
+fligner.test(LMuFreq ~ Isotype, data = Data5)
+
+fligner.test(Binding ~ Time_Point, data = Data5)
+fligner.test(H_CDR3 ~ Time_Point, data = Data5)
+fligner.test(HMuFreq ~ Time_Point, data = Data5)
+fligner.test(L_CDR3 ~ Time_Point, data = Data5)
+fligner.test(LMuFreq ~ Time_Point, data = Data5)
+```
+
+\newpage 
+
+I checked the variance-covariance matrix of the five response variables in different groups and look at the ratio (one matrix divided by another matrix). Some matrices seem quite different. For example, the ratio between variance-covariance matrices of Drug 2 and Drug 3 has numbers such as 8, 9, and 26.  
+
+```{r, echo = FALSE}
+Data4 <- Data3 %>% select(H_CDR3, HMuFreq, L_CDR3, LMuFreq, Binding, Drug, Isotype, Time_Point)
+Data4_drug1 <- Data4 %>% filter(Drug == 1)
+cov1 <- Data4_drug1 %>% select(H_CDR3, HMuFreq, L_CDR3, LMuFreq, Binding) %>% cov()
+Data4_drug2 <- Data4 %>% filter(Drug == 2)
+cov2 <- Data4_drug2 %>% select(H_CDR3, HMuFreq, L_CDR3, LMuFreq, Binding) %>% cov()
+Data4_drug3 <- Data4 %>% filter(Drug == 3)
+cov3 <- Data4_drug3 %>% select(H_CDR3, HMuFreq, L_CDR3, LMuFreq, Binding) %>% cov()
+#cov1 / cov2
+#cov1 / cov3
+cov2 / cov3
+```
+
+The ratio of variance-covariance matrices between Time_Point 0 and Time_Point 2 also has numbers greater than 4. 
+
+```{r, echo = FALSE}
+Data4_tp0 <- Data4 %>% filter(Time_Point == 0)
+covtp0 <- Data4_tp0 %>% select(H_CDR3, HMuFreq, L_CDR3, LMuFreq, Binding) %>% cov()
+Data4_tp1 <- Data4 %>% filter(Time_Point == 1)
+covtp1 <- Data4_tp1 %>% select(H_CDR3, HMuFreq, L_CDR3, LMuFreq, Binding) %>% cov()
+Data4_tp2 <- Data4 %>% filter(Time_Point == 2)
+covtp2 <- Data4_tp2 %>% select(H_CDR3, HMuFreq, L_CDR3, LMuFreq, Binding) %>% cov()
+Data4_tp3 <- Data4 %>% filter(Time_Point == 3)
+covtp3 <- Data4_tp3 %>% select(H_CDR3, HMuFreq, L_CDR3, LMuFreq, Binding) %>% cov()
+#covtp0/covtp1
+covtp0/covtp2
+#covtp0/covtp3
+#covtp1/covtp2
+#covtp1/covtp3
+#covtp2/covtp3
+```
+
+The ratio of variance-covariance matrices between Isotype IgG and IgM even has a value of over 120.  
+
+```{r, echo = FALSE}
+Data4_isog <- Data4 %>% filter(Isotype == "G")
+covg <- Data4_isog %>% select(H_CDR3, HMuFreq, L_CDR3, LMuFreq, Binding) %>% cov()
+Data4_isom <- Data4 %>% filter(Isotype == "M")
+covm <- Data4_isom %>% select(H_CDR3, HMuFreq, L_CDR3, LMuFreq, Binding) %>% cov()
+covg / covm
+```
+
+Does this mean we can only use variables that have large p-values in the Fligner-Killeen Test of Homogeneity of Variance? It looks like maybe we can only use `L_CDR3` and `LMuFreq` in the response variable vector for the MANOVA test. Or is there a way to set `var.equal = FALSE` for MANOVA?  

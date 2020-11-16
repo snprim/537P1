@@ -10,11 +10,11 @@
 \contentsline {subsubsection}{\numberline {2.1.3}Response Variables}{5}{subsubsection.2.1.3}%
 \contentsline {subsection}{\numberline {2.2}Multivariate Data Analysis}{6}{subsection.2.2}%
 \contentsline {subsubsection}{\numberline {2.2.1}MANOVA}{6}{subsubsection.2.2.1}%
-\contentsline {subsubsection}{\numberline {2.2.2}Pairwise comparison}{7}{subsubsection.2.2.2}%
-\contentsline {subsection}{\numberline {2.3}Longitudinal Analysis}{12}{subsection.2.3}%
-\contentsline {subsubsection}{\numberline {2.3.1}One Covariate: Time Point}{12}{subsubsection.2.3.1}%
-\contentsline {subsubsection}{\numberline {2.3.2}Two Covariates: Time Point and Drug}{15}{subsubsection.2.3.2}%
-\contentsline {section}{\numberline {3}Results}{17}{section.3}%
-\contentsline {section}{\numberline {4}Discussion}{18}{section.4}%
-\contentsline {section}{\numberline {5}Conclusions}{18}{section.5}%
-\contentsline {section}{\numberline {6}References}{19}{section.6}%
+\contentsline {subsubsection}{\numberline {2.2.2}Pairwise Comparison}{7}{subsubsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.3}Longitudinal Analysis}{8}{subsection.2.3}%
+\contentsline {subsubsection}{\numberline {2.3.1}One Covariate: Time Point}{8}{subsubsection.2.3.1}%
+\contentsline {subsubsection}{\numberline {2.3.2}Two Covariates: Time Point and Drug}{12}{subsubsection.2.3.2}%
+\contentsline {section}{\numberline {3}Results}{14}{section.3}%
+\contentsline {section}{\numberline {4}Discussion}{14}{section.4}%
+\contentsline {section}{\numberline {5}Conclusions}{15}{section.5}%
+\contentsline {section}{\numberline {6}References}{15}{section.6}%
