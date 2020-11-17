@@ -67,51 +67,54 @@ Data2 <- Data %>% select(MonkeyID, Drug, Treatment, Time_Point, Isotype, H_VBase
 ```{r}
 # Put output at the end
 # MANOVA
+# make sure Q1 and Q2 are the same
 ```
 
 
 # Introduction  
 
+The current project uses multivariate and longitudinal data analyses on a dataset from an HIV study that gave HIV vaccine injections and immuno-suppression tretments to 20 rhesus macaques. This report's main goal is to show whether the vaccine's efficacy, reflected by the variable `Binding`, can be increased by the number of vaccine injections and the type of immuno-suppression treatments.  
+
 ## About the Study  
 
-A dominant vaccine development strategy is to induce neutralizing antibodies by immunizing humans with the virus' glycoproteins. However, HIV vaccines that adopted this strategy mostly failed due to the fact that HIV is an RNA virus, which mutates rapidly to escape the inhibition of neutralizing antibodies. By the time the body generates neutralizing antibodies against the glycoproteins of some HIV strains, the RNA virus has already mutated. Thus, the existing neutralizing antibody fails to recognize, bind with, and neutralize the HIV virus. One possible solution is to increase the number of potential neutralizing antibodies that will cycle in the body by releasing a variety of antibodies after glycoprotein immunization. Regulatory T (Treg) cells prevent autoimmune diseases and suppress allergic reactions by inhibiting adaptive antibody immune response in the germinal center. Theoretically, this adaptive response lowers the effectiveness of vaccines. Thus the experiment used T-cell suppression treatments to investigate  the effect on immunization. These drugs are widely used in post transplant immuno-suppression treatment to prevent rejection.    
+A dominant vaccine development strategy is to induce neutralizing antibodies by immunizing humans with the virus' glycoproteins. However, HIV vaccines that adopted this strategy mostly failed due to the fact that HIV is an RNA virus, which mutates rapidly to escape the inhibition of neutralizing antibodies. By the time the body generates neutralizing antibodies against the glycoproteins of some HIV strains, the RNA virus has already mutated. Thus, the existing neutralizing antibody fails to recognize, bind with, and neutralize the HIV virus. One possible solution is to increase the number of potential neutralizing antibodies that will cycle in the body by releasing a variety of antibodies after glycoprotein immunization. Regulatory T (Treg) cells prevent autoimmune diseases and suppress allergic reactions by inhibiting adaptive antibody immune response in the germinal center. Theoretically, this adaptive response lowers the effectiveness of vaccines. Thus the experiment used T-cell suppression treatments, widely used in post transplant immuno-suppression treatment to prevent rejection, to investigate  the effect on immunization.   
 
-During the study, 20 rhesus macaques were given glycoprotein immunization and supplemental antibody doses, as well as one of three treatments (two experimental regulatory T-cell suppression treatments and one control). Our dataset includes measurements of antibodies after the 20 macaques were given the same HIV vaccine at three different time-points and one of three randomly selected anti-Treg treatments(drugs). Blood samples were collected two weeks after vaccine dosing, and antibodies were isolated from those samples. A different number of antibodies were collected from each blood sample, limited by assay yield. Each observation contains information about the antibody isolated post the glycoprotein immunization.  
+During the study, 20 rhesus macaques were given glycoprotein immunization and supplemental antibody doses, as well as one of three treatments (two experimental regulatory T-cell suppression treatments and one control). The resulting dataset includes measurements of antibodies after the 20 macaques were given the same HIV vaccine at three different time points and one of three randomly selected anti-Treg treatments. Blood samples were collected two weeks after vaccine dosing, and antibodies were isolated from those samples. A different number of antibodies were collected from each blood sample, limited by assay yield. Each observation contains information about the antibody isolated post the glycoprotein immunization.  
 
-A human antibody is formed by a heavy chain and light chain. For heavy chain, a human has about 51 V-gene segments, 25 D-gene segments and 6 J-gene segment. For light chain there are 71 V-gene segments and 9 J-gene segments[ref.5]. Any heavy chain V-D-J combination and light chain V-J combinations can randomly happen in germline center. Theoretically, there can be $51*25*6*71*9=$ `r 51*25*6*71*9` combinations of gene segments. Considering the frequently happened mutation and other factors, each individual can have over **10 billion** different antibodies. Thus, we decided to follow the convention of vaccine studies and treat each antibody as independent.  
+A human antibody is formed by a heavy chain and light chain. For heavy chain, a human has about 51 V-gene segments, 25 D-gene segments and 6 J-gene segment. For light chain there are 71 V-gene segments and 9 J-gene segments[ref.5]. Any heavy chain V-D-J combination and light chain V-J combinations can randomly happen in germinal centers. Theoretically, there can be $51*25*6*71*9=$ `r 51*25*6*71*9` combinations of gene segments. Considering the frequently happened mutation and other factors, each individual can have over **10 billion** different antibodies. Thus, we follow the convention of vaccine studies and treat each antibody as independent.  
 
-Below is the list of variables with a brief description from our dataset. Please note that in each antibody, there are two sets of heavy chain and light chain, all of which forming a Y-shape immunoglobulin. Thus many of the variables start with H or L, indicating which chain the information comes from.  
+Below is the list of variables with a brief description from our dataset. Please note that in each antibody, there are two sets of heavy chain and light chain, all of which forming a Y-shape immunoglobulin. Thus many of the variables start with H or L, indicating the chain from which the information comes.  
 
 ## List of variables  
 
 * Monkey_id: Lists the identity of monkey
-* Treatment(Drug): Treatment A is the mock control, and treatment B and C are two different kinds of Treg inhibitor treatments.
-* Time_Points: 0 represents before immunization; 1 represents 2 weeks post 1st immunization; 2 represents 2 weeks post 2nd immunization; and 3 represents 2 weeks post 3rd immunization, respectively.
-* Isotype: The category of antibody type; there are 5 kinds of immunoglobulin isotypes: IgG, IgA, IgM, IgE, IgD. The two most important kinds are IgG and IgM. IgM occurs in the acute stage of infection and perform an role of primary response. The secondary response IgG appears later in serum with higher binding affinity, and neutralizing potentials against toxins and virus. IgA mostly found in mucosal tissues such as Nasal mucosa. Non-dominant IgD and IgE are typically lower than 1% in blood. 
+* Treatment(Drug): Treatment A is the mock control, and treatment B and C are two different kinds of Treg inhibitor treatments. The 7 treatments in the dataset are coded into 3 drugs to simplify the data.
+* Time_Point: 0 represents before immunization; 1 represents 2 weeks post 1st immunization; 2 represents 2 weeks post 2nd immunization; and 3 represents 2 weeks post 3rd immunization, respectively.
+* Isotype: The category of antibody type; there are 5 kinds of immunoglobulin isotypes: IgG, IgA, IgM, IgE, IgD. The two most important kinds are IgG and IgM. IgM occurs in the acute stage of infection and perform a role in the primary response. The secondary response IgG appears later in serum with higher binding affinity and neutralizing potentials against toxins and virus. IgA is mostly found in mucosal tissues such as Nasal mucosa. Non-dominant IgD and IgE are typically lower than 1% in blood.
 * H_ID and L_ID: heavy chain and light chain IDs for the particular observation
 * H_VBase: the number of nucleotide of the heavy chain variable region
-* H_Substitutions: the number of relative nucleotide mutations in heany chain.
+* H_Substitutions: the number of relative nucleotide mutations in the heavy chain.
 * HMuFreq: calculated by H_Substitutions / H_VBase
 * H_CDR3: the number of amino acid of the heavy chain's third complementarity determining region 
 * L_VBase: the number of nucleotide of the light chain variable region
-* L_Substitutions: the number of relative nucleotide mutations in light chain.
+* L_Substitutions: the number of relative nucleotide mutations in the light chain.
 * LMuFreq: calculated by L_Substitutions / L_VBase
-* L_CDR3: the number of amino acid of the light chain's third complementarity determining region.`H_CDR3` and `L_CDR3` indicates the length of the third complementarity-determining region on the variable heavy chain and light chain. The longer they are, the more potential there is to produce diverse antibodies. [Kan, could you check to see if this is correct?] In other words, we want the values to be higher. 
-* Binding: affinity of antibodies against a selected HIV glycoprotein. The larger value indicates stronger binding.`Binding` indicates the rate of neutralizing, meaning how much the antibodies bind with the virus and thus make the virus ineffective. This is the most important measure of the study.   
+* L_CDR3: the number of amino acid of the light chain's third complementarity determining region.`H_CDR3` and `L_CDR3` indicates the length of the third complementarity-determining region on the variable heavy chain and light chain. The longer they are, the more potential there is to produce diverse antibodies.
+* Binding: affinity of antibodies against a selected HIV glycoprotein. Larger values indicate stronger binding.`Binding` indicates the rate of neutralizing, meaning how much the antibodies bind with the virus and thus make the virus ineffective. This is the most important measure of the study.   
 
-The dataset, [which can be found here](https://github.com/luokan1227/537P1), was provided by Kan Luo, as he was one of authors for the following four publications that used the dataset. After stating our research questions, the methods section includes exploratory data analysis, multivariate data analysis, and longitudinal data analysis. The statistical results are included in the methods section and summarized in the results section. We provide implications and limitations in the discussions and some final thoughts in the conclusions.  
+The dataset, [which can be found here](https://github.com/luokan1227/537P1), was provided by Kan Luo, as he was one of authors for four publications that used the dataset. Now we will turn to our research questions. The methods section includes exploratory data analysis, multivariate data analysis, and longitudinal data analysis. The statistical results are included in the methods section and summarized in the results section. We discuss implications and limitations in the discussions and some final thoughts in the conclusions.  
 
 ## Research questions  
 
-The main focus of the current project is to understand whether isotypes (`Isotype`), the number of vaccine injections (`Time_Point`), and the different Treg treatments (`Drug`) cause changes in the antibody characteristics and if the changes are related to the immune responses against HIV virus. Specifically, we evaluate:  
+The main focus of the current project is to understand whether the number of vaccine injections (`Time_Point`) and the different Treg treatments (`Drug`) cause changes in the antibody characteristics and if the changes are related to the immune responses against HIV virus. The category of antibody (`Isotype`) was not controlled by the researchers, but it could be related to the response variables and is thus included as a predicor. We have two research questions:  
 
-**Q1**: Do drugs and isotypes have effects on the mutation frequency and/or the amino acid count in the third complementarity determining region (CDR3)?
+**RQ1**: Do time points, drugs, and isotypes have effects on the mutation frequency (`HMuFreq` and `LMuFreq`) and the amino acid count in the third complementarity determining region (`H_CDR3` and `L_CDR3`)?
   
-**Q2**: How does the binding strength of the antibodies develop in response to the number of vaccine dosages by treatment and drug types?   
+**RQ2**: How does the binding strength of the antibodies (`Binding`) develop in response to the number of vaccine dosages (`Time_Point`) and immuno-suppression treatments (`Drug`)?  
 
 # Methods  
 
-This section first presents some exploratory data analyses and summaries, and then it uses multivariate and longitudinal data analyses to address the research questions.  
+This section first provides an overview and summaries of the dataset. It then uses multivariate and longitudinal data analyses to address the research questions.  
 
 ## Data Summaries  
 
@@ -158,11 +161,11 @@ g1 <- ggplot(Data, aes(x=factor(Isotype, levels = Iso.order), fill=as.factor(Dru
     )
 ```
 
-As shown in Figure \@ref(fig:isotype-plot), the histograms of `Isotype`, we observed that IgG and IgM occupied the biggest proportion of antibodies in all time points. Before immunization (time point 0), there were similar weight of IgG and IgM found in blood. After the first immunization (time point 1), primary immune response resulted an increase of IgM, followed by an IgG increase at later time points 2 and 3.  
+Figure \@ref(fig:isotype-plot) shows the histograms of `Isotype`, in which we observe that IgG and IgM occupied the biggest proportion of antibodies in all time points. Before immunization (time point 0), there were similar weight of IgG and IgM found in blood. After the first immunization (time point 1), primary immune response resulted an increase of IgM, followed by an IgG increase at later time points 2 and 3.  
 
 ### Outlier Detection  
 
-Our response variables for the multivariate analysis include five variables: `Binding`, `H_CDR3`, `HMuFreq`, `L_CDR3`, and `LMuFreq`. As shown in Figure \@ref(fig:outlier-review), `L_CDR3` in one point seems an outlier. As the summary statistics of standardized `L_CDR3` shown in Table \@ref(tab:outlier-tab), the maximum value is greater than 30, which is quite unusal. Figure \@ref(fig:outlier-d2) shows the Mahalanobis ditances and Z scores of `L_CDR3`, and the data point again appears to be an apparent outlier. The value for `L_CDR3` is quite unlikely. Since we are not able to go back to the original data, we remove the data point and will use the new dataset `Data3`.  
+Our response variables for the project include five variables: `H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq`, and `Binding`. As shown in Figure \@ref(fig:outlier-review), `L_CDR3` in one point seems an outlier. The summary statistics of standardized `L_CDR3` in Table \@ref(tab:outlier-tab) show that the maximum value is greater than 30, which is quite unusual. Figure \@ref(fig:outlier-d2) shows the Mahalanobis ditances and Z scores of `L_CDR3`, and the data point again appears to be an apparent outlier. The value for `L_CDR3`, 47, is quite unlikely. Since we are not able to go back to the original data, we remove the data point and will use the new dataset `Data3`.  
 
 ```{r, outlier-review, fig.cap = "Histogram of Response Variables"}
 cont_subset <- Data2 %>% select(H_CDR3, HMuFreq, L_CDR3, LMuFreq, Binding)
@@ -196,7 +199,7 @@ Data3 <- Data2[-972,]
 
 ### Response Variables  
 
-Here we examine our responses: `H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq` and `Binding`. We observe that for `H_CDR3` the distributions are approximately normal with the center around 13 at different time-points (Figure \@ref(fig:hist-HCDR3T)) without taking into account different treatments. Figure \@ref(fig:hist-HCDR3) represents the distribution of `H_CDR3` with respect to treatments at different time-points, and slightly centered around 9 for `L_CDR3` at different time points. With `L_CDR3`, Figure \@ref(fig:hist-LCDR3T) and Figure \@ref(fig:hist-LCDR3) show approximately normal distribution with a longer right tail. The Q-Q plots in Figure \@ref(fig:QQ) show that `H_CDR3` and `L_CDR3` are both approximately normal.  
+Here we examine our responses: `H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq`, and `Binding`. We observe that for `H_CDR3` the distributions are approximately normal with the center around 13 at different time points (Figure \@ref(fig:hist-HCDR3T)) without taking into account different treatments. Figure \@ref(fig:hist-HCDR3) represents the distribution of `H_CDR3` with respect to treatments at different time points, and slightly centered around 9 for `L_CDR3` at different time points. With `L_CDR3`, Figure \@ref(fig:hist-LCDR3T) and Figure \@ref(fig:hist-LCDR3) show approximately normal distribution with a longer right tail. The Q-Q plots in Figure \@ref(fig:QQ) show that `H_CDR3` and `L_CDR3` are both approximately normal.  
 
 ```{r, hist-HCDR3T, fig.cap = "Histogram H_CDR3"}
 g3.1 <- ggplot(Data3, aes(H_CDR3))
@@ -250,7 +253,7 @@ qqnorm(Data3$H_CDR3, pch = 19, cex = 1)
 qqnorm(Data3$L_CDR3, pch = 19, cex = 1)
 ```
 
-`HMuFreq` and `LMuFreq` are calculated by dividing `H_Substitution` by `H_VBase` for heavy chain and similarly for light chain. These two variables show how much the antibodies mutate. A higher mutation rate is usually indicative of better virus neutralization. Below we present comparison of mutation rate between heavy chain and light chain. Figure \@ref(fig:murate1), Figure \@ref(fig:murate2), Figure \@ref(fig:murate3), and Figure \@ref(fig:murate4) show that `HMuFreq` and `LMuFreq` are both approximately normally distributed, each with a longer right tail. The Q-Q plots in Figure \@ref(fig:QQ2) confirm the approximate normality of `HMuFreq` and `LMuFreq`.  
+`HMuFreq` and `LMuFreq` are calculated by dividing `H_Substitution` by `H_VBase` for heavy chain and `L_Substitution` by `L_VBase` light chain. These two variables show the degree to which the antibodies mutate. A higher mutation rate is usually indicative of better virus neutralization. Below we present comparison of mutation rate between heavy chain and light chain. Figure \@ref(fig:murate1), Figure \@ref(fig:murate2), Figure \@ref(fig:murate3), and Figure \@ref(fig:murate4) show that `HMuFreq` and `LMuFreq` are both approximately normal, each with a long right tail. The Q-Q plots in Figure \@ref(fig:QQ2) confirm the approximate normality of `HMuFreq` and `LMuFreq`.  
 
 ```{r, murate1, fig.cap = "Histogram HMuFreq"}
 #par(mfrow = c(1,2))
@@ -322,55 +325,98 @@ Data3 %>% select(LMuFreq, HMuFreq, L_CDR3, H_CDR3, Binding) %>% ggpairs()
 
 ## Multivariate Data Analysis  
 
-To answer **Q1** (Do drugs and isotypes have effects on the mutation frequency and/or the amino acid count in the third complementarity determining region (CDR3)?), we test whether predictors `Time_Point`, `Drug`, and `Isotype` had effects on the five responses: `H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq`, and `Binding`. 
+To answer **RQ1** (Do time points, drugs, and isotypes have effects on the mutation frequency (`HMuFreq` and `LMuFreq`) and the amino acid count in the third complementarity determining region (`H_CDR3` and `L_CDR3`)?), we test whether predictors `Time_Point`, `Drug`, and `Isotype` had effects on four of our five response variables: `H_CDR3`, `HMuFreq`, `L_CDR3`, and `LMuFreq`. We exclude `Binding` from this section, because it has unequal variances across time points, which violates the equal variance assumption of MANOVA. We will use it as the main response variable in longitudinal analyses, since longitudinal analysis allows the option of unequal variances over time.  
 
 ### MANOVA
 
-Since there are more than two populations we are comparing, we use MANOVA to test for effects. We check that the normality assumption is met due to large sample size (n = 2464). Each antibody is assumed to be independent. However, when we check for equal variance-covariance structures--by Fligner-Killeen Test of Homogeneity of Variances and by checking the variance-covariance matrices of different populations--many of the response variables do not meet the equal variance-covariance matrix assumption. The only populations that meet the assumption is the response variable vector (`L_CDR3`, `LMuFreq`)^T^. Thus we perform a MANOVA test on **(L_CDR3, LMuFreq)^T^ ~ Time_Point + Drug + Isotype** The output below shows that the main effects of `Drug` and `Isotype` have p-values greater than 0.05, suggesting that these main effects are not significant to the two traits, `L_CDR3` and `LMuFreq`, of antibodies. The p-value for `Time_Point` is quite small. Thus we conclude that `Time_Point` has significant effect to the two traits, `L_CDR3` and `LMuFreq`, of antibodies. The next section, longitudinal data analysis, will examine the effects of time points and reach a similar conclusion.  
+Since there are more than two populations we are comparing, we use MANOVA to test for effects. We check that the normality assumption is met due to large sample size (n = 2464). Each antibody is assumed to be independent. **However, when we check for equal variance-covariance structures--by Fligner-Killeen Test of Homogeneity of Variances and by checking the variance-covariance matrices of different populations--many of the response variables do not meet the equal variance-covariance matrix assumption. The only populations that meet the assumption is the response variable vector (`L_CDR3`, `LMuFreq`)^T^.** Thus we perform a MANOVA test on **(H_CDR3, HMuFreq, L_CDR3, LMuFreq)^T^ ~ Time_Point + Drug + Isotype** The null hypothesis is that the three factors do not have effects on the response variable vector.  
 
 ```{r}
 tp <- as.factor(Data3$Time_Point)
 it <- as.factor(Data3$Isotype)
 drug <- as.factor(Data3$Drug)
-fit.manova <- manova(cbind(Data3$L_CDR3, Data3$LMuFreq) ~ drug + it + tp)
+fit.manova <- manova(cbind(Data3$H_CDR3, Data3$HMuFreq, Data3$L_CDR3, Data3$LMuFreq) ~ tp + drug + it)
 summary(fit.manova, test = "Wilks")
-
-# fit.manova2 <- manova(cbind(Data3$H_CDR3, Data3$HMuFreq, Data3$L_CDR3, Data3$LMuFreq) ~ drug + it + tp)
-# summary(fit.manova2, test = "Wilks")
 ```
+
+The output above shows that all of the main effects of `Time_Point`, `Drug`, `Isotype` have very small p-values. Thus we reject the null hypothesis and conclude that all three main effects are significant to the four traits, `H_CDR3`, `HMuFreq`, `L_CDR3`, and `LMuFreq`, of antibodies. To understand how exactly these three factors have effects, we proceed to do pairwise comparison.  
 
 ### Pairwise Comparison  
 
-The pairwise comparison results show that the changes in `LMuFreq` are significant between time points 0 and 2, 0 and 3, and 1 and 3. [need revisions]  
-
 ```{r}
-respMat <- as.matrix(Data3[,c("L_CDR3", "LMuFreq", "H_CDR3", "HMuFreq", "Binding")])
+respMat <- as.matrix(Data3[,c("H_CDR3", "HMuFreq", "L_CDR3", "LMuFreq")])
 # pairwise comparison among treatment groups
-vars <- c("L_CDR3", "LMuFreq", "H_CDR3", "HMuFreq", "Binding")
+vars <- c("H_CDR3", "HMuFreq", "L_CDR3", "LMuFreq")
 ```
 
-```{r, pcdrug}
-# pairwise comparison among drug groups
-fit <- manova(respMat[,1:5] ~ tp)
-# summary(fit2)
-p <- 5
-q <- length(unique(tp))
+```{r, pcdrug1}
+# pairwise comparison among time points
+fit1 <- manova(respMat[,1:4] ~ tp)
+p <- 4
+q1 <- length(unique(tp))
 alpha.old <- 0.05
-nc <- p*q*(q-1)/2
-alpha.new <- alpha.old/nc
-for (i in 1:5){
-  w <- c(0, 0, 0, 0, 0)
+nc1 <- p*q1*(q1-1)/2
+alpha.new1 <- alpha.old/nc1
+for (i in 1:4){
+  w <- c(0, 0, 0, 0)
   w[i] <- 1
   print(paste(vars[i], " pairwise CI's"))
-  cont <- contrast(emmeans(fit, "tp", weights = w), "pairwise")
-  bb <- confint(cont, level = 1 - alpha.new, adj = "none")
+  cont <- contrast(emmeans(fit1, "tp", weights = w), "pairwise")
+  bb <- confint(cont, level = 1 - alpha.new1, adj = "none")
   print(bb)
 }
 ```
 
+```{r, pcdrug2}
+# pairwise comparison among drug groups
+fit2 <- manova(respMat[,1:4] ~ drug)
+p <- 4
+q2 <- length(unique(drug))
+alpha.old <- 0.05
+nc2 <- p*q2*(q2-1)/2
+alpha.new2 <- alpha.old/nc2
+for (i in 1:4){
+  w <- c(0, 0, 0, 0)
+  w[i] <- 1
+  print(paste(vars[i], " pairwise CI's"))
+  cont <- contrast(emmeans(fit2, "drug", weights = w), "pairwise")
+  bb <- confint(cont, level = 1 - alpha.new2, adj = "none")
+  print(bb)
+}
+```
+
+```{r, pcdrug3}
+# pairwise comparison among isotype
+fit3 <- manova(respMat[,1:4] ~ it)
+p <- 4
+q3 <- length(unique(it))
+alpha.old <- 0.05
+nc3 <- p*q3*(q3-1)/2
+alpha.new3 <- alpha.old/nc3
+for (i in 1:4){
+  w <- c(0, 0, 0, 0)
+  w[i] <- 1
+  print(paste(vars[i], " pairwise CI's"))
+  cont <- contrast(emmeans(fit3, "it", weights = w), "pairwise")
+  bb <- confint(cont, level = 1 - alpha.new3, adj = "none")
+  print(bb)
+}
+```
+
+```{r, pctab}
+col_timepoint <- t(data.frame(H_CDR3 = "3 > 1, 3 > 2", HMuFreq = "0 > 2, 0 > 3, 1 > 2, 1 > 3", L_CDR3 = "none", LMuFreq = "0 > 2, 0 > 3, 1 > 3"))
+col_drug <- t(data.frame(H_CDR3 = "1 > 2", HMuFreq = "2 > 1 > 3", L_CDR3 = "none", LMuFreq = "none"))
+col_isotype <- t(data.frame(H_CDR3 = "IgD < IgG, IgG > IgM", HMuFreq = "IgD < IgG, IgG > IgM", L_CDR3 = "none", LMuFreq = "none"))
+pairTab <- cbind(col_timepoint, col_drug, col_isotype)
+colnames(pairTab) <- c("Time_Point", "Drug", "Isotype")
+kable(pairTab, caption = "Significant Pairs in terms of Time Point, Drug, and Isotype: Significant Pairs")
+```
+
+Table \@ref(tab:pctab) summarizes The pairwise comparison results. `Time_Point` have significant pairs for `H_CDR3`, `HMuFreq`, and `LMuFreq`, and time points 0 and 1 appear to have significant differences from time points 2 and 3. `Drug` and `Isotype` have significant pairs in `H_CDR3` and `HMuFreq`. For `H_CDR3`, drug 1 has a higher mean than drug 2, and IgG has a higher mean than IgD and IgM. For `HMuFreq`, drug 2 has a higher mean than drug 1, which has a higher mean than drug 3 (control group). IgG again has a higher mean than IgD and IgM. [Kan, please add/revise the interpretations here.]  
+
 ## Longitudinal Analysis  
 
-To answer our **Q2** (How does the binding strength of the antibodies develop in response to the number of vaccine dosages by treatment and drug types?), we use longitudinal data analysis, including general linear models and linear mixed models. For the longitudinal analysis of binding strength vs number of vaccine doses, we use the `gls` and `lme` functions from the nlme package$^{[7]}.$  
+To answer our **RQ2** (How does the binding strength of the antibodies develop in response to the number of vaccine dosages by treatment and drug types?), we use longitudinal data analysis, including general linear models and linear mixed models. For the longitudinal analysis of binding strength vs number of vaccine doses, we use the `gls` and `lme` functions from the nlme package$^{[7]}.$  
 
 ### One Covariate: Time Point  
 
