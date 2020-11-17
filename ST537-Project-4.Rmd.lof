@@ -1,22 +1,22 @@
-\contentsline {figure}{\numberline {1}{\ignorespaces Histograms of Antibodies}}{23}{figure.1}%
-\contentsline {figure}{\numberline {2}{\ignorespaces Histograms of Isotypes}}{24}{figure.2}%
-\contentsline {figure}{\numberline {3}{\ignorespaces Histogram of Response Variables}}{25}{figure.3}%
-\contentsline {figure}{\numberline {4}{\ignorespaces Mahalanobis distances and Z scores}}{26}{figure.4}%
-\contentsline {figure}{\numberline {5}{\ignorespaces Histogram H\_CDR3}}{27}{figure.5}%
-\contentsline {figure}{\numberline {6}{\ignorespaces Histograms of H\_CDR3 vs Treatment and Timepoint}}{28}{figure.6}%
-\contentsline {figure}{\numberline {7}{\ignorespaces Histogram L\_CDR3}}{29}{figure.7}%
-\contentsline {figure}{\numberline {8}{\ignorespaces Histograms of L\_CDR3 vs Treatment and Timepoint}}{30}{figure.8}%
-\contentsline {figure}{\numberline {9}{\ignorespaces Q-Q Plots of H\_CDR3 and L\_CDR3}}{31}{figure.9}%
-\contentsline {figure}{\numberline {10}{\ignorespaces Histogram HMuFreq}}{32}{figure.10}%
-\contentsline {figure}{\numberline {11}{\ignorespaces Histograms of HMuFreq vs Treatment and Timepoint}}{33}{figure.11}%
-\contentsline {figure}{\numberline {12}{\ignorespaces Histogram LMuFreq}}{34}{figure.12}%
-\contentsline {figure}{\numberline {13}{\ignorespaces Histograms of LMuFreq vs Treatment and Timepoint}}{35}{figure.13}%
-\contentsline {figure}{\numberline {14}{\ignorespaces Q-Q Plot of HMuFreq and LMuFreq}}{36}{figure.14}%
-\contentsline {figure}{\numberline {15}{\ignorespaces Histograms of Binding Strength vs Treatment and Timepoint}}{37}{figure.15}%
-\contentsline {figure}{\numberline {16}{\ignorespaces Q-Q Plot of Binding}}{38}{figure.16}%
-\contentsline {figure}{\numberline {17}{\ignorespaces Plots of response variables}}{39}{figure.17}%
-\contentsline {figure}{\numberline {18}{\ignorespaces Mean trend by monkey}}{40}{figure.18}%
-\contentsline {figure}{\numberline {19}{\ignorespaces Variances over time by monkey}}{41}{figure.19}%
-\contentsline {figure}{\numberline {20}{\ignorespaces Piecewise Linear Function--three segments}}{42}{figure.20}%
-\contentsline {figure}{\numberline {21}{\ignorespaces Piecewise Linear Function--two segments}}{43}{figure.21}%
-\contentsline {figure}{\numberline {22}{\ignorespaces Q-Q plots of models: GLS, compound symmetry, AR1}}{44}{figure.22}%
+\contentsline {figure}{\numberline {1}{\ignorespaces Histograms of Antibodies}}{24}{figure.1}%
+\contentsline {figure}{\numberline {2}{\ignorespaces Histograms of Isotypes}}{25}{figure.2}%
+\contentsline {figure}{\numberline {3}{\ignorespaces Histogram of Response Variables}}{26}{figure.3}%
+\contentsline {figure}{\numberline {4}{\ignorespaces Mahalanobis distances and Z scores}}{27}{figure.4}%
+\contentsline {figure}{\numberline {5}{\ignorespaces Histogram H\_CDR3}}{28}{figure.5}%
+\contentsline {figure}{\numberline {6}{\ignorespaces Histograms of H\_CDR3 vs Treatment and Timepoint}}{29}{figure.6}%
+\contentsline {figure}{\numberline {7}{\ignorespaces Histogram L\_CDR3}}{30}{figure.7}%
+\contentsline {figure}{\numberline {8}{\ignorespaces Histograms of L\_CDR3 vs Treatment and Timepoint}}{31}{figure.8}%
+\contentsline {figure}{\numberline {9}{\ignorespaces Q-Q Plots of H\_CDR3 and L\_CDR3}}{32}{figure.9}%
+\contentsline {figure}{\numberline {10}{\ignorespaces Histogram HMuFreq}}{33}{figure.10}%
+\contentsline {figure}{\numberline {11}{\ignorespaces Histograms of HMuFreq vs Treatment and Timepoint}}{34}{figure.11}%
+\contentsline {figure}{\numberline {12}{\ignorespaces Histogram LMuFreq}}{35}{figure.12}%
+\contentsline {figure}{\numberline {13}{\ignorespaces Histograms of LMuFreq vs Treatment and Timepoint}}{36}{figure.13}%
+\contentsline {figure}{\numberline {14}{\ignorespaces Q-Q Plot of HMuFreq and LMuFreq}}{37}{figure.14}%
+\contentsline {figure}{\numberline {15}{\ignorespaces Histograms of Binding Strength vs Treatment and Timepoint}}{38}{figure.15}%
+\contentsline {figure}{\numberline {16}{\ignorespaces Q-Q Plot of Binding}}{39}{figure.16}%
+\contentsline {figure}{\numberline {17}{\ignorespaces Plots of response variables}}{40}{figure.17}%
+\contentsline {figure}{\numberline {18}{\ignorespaces Mean trend by monkey}}{41}{figure.18}%
+\contentsline {figure}{\numberline {19}{\ignorespaces Variances over time by monkey}}{42}{figure.19}%
+\contentsline {figure}{\numberline {20}{\ignorespaces Piecewise Linear Function--three segments}}{43}{figure.20}%
+\contentsline {figure}{\numberline {21}{\ignorespaces Piecewise Linear Function--two segments}}{44}{figure.21}%
+\contentsline {figure}{\numberline {22}{\ignorespaces Q-Q plots of models: GLS, compound symmetry, AR1}}{45}{figure.22}%

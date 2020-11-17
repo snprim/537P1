@@ -1,7 +1,7 @@
 ---
 title: "**Antibody Response Induced by HIV Vaccines and T-cell Suppression Treatments in Rhesus Macaques**"
 author: "Group 3: Kan Luo, Shih-Ni Prim, Frederick Davey, Rizwana Rehman"
-date: "11/16/2020"
+date: "11/17/2020"
 fontsize: 12pt
 geometry: margin = 1in
 mainfont: Times New Roman
@@ -67,7 +67,7 @@ Data2 <- Data %>% select(MonkeyID, Drug, Treatment, Time_Point, Isotype, H_VBase
 ```{r}
 # Put output at the end
 # MANOVA
-# make sure Q1 and Q2 are the same
+# verb tense
 ```
 
 
@@ -81,7 +81,7 @@ A dominant vaccine development strategy is to induce neutralizing antibodies by 
 
 During the study, 20 rhesus macaques were given glycoprotein immunization and supplemental antibody doses, as well as one of three treatments (two experimental regulatory T-cell suppression treatments and one control). The resulting dataset includes measurements of antibodies after the 20 macaques were given the same HIV vaccine at three different time points and one of three randomly selected anti-Treg treatments. Blood samples were collected two weeks after vaccine dosing, and antibodies were isolated from those samples. A different number of antibodies were collected from each blood sample, limited by assay yield. Each observation contains information about the antibody isolated post the glycoprotein immunization.  
 
-A human antibody is formed by a heavy chain and light chain. For heavy chain, a human has about 51 V-gene segments, 25 D-gene segments and 6 J-gene segment. For light chain there are 71 V-gene segments and 9 J-gene segments[ref.5]. Any heavy chain V-D-J combination and light chain V-J combinations can randomly happen in germinal centers. Theoretically, there can be $51*25*6*71*9=$ `r 51*25*6*71*9` combinations of gene segments. Considering the frequently happened mutation and other factors, each individual can have over **10 billion** different antibodies. Thus, we follow the convention of vaccine studies and treat each antibody as independent.  
+A human antibody is formed by a heavy chain and light chain. For heavy chain, a human has about 51 V-gene segments, 25 D-gene segments and 6 J-gene segment. For light chain there are 71 V-gene segments and 9 J-gene segments[ref.5]. Any heavy chain V-D-J combination and light chain V-J combinations can randomly happen in germinal centers. Theoretically, there can be $51*25*6*71*9=$ `r 51*25*6*71*9` combinations of gene segments. Considering the frequently happened mutation and other factors, each individual can have over **10 billion** different antibodies. Thus, we follow the convention of vaccine studies and treat each antibody as independent for multivariate data analysis. For Longitudinal data analysis, since the models allow measurements from the same observational unit to correlate over time, we will try different correlation structures to find a best model. This essentially implies that the antibodies from the same macaque can be correlated.  
 
 Below is the list of variables with a brief description from our dataset. Please note that in each antibody, there are two sets of heavy chain and light chain, all of which forming a Y-shape immunoglobulin. Thus many of the variables start with H or L, indicating the chain from which the information comes.  
 
@@ -106,7 +106,7 @@ The dataset, [which can be found here](https://github.com/luokan1227/537P1), was
 
 ## Research questions  
 
-The main focus of the current project is to understand whether the number of vaccine injections (`Time_Point`) and the different Treg treatments (`Drug`) cause changes in the antibody characteristics and if the changes are related to the immune responses against HIV virus. The category of antibody (`Isotype`) was not controlled by the researchers, but it could be related to the response variables and is thus included as a predicor. We have two research questions:  
+The main focus of the current project is to understand whether the number of vaccine injections (`Time_Point`) and the different Treg inhibitor treatments (`Drug`) cause changes in the antibody characteristics and if the changes are related to the immune responses against HIV virus. The category of antibody (`Isotype`) was not controlled by the researchers, but it could be related to the response variables and is thus included as a predicor. We have two research questions:  
 
 **RQ1**: Do time points, drugs, and isotypes have effects on the mutation frequency (`HMuFreq` and `LMuFreq`) and the amino acid count in the third complementarity determining region (`H_CDR3` and `L_CDR3`)?
   
@@ -329,7 +329,7 @@ To answer **RQ1** (Do time points, drugs, and isotypes have effects on the mutat
 
 ### MANOVA
 
-Since there are more than two populations we are comparing, we use MANOVA to test for effects. We check that the normality assumption is met due to large sample size (n = 2464). Each antibody is assumed to be independent. **However, when we check for equal variance-covariance structures--by Fligner-Killeen Test of Homogeneity of Variances and by checking the variance-covariance matrices of different populations--many of the response variables do not meet the equal variance-covariance matrix assumption. The only populations that meet the assumption is the response variable vector (`L_CDR3`, `LMuFreq`)^T^.** Thus we perform a MANOVA test on **(H_CDR3, HMuFreq, L_CDR3, LMuFreq)^T^ ~ Time_Point + Drug + Isotype** The null hypothesis is that the three factors do not have effects on the response variable vector.  
+Since there are more than two populations we are comparing, we use MANOVA to test for effects. We check that the normality assumption is met due to large sample size (n = 2464). Each antibody is assumed to be independent. **However, when we check for equal variance-covariance structures--by Fligner-Killeen Test of Homogeneity of Variances and by checking the variance-covariance matrices of different populations--many of the response variables do not meet the equal variance-covariance matrix assumption. The only populations that meet the assumption is the response variable vector (`L_CDR3`, `LMuFreq`)^T^.** Thus we perform a MANOVA test on **(H_CDR3, HMuFreq, L_CDR3, LMuFreq)^T^ ~ Time_Point + Drug + Isotype** The null hypothesis is that the means of the different populations (of `Time_Point`, `Drug`, and `Isotype`) are different.  
 
 ```{r}
 tp <- as.factor(Data3$Time_Point)
@@ -416,7 +416,7 @@ Table \@ref(tab:pctab) summarizes The pairwise comparison results. `Time_Point` 
 
 ## Longitudinal Analysis  
 
-To answer our **RQ2** (How does the binding strength of the antibodies develop in response to the number of vaccine dosages by treatment and drug types?), we use longitudinal data analysis, including general linear models and linear mixed models. For the longitudinal analysis of binding strength vs number of vaccine doses, we use the `gls` and `lme` functions from the nlme package$^{[7]}.$  
+To answer our **RQ2** (How does the binding strength of the antibodies (`Binding`) develop in response to the number of vaccine dosages (`Time_Point`) and immuno-suppression treatments (`Drug`)?), we use longitudinal data analysis, including general linear models and linear mixed models. For the longitudinal analysis of binding strength vs number of vaccine doses, we use the `gls` and `lme` functions from the nlme package$^{[7]}.$  
 
 ### One Covariate: Time Point  
 
@@ -452,9 +452,10 @@ $$S3=
 \end{cases}
 $$
 
-The new model is thus $$Y_{ij}=S1(\beta_0+\beta_1 Time_{ij})+S2(\beta_2+\beta_3 Time_{ij})+S3(\beta_4+\beta_5 Time_{ij})+e_{ij}$$  
+The new model is $$Y_{ij}=S1(\beta_0+\beta_1 Time_{ij})+S2(\beta_2+\beta_3 Time_{ij})+S3(\beta_4+\beta_5 Time_{ij})+e_{ij}$$  
 
-We also want to make sure that the trend is continuous at time points 1 and 2. Our first complete model (`fit.gls`) is now $Y_{ij} = \beta_0(S1 + 2S2 - S2 Time_{ij}) + \beta_1 (S1 Time_{ij} + 2S2 - S2 Time_{ij}) + \beta_4(-S2 + S2 Time_{ij} + S3) + \beta_5(-2S2 + 2S2 Time_{ij} + S3 Time_{ij}) + e_{ij}$ where $$\mathbf{e}_i \sim N(0, \sigma^2I)$$  
+We also want to make sure that the trend is continuous at time points 1 and 2. Our first complete model (`fit.gls`) is now $$Y_{ij} = \beta_0(S1 + 2S2 - S2 Time_{ij}) + \beta_1 (S1 Time_{ij} + 2S2 - S2 Time_{ij}) +$$ 
+$$\beta_4(-S2 + S2 Time_{ij} + S3) + \beta_5(-2S2 + 2S2 Time_{ij} + S3 Time_{ij}) + e_{ij}$$  where $$\mathbf{e}_i \sim N(0, \sigma^2I)$$  
 
 ```{r}
 S1 <- as.numeric(Data3$Time_Point >= 0 & Data3$Time_Point < 1)
@@ -507,7 +508,7 @@ $$S5=
 \end{cases}
 $$
 
-Again, we want to make sure that the trend is continuous at Time_Point = 2. Our second complete model (`fit.gls2`) is then $Y_{ij} = \beta_1(-2S4 + S4 Time_{ij}) + \beta_2(S4 + S5) + \beta_3(2S4 + S5 Time_{ij}) + e_{ij}$ where $$\mathbf{e}_i \sim N(0, \sigma^2I)$$  
+Again, we want to make sure that the trend is continuous at Time_Point = 2. Our second complete model (`fit.gls2`) is then $$Y_{ij} = \beta_1(-2S4 + S4 Time_{ij}) + \beta_2(S4 + S5) + \beta_3(2S4 + S5 Time_{ij}) + e_{ij}$$ where $$\mathbf{e}_i \sim N(0, \sigma^2I)$$  
 
 ```{r}
 S4 <- as.numeric(Data3$Time_Point < 2)
@@ -519,9 +520,10 @@ fit.gls2 <- gls(model = meanform2, data = dataLDA1, weights = varIdent(form = ~ 
 # summary(fit.gls2)
 ```
 
-The model can also be written as $Y_{ij} = S4(-2 \beta_1 + \beta_2 + 2\beta_3) + S4 Time_{ij}(\beta_1) + S5(\beta_2) + S5 Time_{ij}(\beta_3) + e_{ij}$  
+The model can also be written as $$Y_{ij} = S4(-2 \beta_1 + \beta_2 + 2\beta_3) + S4 Time_{ij}(\beta_1) +$$
+$$S5(\beta_2) + S5 Time_{ij}(\beta_3) + e_{ij}$$  
 
-We first find the mean trend for S4 and S5:  
+After the model is constructed, we use the coefficients to find the mean trends for S4 and S5:  
 
 * S4: $(-2*0.5310975 + 0.5720853 + 2*-0.0000723) + 0.5310975*time = -0.4902543 + 0.5310975*time$
 * S5: $0.5720853 - 0.0000723*time$  
@@ -545,7 +547,9 @@ ggplot(Data3, aes(x = Time_Point, y = Binding, colour = as.factor(MonkeyID))) +
 knitr::kable(data.frame(cbind(AIC(fit.gls, fit.gls2), BIC(fit.gls, fit.gls2))), caption = "AIC and BIC between two gls models")
 ```
 
-Next we check whether adding random effects improve our second complete model (`fit.gls2`). We assume that random effects exist in the intercept and slope. Our linear mixed model is then: $Y_{ij}= \beta_1(-2S4 + S4 Time_{ij}) + \beta_2(S4 + S5) + \beta_3(2S4 + S5 Time_{ij}) + b_{0i} + b{1i} Time_{ij} + e_{ij}$  
+### Adding Random Effects  
+
+Next we check whether adding random effects improve our second complete model (`fit.gls2`). We assume that random effects exist in the intercept and slope. Our linear mixed model is then: $Y_{ij}= \beta_1(-2S4 + S4 Time_{ij}) + \beta_2(S4 + S5) + \beta_3(2S4 + S5 Time_{ij}) + b_{0i} + b_{1i} Time_{ij} + e_{ij}$  
 where $$\mathbf{b}_i \sim N \left( 0, \mathbf{D} = 
 \begin{bmatrix}
 D_{11} & D_{12} \\
@@ -567,7 +571,7 @@ fit.a2 <- lme(fixed = meanform2, random = ~ time | id, data = dataLDA1, weights 
 kable(data.frame(AIC(fit.gls2, fit.a1, fit.a2), BIC(fit.gls2, fit.a1, fit.a2)), caption = "AIC and BIC for three models")
 ```
 
-We fit two models with random effects: `fit.a1` assumes random intercept and slope for time point, compound symmetric correlation structure, and unequal variances over time; and `fit.a2` assumes random intercept and slope for time point, AR1 correlation structure, and uneuqal variances over time. As shown in Table \@ref(tab:AIC-tab2), the model `fit.a2` has the lowest AIC And BIC, so it seems the best model. We now check residuals for three models: `fit.gls2`, `fit.a1`, `fit.a2`, as shown in Figure \@ref(fig:QQmodel). All three Q-Q plots show approximate normality. To further investigate the effects of drugs, We now use `fit.a2` for further analysis.  
+We fit two models with random effects: `fit.a1` assumes random intercept and slope for time point, compound symmetric correlation structure, and unequal variances over time; and `fit.a2` assumes random intercept and slope for time point, AR1 correlation structure, and uneuqal variances over time. As shown in Table \@ref(tab:AIC-tab2), the model `fit.a2` has the lowest AIC and BIC, so it is the best model. We now check residuals for three models: `fit.gls2`, `fit.a1`, `fit.a2`, as shown in Figure \@ref(fig:QQmodel). All three Q-Q plots show approximate normality. To further investigate the effects of drugs, We now use `fit.a2` for further analysis.  
 
 ```{r, QQmodel, fig.cap = "Q-Q plots of models: GLS, compound symmetry, AR1"}
 par(mfrow = c(1,3))
@@ -579,12 +583,14 @@ lme.res2 <- residuals(fit.a2, level = 1, type = "normalized")
 qqnorm(lme.res2)
 ```
 
+### Inference about $\boldsymbol{\beta}$  
 
 Now we would like to know if the slopes between Time_Point 0 and 2 and between Time_Point 2 and 3 equal zero. $$H_0: \text{ slope of } S4=0 \text{ and slope of } S5=0$$ which means $$H_0: \beta_1 = 0 \text{ and } \beta_3=0$$  
 
 Thus, we can check for two tests: $$\mathbf{L_1} \boldsymbol{\beta}=0$$ where $\mathbf{L_1}=(1, 0, 0)$ and $\mathbf{\beta}=(\beta_1, \beta_2, \beta_3)^T$ and $$\mathbf{L_2} \boldsymbol{\beta} = 0$$ where $\mathbf{L_2}=(0, 0, 1)$ and $\mathbf{\beta}=(\beta_1, \beta_2, \beta_3)^T$  
 
 ```{r, S4S5-slope}
+# intervals(fit.a2, which = "fixed")
 L1 <- matrix(c(1, 0, 0), byrow = TRUE, nrow = 1)
 L2 <- matrix(c(0, 0, 1), byrow = TRUE, nrow = 1)
 test1 <- anova.lme(fit.a2, L = L1, adjustSigma = TRUE)
@@ -664,7 +670,7 @@ To see whether Drug 2 and Drug 3 have any difference, we want to perform a hypot
 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & -1 
 \end{bmatrix}$$ and $\mathbf{\beta}=(\beta_1, \beta_2, \beta_3, \beta_4, \beta_5, \beta_6, \beta_7, \beta_8, \beta_9)^T$  
 
-We found that, as shown in Table \@ref(tab:L3-test), Drug 1 and Drug 2 do not have significantly different effects on Binding rates. As shown in Table \@ref(tab:L4-test), Drug 1 and Drug 3 do not have significantly different effects on Binding rates. Also, as shown in Table \@ref(tab:L5-test), Drug 2 and Drug 3 do not have significantly different effects on Binding rates. In other words, drug groups do not have signifant effects on our longitudinal model. Thus we will retain `fit.a2` as our best model.  
+We found that, as shown in Table \@ref(tab:L3-test), Drug 1 and Drug 2 do not have significantly different effects on Binding rates. As shown in Table \@ref(tab:L4-test), Drug 1 and Drug 3 do not have significantly different effects on Binding rates. Also, as shown in Table \@ref(tab:L5-test), Drug 2 and Drug 3 do not have significantly different effects on Binding rates. In other words, drug groups do not have signifant effects on our longitudinal model. Thus `fit.a2` is our best model for longitudinal data analysis.  
 
 ```{r}
 betahat <- fit.a3$coefficients$fixed
@@ -707,43 +713,45 @@ knitr::kable(data.frame(Fstat = Fstat_L5, p_value = p.value), caption = "Test wh
 
 # Results  
 
-For multivariate analyses, we performed a MANOVA test on the main effects of `Isotype` and `Drug` on the response variable vector (`H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq`, `Binding`)^T^. We found that both `Isotype` and `Drug` have very small p-values. We also performed pairwise comparison to see where the effects were. [need revisions]  
+For multivariate analyses, we performed a MANOVA test on the main effects of `Time_Point`, `Drug`, and `Isotype` on the response variable vector (`H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq`)^T^. We find that all three main effects have very small p-values. We also performed pairwise comparison to see where the effects were, as shown in Table \@ref(tab:pctab). [need revisions]  
 
-For longitudinal analyses, we found that the best linear mixed model is $Y_{ij}= \beta_1(-2S4 + S4 Time_{ij}) + \beta_2(S4 + S5) + \beta_3(2S4 + S5 Time_{ij}) + b_{0i} + b{1i} Time_{ij} + e_{ij}$  
+For longitudinal analyses, we find that the best linear mixed model is $Y_{ij}= \beta_1(-2S4 + S4 Time_{ij}) + \beta_2(S4 + S5) + \beta_3(2S4 + S5 Time_{ij}) + b_{0i} + b{1i} Time_{ij} + e_{ij}$  
 where $$\mathbf{b}_i \sim N \left( 0, \mathbf{D} = 
 \begin{bmatrix}
 D_{11} & D_{12} \\
  & D_{22}
  \end{bmatrix} \right)$$ and $$\mathbf{e}_i \sim N(0, \sigma^2I)$$  
  
-We performed F-tests to make inferences on $\boldsymbol{\beta}$ for the two line segments, We rejected the hypothesis that the slope of the first line segment (between time points 0 and 2) is zero, but we failed to reject the hypothesis that the slope of hte second line segment (between time points 2 and 3) is zero. We then added `Drug` as another covariate to the above model and made inference on $\boldsymbol{\beta}$. The comparison between three drug groups was done with three F-tests (between Drug grups 1 and 2, 2 and 3, and 1 and 3), which led to three p-values greater than 0.05. Thus We failed to reject the null hypotheses that the mean trend of either of the two drug groups was equal.  
+We performed F-tests to make inferences on $\boldsymbol{\beta}$ for the two line segments, We reject the hypothesis that the slope of the first line segment (between time points 0 and 2) is zero, but we fail to reject the hypothesis that the slope of the second line segment (between time points 2 and 3) is zero. We then added `Drug` as another covariate to the above model and made inference on $\boldsymbol{\beta}$. The comparison between three drug groups was done with three F-tests (between Drug grups 1 and 2, 2 and 3, and 1 and 3), which led to three p-values greater than 0.05. Thus We fail to reject the null hypotheses that the mean trend of either of the two drug groups was equal.  
 
 # Discussion  
 
 ## Implications  
 
-Our findings show that the number of vaccine injections do contribute to higher binding rates, although we do not determine whether the increase can be translated into immunity against HIV. The lack of evidence for effects of Treg medications, on the other hand, suggest that the theory of using immuno-suppressing drugs to enhance the efficacy of HIV vaccines has not been proven.  
+Our findings show that the number of vaccine injections do contribute to higher binding rates, although we do not determine whether the increase can be translated into immunity against HIV. The lack of evidence for effects of Treg inhibitor treatments, on the other hand, suggests that the theory of using immuno-suppressing drugs to enhance the efficacy of HIV vaccines has not been proven.  
 
 ## Limitations  
 
-While our analyses reached some findings, some further investigations could improve our analyses. A common method to analyze antibody traits is to treat antibodies (rows in our data) as independent from each other. We considered perform statistical analyses to prove or disprove such a convention, but it requires more biological knowledge and the investigation would most likely be beyond the scope of a final report. However, this remains an interesting topic that could be explored.  
+While our analyses reached some findings, some further investigations could improve our analyses. In our multivariate analyses, we follow the common method of treating antibodies (rows in our data) as independent from each other. In our longitudinal analyses, the models allow measurements from the same observational unit (macaque) to correlate over time. It would be beneficial to perform statistical analyses to choose the most reasonable option, but it would require more biological knowledge and the investigation would most likely be beyond the scope of a final report. This remains an interesting topic that could be explored.  
 
-[about MANOVA]
+For multivariate data analyses, the use of MANOVA was restricted by the assumptions of equal variance-covariance matrices among different populations. Furthermore, the pairwise comparison results are difficult to interpret. [need revisions]
 
-For longitudinal data analyses, we did not try out more combinations for models. For example, we only tried two correlation structures (compound symmetry and AR1); other structures might achieve better results. When we added drug as another covariate, we did not go back to test which correlation structure might perform better or whether the piecewise model should include two or three line segments.  
+For longitudinal data analyses, we did not try out more combinations for models. For example, we only tried two correlation structures (compound symmetry and AR1); other structures might achieve better results. When we added drug as another covariate, we did not go back to test which correlation structure might perform better or whether the piecewise model should include two or three line segments. Further, we did not assume different random effects on different line segments. These additional steps might lead to a better model.  
 
 # Conclusions  
 
-[need revisions] In this report, we performed multivariate data analyses and longitudinal data analyses to understand whether time points, drugs, and isotypes have effects on characteristics of antibodies. Our statistical analyses provide answers to our two research questions. We performed a MANOVA test to our first research question, "Do drugs and isotypes have effects on the mutation frequency and/or the amino acid count in the third complementarity determining region (CDR3)?" and found significant main effects for both drugs and isotypes. However, pairwise comparisons reveal that drugs increased mutation rates for heavy chain but did not increase binding rates, which are the key to better efficacy of vaccines. [Kan: how to interpret IgG's higher mutation rates and binding rates?]
+[need revisions] In this report, we performed multivariate data analyses and longitudinal data analyses to understand whether time points, drugs, and isotypes have effects on characteristics of antibodies and enhance the efficacy of HIV vaccines. Our statistical analyses provide answers to our two research questions. 
+
+We performed a MANOVA test to our first research question, "Do time points, drugs, and isotypes have effects on the mutation frequency (`HMuFreq` and `LMuFreq`) and the amino acid count in the third complementarity determining region (`H_CDR3` and `L_CDR3`)?" and found significant main effects for time points, drugs, and isotypes. However, pairwise comparisons reveal that drugs increased mutation rates for heavy chain but did not increase binding rates, which are the key to better efficacy of vaccines. [Kan: please revise interpretations here.]
   
-To answer our second research question, How does the binding strength of the antibodies develop in response to the number of vaccine dosages by treatment and drug types?", we first used time point as the only covariate and constructed with two general linear models with two and three line segments. We then added random effects for intercept and slope for time point as well as different correlation structure--compound symmetry and AR1--and found the model with two line segments (time points 0 to 2 and time points 2 to 3), random effects of intercept and slope of time point, AR1 correlation structure, and unequal variances over time performs best. F-tests for inferences for $\boldsymbol{\beta}$ reveals that time point 2 have the highest binding rates, suggesting that two vaccine injections improved the binding rates while the third injection did not make a difference. We also found that adding drug as a covariate did not improve the model.  
+To answer our second research question, "How does the binding strength of the antibodies (`Binding`) develop in response to the number of vaccine dosages (`Time_Point`) and immuno-suppression treatments (`Drug`)?", we first used time point as the only covariate and constructed with two general linear models with two and three line segments. We then added random effects for intercept and slope for time point as well as different correlation structure--compound symmetry and AR1--and found the model with two line segments (time points 0 to 2 and time points 2 to 3), random effects of intercept and slope of time point, AR1 correlation structure, and unequal variances over time performs best. F-tests for inferences for $\boldsymbol{\beta}$ reveals that time point 2 have the highest binding rates, suggesting that two vaccine injections improved the binding rates while the third injection did not make a difference. We also found that adding drug as a covariate did not improve the model, indicating that the Treg inhibitor treatments have not been proven effective in producing immunity against HIV.  
 
 # References  
 
 1. Luo K, Liao HX, Zhang R, et al. Tissue memory B cell repertoire analysis after ALVAC/AIDSVAX B/E gp120 immunization of rhesus macaques. *JCI Insight*. 2016;1(20):e88522. Published 2016 Dec 8. doi:10.1172/jci.insight.88522
 2. Bradley, T., Kuraoka, M., Yeh, C.-H., Tian, M., Chen, H., Cain, D. W., . . . Haynes, B. F. (2020). Immune checkpoint modulation enhances HIV-1 antibody induction. *Nature Communications*, 11(1), 948. doi:10.1038/s41467-020-14670-w
 3. Easterhoff, D., Pollara, J., Luo, K., Tolbert, W. D., Young, B., Mielke, D., . . . Ferrari, G. (2020). Boosting with AIDSVAX B/E Enhances Env Constant Region 1 and 2 Antibody-Dependent Cellular Cytotoxicity Breadth and Potency. *Journal of Virology*, 94(4), e01120-01119. doi:10.1128/jvi.01120-19
-4. Wiehe, K., Easterhoff, D., Luo, K., Nicely, N. I., Bradley, T., Jaeger, F. H., Dennison, S. M., Zhang, R., Lloyd, K. E., Stolarchuk, C., Parks, R., Sutherland, L. L., Scearce, R. M., Morris, L., Kaewkungwal, J., Nitayaphan, S., Pitisuttithum, P., Rerks-Ngarm, S., Sinangil, F., Phogat, S., . Haynes, B. F. (2014). Antibody light-chain-restricted recognition of the site of immune pressure in the RV144 HIV-1 vaccine trial is phylogenetically conserved. *Immunity*, 41(6), 909-918. https://doi.org/10.1016/j.immuni.2014.11.014  
-5. Lefranc MP, Giudicelli V, Ginestoux C, Bodmer J, Muller W, Bontrop R, Lemaitre M, Malik A, Barbie V, Chaume D. IMGT, the international ImMunoGeneTics database. *Nucleic Acids Res*. 1999;27:209-212. doi: 10.1093/nar/27.1.209.  
-6. Jenny M Woof , Dennis R Burton,Human antibody-Fc receptor interactions illuminated by crystal structures.*Nat Rev Immunol*. 2004 Feb;4(2):89-99. doi: 10.1038/nri1266.  
+4. Wiehe, K., Easterhoff, D., Luo, K., Nicely, N. I., Bradley, T., Jaeger, F. H., Dennison, S. M., Zhang, R., Lloyd, K. E., Stolarchuk, C., Parks, R., Sutherland, L. L., Scearce, R. M., Morris, L., Kaewkungwal, J., Nitayaphan, S., Pitisuttithum, P., Rerks-Ngarm, S., Sinangil, F., Phogat, S., . Haynes, B. F. (2014). Antibody light-chain-restricted recognition of the site of immune pressure in the RV144 HIV-1 vaccine trial is phylogenetically conserved. *Immunity*, 41(6), 909-918. https://doi.org/10.1016/j.immuni.2014.11.014
+5. Lefranc MP, Giudicelli V, Ginestoux C, Bodmer J, Muller W, Bontrop R, Lemaitre M, Malik A, Barbie V, Chaume D. IMGT, the international ImMunoGeneTics database. *Nucleic Acids Res*. 1999;27:209-212. doi: 10.1093/nar/27.1.209.
+6. Jenny M Woof , Dennis R Burton,Human antibody-Fc receptor interactions illuminated by crystal structures.*Nat Rev Immunol*. 2004 Feb;4(2):89-99. doi: 10.1038/nri1266.
 7. Pinheiro J, Bates D, DebRoy S, Sarkar D, R Core Team (2020). _nlme: Linear and Nonlinear Mixed Effects Models_. R package
