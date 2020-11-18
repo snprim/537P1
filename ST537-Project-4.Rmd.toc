@@ -12,12 +12,15 @@
 \contentsline {subsubsection}{\numberline {2.2.2}Pairwise Comparison}{7}{subsubsection.2.2.2}%
 \contentsline {subsection}{\numberline {2.3}Longitudinal Analysis}{13}{subsection.2.3}%
 \contentsline {subsubsection}{\numberline {2.3.1}One Covariate: Time Point}{13}{subsubsection.2.3.1}%
-\contentsline {subsubsection}{\numberline {2.3.2}Adding Random Effects}{15}{subsubsection.2.3.2}%
+\contentsline {subsubsection}{\numberline {2.3.2}Adding Random Effects}{16}{subsubsection.2.3.2}%
 \contentsline {subsubsection}{\numberline {2.3.3}Inference about \(\boldsymbol {\mitbeta }\)}{16}{subsubsection.2.3.3}%
 \contentsline {subsubsection}{\numberline {2.3.4}Two Covariates: Time Point and Drug}{17}{subsubsection.2.3.4}%
 \contentsline {section}{\numberline {3}Results}{19}{section.3}%
-\contentsline {section}{\numberline {4}Discussion}{19}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Implications}{19}{subsection.4.1}%
+\contentsline {section}{\numberline {4}Discussion}{20}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Implications}{20}{subsection.4.1}%
 \contentsline {subsection}{\numberline {4.2}Limitations}{20}{subsection.4.2}%
-\contentsline {section}{\numberline {5}Conclusions}{20}{section.5}%
-\contentsline {section}{\numberline {6}References}{21}{section.6}%
+\contentsline {subsubsection}{\numberline {4.2.1}Independent of antibodies}{20}{subsubsection.4.2.1}%
+\contentsline {subsubsection}{\numberline {4.2.2}Equal variance-covariance matrices assumption for MANOVA}{20}{subsubsection.4.2.2}%
+\contentsline {subsubsection}{\numberline {4.2.3}Longitudinal Models}{23}{subsubsection.4.2.3}%
+\contentsline {section}{\numberline {5}Conclusions}{23}{section.5}%
+\contentsline {section}{\numberline {6}References}{24}{section.6}%

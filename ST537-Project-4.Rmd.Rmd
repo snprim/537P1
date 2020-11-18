@@ -37,7 +37,6 @@ library(bookdown)
 ```
 
 
-
 ```{r readin Data, results = 'hide'}
 #Readin data from Github url address
 url1 <- 'https://github.com/luokan1227/537P1/raw/master/Data.xlsx'  # main data
@@ -66,7 +65,8 @@ Data2 <- Data %>% select(MonkeyID, Drug, Treatment, Time_Point, Isotype, H_VBase
 
 ```{r}
 # Put output at the end
-# MANOVA
+# MANOVA (keep isotype?)
+# figure and table titles
 ```
 
 
@@ -82,7 +82,7 @@ During the study, 20 rhesus macaques were given glycoprotein immunization and su
 
 A human antibody is formed heavy chains and light chains. A heavy chain has about 51 V-gene segments, 25 D-gene segments, and 6 J-gene segment. A light chain has about 71 V-gene segments and 9 J-gene segments[ref.5]. Any heavy chain V-D-J combination and light chain V-J combinations can randomly happen in germinal centers. Theoretically, there can be $51*25*6*71*9=$ `r 51*25*6*71*9` combinations of gene segments. Considering the frequent mutations and other factors, each individual can have over **10 billion** different antibodies. Thus, we followed the convention of vaccine studies and viewed each antibody as independent for multivariate data analysis. For longitudinal data analysis, since general linear and linear mixed models allow measurements from the same observational unit to correlate over time, we used different correlation structures to find a best model. This essentially implies that the antibodies from the same macaque can be correlated.  
 
-Below is the list of variables with a brief description from our dataset. Please note that each antibody contains two sets of heavy chain and light chain, all of which forming a Y-shape immunoglobulin. Thus many of the variables start with H or L, indicating the chain from which the information comes.  
+Below is the list of variables with a brief description from our dataset. Please note that each antibody contains two sets of heavy chain and light chain, all of which forming a Y-shape immunoglobulin. Thus many of the variables start with H or L, indicating the chain from which the information comes. Some variables have missing numbers. We chose to let R functions ignore missing values, since we wanted to keep as much data as possible.  
 
 ## List of variables  
 
@@ -328,7 +328,7 @@ To answer **RQ1** (Do time points, drugs, and isotypes have effects on the mutat
 
 ### MANOVA
 
-Since we wanted to compare more than two populations, we used MANOVA to test for effects. We check that the normality assumption is met due to large sample size (n = `r nrow(Data3)`). Each antibody is assumed to be independent. **However, when we check for equal variance-covariance structures--by Fligner-Killeen Test of Homogeneity of Variances and by checking the variance-covariance matrices of different populations--many of the response variables do not meet the equal variance-covariance matrix assumption. The only populations that meet the assumption is the response variable vector (`L_CDR3`, `LMuFreq`)^T^.** Thus we performed a MANOVA test with the formula **(H_CDR3, HMuFreq, L_CDR3, LMuFreq)^T^ ~ Time_Point + Drug + Isotype** and the null hypothesis the means of the different populations (of `Time_Point`, `Drug`, and `Isotype`) were the same.  
+Since we wanted to compare more than two populations, we used MANOVA to test for effects. We check that the normality assumption is met due to large sample size (n = `r nrow(Data3)`). Each antibody is assumed to be independent. However, we had some concerns about the equal variance-covariance matrices assumption, which is addressed in the Discussions section. We performed a MANOVA test with the formula **(H_CDR3, HMuFreq, L_CDR3, LMuFreq)^T^ ~ Time_Point + Drug + Isotype** and the null hypothesis the means of the different populations (of `Time_Point`, `Drug`, and `Isotype`) were equal.  
 
 ```{r}
 tp <- as.factor(Data3$Time_Point)
@@ -336,6 +336,9 @@ it <- as.factor(Data3$Isotype)
 drug <- as.factor(Data3$Drug)
 fit.manova <- manova(cbind(Data3$H_CDR3, Data3$HMuFreq, Data3$L_CDR3, Data3$LMuFreq) ~ tp + drug + it)
 summary(fit.manova, test = "Wilks")
+
+fit.manova2 <- manova(cbind(Data3$H_CDR3, Data3$HMuFreq, Data3$L_CDR3, Data3$LMuFreq) ~ tp + drug)
+summary(fit.manova2, test = "Wilks")
 ```
 
 The output above shows that all of the main effects of `Time_Point`, `Drug`, `Isotype` have very small p-values. Thus we rejected the null hypothesis and concluded that all three main effects were significant to the antibodies' four traits, `H_CDR3`, `HMuFreq`, `L_CDR3`, and `LMuFreq`. To understand how exactly the effects of these three factors, we proceeded to do pairwise comparisons.  
@@ -731,9 +734,61 @@ Our findings show that the number of vaccine injections did contribute to higher
 
 ## Limitations  
 
+### Independent of antibodies  
+
 While our analyses reached some findings, some further investigations could improve our analyses. In our multivariate analyses, we followed the common method of treating antibodies (rows in our data) as independent from each other. In our longitudinal analyses, the models allow measurements from the same observational unit (macaque) to correlate over time. It would be beneficial to formally determine whether the antibodies were correlated or independent, but it would require more biological knowledge and the investigation would be beyond the scope of a final report. This remains an interesting topic that could be explored.  
 
-For multivariate data analyses, the use of MANOVA was restricted by the assumptions of equal variance-covariance matrices among different populations. Furthermore, the pairwise comparison results are difficult to interpret. [need revisions]
+### Equal variance-covariance matrices assumption for MANOVA  
+
+For multivariate data analyses, the use of MANOVA was restricted by the assumptions of equal variance-covariance matrices among different populations. We ran the Fligner-Killeen Test of Homogeneity of Variances on all the four response variables `H_CDR3`, `HMuFreq`, `L_CDR3`, and `LMuFreq`. As shown in the output below, most of the p-values are very small, meaning the null hypothesis of equal variance is rejected. In most cases, `H_CDR3`, `HMuFreq`, and `Binding` do not meet the equal variance-covariance matrices assumption.  
+
+```{r}
+Data5 <- Data3 %>% select(Drug, Isotype, Time_Point, H_CDR3, HMuFreq, L_CDR3, LMuFreq)
+
+fligner.test(H_CDR3 ~ Drug, data = Data5)
+fligner.test(HMuFreq ~ Drug, data = Data5)
+fligner.test(L_CDR3 ~ Drug, data = Data5)
+fligner.test(LMuFreq ~ Drug, data = Data5)
+
+fligner.test(H_CDR3 ~ Isotype, data = Data5)
+fligner.test(HMuFreq ~ Isotype, data = Data5)
+fligner.test(L_CDR3 ~ Isotype, data = Data5)
+fligner.test(LMuFreq ~ Isotype, data = Data5)
+
+fligner.test(H_CDR3 ~ Time_Point, data = Data5)
+fligner.test(HMuFreq ~ Time_Point, data = Data5)
+fligner.test(L_CDR3 ~ Time_Point, data = Data5)
+fligner.test(LMuFreq ~ Time_Point, data = Data5)
+```
+
+Comparisons of the variance-covariance matrix of the response variables in different groups using ratios (one matrix divided by another matrix) also reveals that the variance-covariance matrices might not be equal. Some matrices seem quite different. For example, as shown in Table \@ref(tab:covcomp1), the ratio between variance-covariance matrices of Drug 2 and Drug 3 has numbers as large as 26. As shown in Table \@ref(tab:covcomp2), the ratio of variance-covariance matrices between Isotype IgG and IgM even has values as large as 128. Furthermore, the sample sizes of each populations, as shown in Table \@ref(tab:ft-drug-timepoint-isotype), were unequal. Thus, the results of the MANOVA test should be viewed with caution.  
+  
+
+```{r, covcomp1}
+Data4 <- Data3 %>% select(H_CDR3, HMuFreq, L_CDR3, LMuFreq, Drug, Isotype, Time_Point)
+Data4_drug1 <- Data4 %>% filter(Drug == 1)
+cov1 <- Data4_drug1 %>% select(H_CDR3, HMuFreq, L_CDR3, LMuFreq) %>% cov(use="complete.obs")
+Data4_drug2 <- Data4 %>% filter(Drug == 2)
+cov2 <- Data4_drug2 %>% select(H_CDR3, HMuFreq, L_CDR3, LMuFreq) %>% cov(use="complete.obs")
+Data4_drug3 <- Data4 %>% filter(Drug == 3)
+cov3 <- Data4_drug3 %>% select(H_CDR3, HMuFreq, L_CDR3, LMuFreq) %>% cov(use="complete.obs")
+#cov1 / cov2
+#cov1 / cov3
+mat1 <- cov2 / cov3
+kable(mat1, caption = "Variance-covariance matrices comparison of drug groups 2 and 3")
+```
+
+
+```{r, covcomp2}
+Data4_isog <- Data4 %>% filter(Isotype == "G")
+covg <- Data4_isog %>% select(H_CDR3, HMuFreq, L_CDR3, LMuFreq) %>% cov(use="complete.obs")
+Data4_isom <- Data4 %>% filter(Isotype == "M")
+covm <- Data4_isom %>% select(H_CDR3, HMuFreq, L_CDR3, LMuFreq) %>% cov(use="complete.obs")
+mat2 <- covg / covm
+kable(mat2, caption = "Variance-covariance matrices comparison of isotypes IgG and IgM")
+```
+
+### Longitudinal Models  
 
 For longitudinal data analyses, we did not try out more combinations for models. For example, we only tried two correlation structures (compound symmetry and AR1); other structures might have achieved better results. When we added drug as another covariate, we did not go back to test which correlation structure might perform better and whether the piecewise model should include two or three line segments. Further, we did not assume different random effects on different line segments. These additional steps could lead to better models.  
 

@@ -198,3 +198,43 @@ Fstat & p\_value\\
 \hline
 \end{tabular}
 \end{table}
+\efloatseparator
+ 
+\begin{table}
+
+\caption{\label{tab:covcomp1}Variance-covariance matrices comparison of drug groups 2 and 3}
+\centering
+\begin{tabular}[t]{l|r|r|r|r}
+\hline
+  & H\_CDR3 & HMuFreq & L\_CDR3 & LMuFreq\\
+\hline
+H\_CDR3 & 0.8233467 & 0.0940387 & 1.7311285 & -8.1369695\\
+\hline
+HMuFreq & 0.0940387 & 1.6459865 & -1.2232736 & 26.2072877\\
+\hline
+L\_CDR3 & 1.7311285 & -1.2232736 & 0.9656927 & 0.7827240\\
+\hline
+LMuFreq & -8.1369695 & 26.2072877 & 0.7827240 & 0.9973451\\
+\hline
+\end{tabular}
+\end{table}
+\efloatseparator
+ 
+\begin{table}
+
+\caption{\label{tab:covcomp2}Variance-covariance matrices comparison of isotypes IgG and IgM}
+\centering
+\begin{tabular}[t]{l|r|r|r|r}
+\hline
+  & H\_CDR3 & HMuFreq & L\_CDR3 & LMuFreq\\
+\hline
+H\_CDR3 & 1.6159018 & 5.299330 & 2.3376280 & -0.6033657\\
+\hline
+HMuFreq & 5.2993296 & 1.633674 & -1.2654633 & 128.3747014\\
+\hline
+L\_CDR3 & 2.3376280 & -1.265463 & 1.2304862 & 0.3019796\\
+\hline
+LMuFreq & -0.6033657 & 128.374701 & 0.3019796 & 0.6281664\\
+\hline
+\end{tabular}
+\end{table}
