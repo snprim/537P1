@@ -144,7 +144,7 @@ fit.a2 & 11 & 3063.290 & 11 & 3127.182\\
  
 \begin{table}
 
-\caption{\label{tab:S4S5-slope}Inference of S4 ad S5 slopes}
+\caption{\label{tab:S4S5-slope}Inference about S4 ad S5 slopes}
 \centering
 \begin{tabular}[t]{r|r|r|r}
 \hline
