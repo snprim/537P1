@@ -330,15 +330,15 @@ To answer **RQ1** (Do time points, drugs, and isotypes have effects on the mutat
 
 Since we wanted to compare more than two populations, we used MANOVA to test for effects. We check that the normality assumption is met due to large sample size (n = `r nrow(Data3)`). Each antibody is assumed to be independent. However, we had some concerns about the equal variance-covariance matrices assumption, which is addressed in the Discussions section. We performed a MANOVA test with the formula **(H_CDR3, HMuFreq, L_CDR3, LMuFreq)^T^ ~ Time_Point + Drug + Isotype** and the null hypothesis the means of the different populations (of `Time_Point`, `Drug`, and `Isotype`) were equal.  
 
-```{r}
+```{r, manova1, eval = FALSE}
 tp <- as.factor(Data3$Time_Point)
 it <- as.factor(Data3$Isotype)
 drug <- as.factor(Data3$Drug)
 fit.manova <- manova(cbind(Data3$H_CDR3, Data3$HMuFreq, Data3$L_CDR3, Data3$LMuFreq) ~ tp + drug + it)
 summary(fit.manova, test = "Wilks")
 
-fit.manova2 <- manova(cbind(Data3$H_CDR3, Data3$HMuFreq, Data3$L_CDR3, Data3$LMuFreq) ~ tp + drug)
-summary(fit.manova2, test = "Wilks")
+# fit.manova2 <- manova(cbind(Data3$H_CDR3, Data3$HMuFreq, Data3$L_CDR3, Data3$LMuFreq) ~ tp + drug)
+# summary(fit.manova2, test = "Wilks")
 ```
 
 The output above shows that all of the main effects of `Time_Point`, `Drug`, `Isotype` have very small p-values. Thus we rejected the null hypothesis and concluded that all three main effects were significant to the antibodies' four traits, `H_CDR3`, `HMuFreq`, `L_CDR3`, and `LMuFreq`. To understand how exactly the effects of these three factors, we proceeded to do pairwise comparisons.  
@@ -351,7 +351,7 @@ respMat <- as.matrix(Data3[,c("H_CDR3", "HMuFreq", "L_CDR3", "LMuFreq")])
 vars <- c("H_CDR3", "HMuFreq", "L_CDR3", "LMuFreq")
 ```
 
-```{r, pcdrug1}
+```{r, pcdrug1, eval = FALSE}
 # pairwise comparison among time points
 fit1 <- manova(respMat[,1:4] ~ tp)
 p <- 4
@@ -369,7 +369,7 @@ for (i in 1:4){
 }
 ```
 
-```{r, pcdrug2}
+```{r, pcdrug2, eval = FALSE}
 # pairwise comparison among drug groups
 fit2 <- manova(respMat[,1:4] ~ drug)
 p <- 4
@@ -387,7 +387,7 @@ for (i in 1:4){
 }
 ```
 
-```{r, pcdrug3}
+```{r, pcdrug3, eval = FALSE}
 # pairwise comparison among isotype
 fit3 <- manova(respMat[,1:4] ~ it)
 p <- 4
@@ -742,7 +742,7 @@ While our analyses reached some findings, some further investigations could impr
 
 For multivariate data analyses, the use of MANOVA was restricted by the assumptions of equal variance-covariance matrices among different populations. We ran the Fligner-Killeen Test of Homogeneity of Variances on all the four response variables `H_CDR3`, `HMuFreq`, `L_CDR3`, and `LMuFreq`. As shown in the output below, most of the p-values are very small, meaning the null hypothesis of equal variance is rejected. In most cases, `H_CDR3`, `HMuFreq`, and `Binding` do not meet the equal variance-covariance matrices assumption.  
 
-```{r}
+```{r, fktests, eval = FALSE}
 Data5 <- Data3 %>% select(Drug, Isotype, Time_Point, H_CDR3, HMuFreq, L_CDR3, LMuFreq)
 
 fligner.test(H_CDR3 ~ Drug, data = Data5)
@@ -812,3 +812,31 @@ To date, no HIV vaccines have been found effective in creating immunity against 
 6. Jenny M Woof , Dennis R Burton,Human antibody-Fc receptor interactions illuminated by crystal structures.*Nat Rev Immunol*. 2004 Feb;4(2):89-99. doi: 10.1038/nri1266.
 7. Russell Lenth (2020). _emmeans: Estimated Marginal Means, aka Least-Squares Means_. R package version 1.5.0. https://CRAN.R-project.org/package=emmeans
 8. Pinheiro J, Bates D, DebRoy S, Sarkar D, R Core Team (2020). _nlme: Linear and Nonlinear Mixed Effects Models_. R package
+
+\newpage
+
+# Appendix  
+
+```{r, ref.label = "manova1", eval = TRUE}
+
+```
+\newpage
+
+```{r, ref.label = "pcdrug1", eval = TRUE}
+
+```
+\newpage
+
+```{r, ref.label = "pcdrug2", eval = TRUE}
+
+```
+\newpage
+
+```{r, ref.label = "pcdrug3", eval = TRUE}
+
+```
+\newpage
+
+```{r, ref.label = "fktests", eval = TRUE}
+
+```

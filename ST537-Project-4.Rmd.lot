@@ -1,12 +1,12 @@
-\contentsline {table}{\numberline {1}{\ignorespaces Frequency tables of drug vs. timepoints}}{50}{table.1}%
-\contentsline {table}{\numberline {2}{\ignorespaces Frequency tables of timepoints vs. isotypes for drug = 1 (left), 2 (middle), 3 (right)}}{51}{table.2}%
-\contentsline {table}{\numberline {3}{\ignorespaces Summaries of standardized LCDR3}}{52}{table.3}%
-\contentsline {table}{\numberline {4}{\ignorespaces Significant Pairs in terms of Time Point, Drug, and Isotype: Significant Pairs}}{53}{table.4}%
-\contentsline {table}{\numberline {5}{\ignorespaces AIC and BIC between two gls models}}{54}{table.5}%
-\contentsline {table}{\numberline {6}{\ignorespaces AIC and BIC for three models}}{55}{table.6}%
-\contentsline {table}{\numberline {7}{\ignorespaces Inference about S4 ad S5 slopes}}{56}{table.7}%
-\contentsline {table}{\numberline {8}{\ignorespaces Test whether drug 1 = drug 2}}{57}{table.8}%
-\contentsline {table}{\numberline {9}{\ignorespaces Test whether drug 1 = drug 3}}{58}{table.9}%
-\contentsline {table}{\numberline {10}{\ignorespaces Test whether drug 2 = drug 3}}{59}{table.10}%
-\contentsline {table}{\numberline {11}{\ignorespaces Variance-covariance matrices comparison of drug groups 2 and 3}}{60}{table.11}%
-\contentsline {table}{\numberline {12}{\ignorespaces Variance-covariance matrices comparison of isotypes IgG and IgM}}{61}{table.12}%
+\contentsline {table}{\numberline {1}{\ignorespaces Frequency tables of drug vs. timepoints}}{53}{table.1}%
+\contentsline {table}{\numberline {2}{\ignorespaces Frequency tables of timepoints vs. isotypes for drug = 1 (left), 2 (middle), 3 (right)}}{54}{table.2}%
+\contentsline {table}{\numberline {3}{\ignorespaces Summaries of standardized LCDR3}}{55}{table.3}%
+\contentsline {table}{\numberline {4}{\ignorespaces Significant Pairs in terms of Time Point, Drug, and Isotype: Significant Pairs}}{56}{table.4}%
+\contentsline {table}{\numberline {5}{\ignorespaces AIC and BIC between two gls models}}{57}{table.5}%
+\contentsline {table}{\numberline {6}{\ignorespaces AIC and BIC for three models}}{58}{table.6}%
+\contentsline {table}{\numberline {7}{\ignorespaces Inference about S4 ad S5 slopes}}{59}{table.7}%
+\contentsline {table}{\numberline {8}{\ignorespaces Test whether drug 1 = drug 2}}{60}{table.8}%
+\contentsline {table}{\numberline {9}{\ignorespaces Test whether drug 1 = drug 3}}{61}{table.9}%
+\contentsline {table}{\numberline {10}{\ignorespaces Test whether drug 2 = drug 3}}{62}{table.10}%
+\contentsline {table}{\numberline {11}{\ignorespaces Variance-covariance matrices comparison of drug groups 2 and 3}}{63}{table.11}%
+\contentsline {table}{\numberline {12}{\ignorespaces Variance-covariance matrices comparison of isotypes IgG and IgM}}{64}{table.12}%
