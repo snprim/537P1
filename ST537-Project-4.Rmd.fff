@@ -105,6 +105,13 @@
  
 \begin{figure}
 \centering
+\includegraphics{ST537-Project-4.Rmd_files/figure-latex/logQQ-1.pdf}
+\caption{\label{fig:logQQ}Q-Q plot of logBinding}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
 \includegraphics{ST537-Project-4.Rmd_files/figure-latex/QQ3-1.pdf}
 \caption{\label{fig:QQ3}Q-Q Plot of Binding}
 \end{figure}

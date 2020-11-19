@@ -34,6 +34,15 @@ library(bookdown)
 library(caret)
 ```
 
+To see whether Drug 1 and Drug 2 had different effects, we performed a hypothesis test on $H_0: \beta_4 = \beta_5 = \beta_6 = \beta_7 = 0$ by testing $$\mathbf{L_4}\boldsymbol{\beta}=0$$ where $$\mathbf{L_4}=
+\setcounter{MaxMatrixCols}{12}
+\begin{bmatrix}
+0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0 \\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0  
+\end{bmatrix}$$ and $\boldsymbol{\beta}=(\beta_0, \beta_1, \beta_2, \beta_3, \beta_4, \beta_5, \beta_6, \beta_7, \beta_8, \beta_9, \beta_10, \beta_11)^T$  
+
 ```{r readin Data, results = 'hide'}
 #Readin data from Github url address
 url1 <- 'https://github.com/luokan1227/537P1/raw/master/Data.xlsx'  # main data
