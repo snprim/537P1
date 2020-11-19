@@ -341,7 +341,7 @@ summary(fit.manova, test = "Wilks")
 # summary(fit.manova2, test = "Wilks")
 ```
 
-The output above shows that all of the main effects of `Time_Point`, `Drug`, `Isotype` have very small p-values. Thus we rejected the null hypothesis and concluded that all three main effects were significant to the antibodies' four traits, `H_CDR3`, `HMuFreq`, `L_CDR3`, and `LMuFreq`. To understand how exactly the effects of these three factors, we proceeded to do pairwise comparisons.  
+The output seen at Section \@ref(app1) shows that all of the main effects of `Time_Point`, `Drug`, `Isotype` have very small p-values. Thus we rejected the null hypothesis and concluded that all three main effects were significant to the antibodies' four traits, `H_CDR3`, `HMuFreq`, `L_CDR3`, and `LMuFreq`. To understand how exactly the effects of these three factors, we proceeded to do pairwise comparisons.  
 
 ### Pairwise Comparison  
 
@@ -414,7 +414,7 @@ colnames(pairTab) <- c("Time_Point", "Drug", "Isotype")
 kable(pairTab, caption = "Significant Pairs in terms of Time Point, Drug, and Isotype: Significant Pairs")
 ```
 
-Table \@ref(tab:pctab) summarizes The pairwise comparison results. `Time_Point` have significant pairs for `H_CDR3`, `HMuFreq`, and `LMuFreq`, and time points 0 and 1 appear to have significant differences from time points 2 and 3. `Drug` and `Isotype` have significant pairs in `H_CDR3` and `HMuFreq`. For `H_CDR3`, drug 1 has a higher mean than drug 2, and IgG has a higher mean than IgD and IgM. For `HMuFreq`, drug 2 has a higher mean than drug 1, which has a higher mean than drug 3 (control group). IgG again has a higher mean than IgD and IgM. [Kan, please add/revise the interpretations here.]  
+Table \@ref(tab:pctab) summarizes the pairwise comparison results (see Sections \@ref(app2), \@ref(app3)). `Time_Point` have significant pairs for `H_CDR3`, `HMuFreq`, and `LMuFreq`, and time points 0 and 1 appear to have significant differences from time points 2 and 3. `Drug` and `Isotype` have significant pairs in `H_CDR3` and `HMuFreq`. For `H_CDR3`, drug 1 has a higher mean than drug 2, and IgG has a higher mean than IgD and IgM. For `HMuFreq`, drug 2 has a higher mean than drug 1, which has a higher mean than drug 3 (control group). IgG again has a higher mean than IgD and IgM. [Kan, please add/revise the interpretations here.]  
 
 ## Longitudinal Analysis  
 
@@ -740,7 +740,7 @@ While our analyses reached some findings, some further investigations could impr
 
 ### Equal variance-covariance matrices assumption for MANOVA  
 
-For multivariate data analyses, the use of MANOVA was restricted by the assumptions of equal variance-covariance matrices among different populations. We ran the Fligner-Killeen Test of Homogeneity of Variances on all the four response variables `H_CDR3`, `HMuFreq`, `L_CDR3`, and `LMuFreq`. As shown in the output below, most of the p-values are very small, meaning the null hypothesis of equal variance is rejected. In most cases, `H_CDR3`, `HMuFreq`, and `Binding` do not meet the equal variance-covariance matrices assumption.  
+For multivariate data analyses, the use of MANOVA was restricted by the assumptions of equal variance-covariance matrices among different populations. We ran the Fligner-Killeen Test of Homogeneity of Variances on all the four response variables `H_CDR3`, `HMuFreq`, `L_CDR3`, and `LMuFreq`. As shown in the output in Section \@ref(app4), most of the p-values are very small, meaning the null hypothesis of equal variance is rejected. In most cases, `H_CDR3`, `HMuFreq`, and `Binding` do not meet the equal variance-covariance matrices assumption.  
 
 ```{r, fktests, eval = FALSE}
 Data5 <- Data3 %>% select(Drug, Isotype, Time_Point, H_CDR3, HMuFreq, L_CDR3, LMuFreq)
@@ -817,25 +817,31 @@ To date, no HIV vaccines have been found effective in creating immunity against 
 
 # Appendix  
 
-```{r, ref.label = "manova1", eval = TRUE}
+## Output for the MANOVA test {#app1}  
 
+```{r, ref.label = "manova1", eval = TRUE}
 ```
 \newpage
+
+## Pairwise comparison by time point {#app2}  
 
 ```{r, ref.label = "pcdrug1", eval = TRUE}
-
 ```
 \newpage
+
+## Pairwise comparison by drug {#app3}  
 
 ```{r, ref.label = "pcdrug2", eval = TRUE}
-
 ```
 \newpage
+
+## Pairwise comparison by isotype 
 
 ```{r, ref.label = "pcdrug3", eval = TRUE}
-
 ```
 \newpage
+
+## Fligner-Killeen Test of Homogeneity of Variances {#app4}  
 
 ```{r, ref.label = "fktests", eval = TRUE}
 
