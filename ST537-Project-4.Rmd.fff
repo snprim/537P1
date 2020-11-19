@@ -126,15 +126,29 @@
  
 \begin{figure}
 \centering
-\includegraphics{ST537-Project-4.Rmd_files/figure-latex/mean-monkey-1.pdf}
-\caption{\label{fig:mean-monkey}Mean trend by monkey}
+\includegraphics{ST537-Project-4.Rmd_files/figure-latex/meantrend-1.pdf}
+\caption{\label{fig:meantrend}Means for Binding by monkey}
 \end{figure}
 \efloatseparator
  
 \begin{figure}
 \centering
-\includegraphics{ST537-Project-4.Rmd_files/figure-latex/variance-monkey-1.pdf}
-\caption{\label{fig:variance-monkey}Variances over time by monkey}
+\includegraphics{ST537-Project-4.Rmd_files/figure-latex/logmeantrend-1.pdf}
+\caption{\label{fig:logmeantrend}Means for logBinding over time by monkey}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-4.Rmd_files/figure-latex/variance-1.pdf}
+\caption{\label{fig:variance}Variances for Binding over time by monkey}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-4.Rmd_files/figure-latex/logvariance-1.pdf}
+\caption{\label{fig:logvariance}Variances for logBinding over time by monkey}
 \end{figure}
 \efloatseparator
  

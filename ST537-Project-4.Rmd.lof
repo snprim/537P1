@@ -16,8 +16,10 @@
 \contentsline {figure}{\numberline {16}{\ignorespaces Q-Q plot of logBinding}}{44}{figure.16}%
 \contentsline {figure}{\numberline {17}{\ignorespaces Q-Q Plot of Binding}}{45}{figure.17}%
 \contentsline {figure}{\numberline {18}{\ignorespaces Plots of response variables}}{46}{figure.18}%
-\contentsline {figure}{\numberline {19}{\ignorespaces Mean trend by monkey}}{47}{figure.19}%
-\contentsline {figure}{\numberline {20}{\ignorespaces Variances over time by monkey}}{48}{figure.20}%
-\contentsline {figure}{\numberline {21}{\ignorespaces Piecewise Linear Function--three segments}}{49}{figure.21}%
-\contentsline {figure}{\numberline {22}{\ignorespaces Piecewise Linear Function--two segments}}{50}{figure.22}%
-\contentsline {figure}{\numberline {23}{\ignorespaces Q-Q plots of models: GLS, compound symmetry, AR1}}{51}{figure.23}%
+\contentsline {figure}{\numberline {19}{\ignorespaces Means for Binding by monkey}}{47}{figure.19}%
+\contentsline {figure}{\numberline {20}{\ignorespaces Means for logBinding over time by monkey}}{48}{figure.20}%
+\contentsline {figure}{\numberline {21}{\ignorespaces Variances for Binding over time by monkey}}{49}{figure.21}%
+\contentsline {figure}{\numberline {22}{\ignorespaces Variances for logBinding over time by monkey}}{50}{figure.22}%
+\contentsline {figure}{\numberline {23}{\ignorespaces Piecewise Linear Function--three segments}}{51}{figure.23}%
+\contentsline {figure}{\numberline {24}{\ignorespaces Piecewise Linear Function--two segments}}{52}{figure.24}%
+\contentsline {figure}{\numberline {25}{\ignorespaces Q-Q plots of models: GLS, compound symmetry, AR1}}{53}{figure.25}%
