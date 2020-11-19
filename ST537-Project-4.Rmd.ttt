@@ -160,7 +160,7 @@ fit.a2 & 12 & -591.4157 & 12 & -521.7012\\
  
 \begin{table}
 
-\caption{\label{tab:3slopes}Inference about S4 ad S5 slopes}
+\caption{\label{tab:3slopes}Inference about S1, S2, ad S3 slopes}
 \centering
 \begin{tabular}[t]{r|r|r|r}
 \hline

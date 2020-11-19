@@ -1,7 +1,7 @@
 ---
 title: "**Antibody Response Induced by HIV Vaccines and T-cell Suppression Treatments in Rhesus Macaques**"
 author: "Group 3: Kan Luo, Shih-Ni Prim, Frederick Davey, Rizwana Rehman"
-date: "11/18/2020"
+date: "11/19/2020"
 fontsize: 12pt
 geometry: margin = 1in
 mainfont: Times New Roman
@@ -64,8 +64,11 @@ Data2 <- Data %>% select(MonkeyID, Drug, Treatment, Time_Point, Isotype, H_VBase
 ```
 
 ```{r}
-# MANOVA (keep isotype?)
 # figure and table titles
+# verb tense
+# comments in []
+# will take out table of contents and add a cover page
+# try to shorten text
 ```
 
 
@@ -424,7 +427,7 @@ The new model is $$Y_{ij}=S1(\beta_0+\beta_1 Time_{ij})+S2(\beta_2+\beta_3 Time_
 We ensured that the trend is continuous at time points 1 and 2. Our first complete model (`fit.gls`) is $$Y_{ij} = \beta_0(S1 + 2S2 - S2 Time_{ij}) + \beta_1 (S1 Time_{ij} + 2S2 - S2 Time_{ij}) +$$ 
 $$\beta_4(-S2 + S2 Time_{ij} + S3) + \beta_5(-2S2 + 2S2 Time_{ij} + S3 Time_{ij}) + e_{ij}$$  where $$\mathbf{e}_i \sim N(0, \sigma^2I)$$  
 
-As mentioned earlier, we transformed `Binding` into `logBinding` with the formula $$logBinding = log(Binding + 1).$$ We first used them as response variables in the above formula in two models (`fit.gls1` and `fit.gls2`, respectively) to find the better response variable. As seen in Table \@ref(tab:AICtab), the model using `logBinding` as the response variable has much lower AIC and BIC values. We decided to use `logBinding` as the response variable and build on this model (`gls.fit2`). Note that the plots below still use `Binding` in the y-axis, and thus we had to plug the fitted values of `logBinding` into the exponential function to find `Binding`. As seen in plots below, the fitted values of `Binding` are never negative, which was why we transformed `Binding`.  
+As mentioned earlier, we transformed `Binding` into `logBinding` with the formula $$logBinding = log(Binding + 1).$$ We first used them as response variables in the above formula in two models (`fit.gls1` and `fit.gls2`, respectively) to find the better response variable. As seen in Table \@ref(tab:AICtab), the model using `logBinding` as the response variable has much lower AIC and BIC values. We decided to use `logBinding` as the response variable and build on this model (`gls.fit2`). For the rest of the report, $Y_{ij}$ denotes `logBinding`. Note that the plots below still use `Binding` in the y-axis, and thus we had to plug the fitted values of `logBinding` into the exponential function to find `Binding`.  
 
 ```{r, AICtab}
 S1 <- as.numeric(Data3$Time_Point >= 0 & Data3$Time_Point < 1)
@@ -445,11 +448,11 @@ $$ + S3(\beta_4) + S3 Time_{ij} (\beta_5) + e_{ij}$$
 
 ```{r}
 # when S1 = 1
-f1 <- function(x, y){y = exp(-0.0921720+0.1090234*x)}
+f1 <- function(x, y){y = exp(-0.0921720+0.1090234*x) - 1}
 # when S2 = 1
-f2 <- function(x, y){y = exp(-0.109483 + 0.1263344*x)}
+f2 <- function(x, y){y = exp(-0.109483 + 0.1263344*x) - 1}
 # when S3 = 1
-f3 <- function(x, y){y = exp(0.3573358-0.1070750*x)}
+f3 <- function(x, y){y = exp(0.3573358-0.1070750*x) - 1}
 ```
 
 ```{r, piecewise1, fig.cap = "Piecewise Linear Function--three segments"}
@@ -461,9 +464,9 @@ ggplot(Data3, aes(x = Time_Point, y = Binding, colour = as.factor(MonkeyID))) +
 
 We ran the model and plugged in coefficients to find the intercepts and slopes for all three segments of the mean trend:  
 
-* S1: $exp(-0.0921720+0.1090234*time)$
-* S2: $exp((2*-0.0921720+2*0.1090234-0.3573358-2*-0.1070750)+(0.0921720-0.1090234+0.3573358+2*-0.1070750)*time) = exp(-0.109483 + 0.1263344*time)$
-* S3: $exp(0.3573358-0.1070750*time)$  
+* S1: Binding = $exp(-0.0921720+0.1090234*time) - 1$
+* S2: Binding = $exp((2*-0.0921720+2*0.1090234-0.3573358-2*-0.1070750)+(0.0921720-0.1090234+0.3573358+2*-0.1070750)*time) - 1 = exp(-0.109483 + 0.1263344*time) - 1$
+* S3: Binding = $exp(0.3573358-0.1070750*time) - 1$  
 
 Figure \@ref(fig:piecewise1) shows the two segments S1 and S2 have very similar slopes. So we could refit the model with only two line segments between time points 0 and 2 and between time points 2 and 3. We called them S4 and S5. The next model is therefore $$Y_{ij}=S4(\beta_0+\beta_1 Time_{ij})+S5(\beta_2+\beta_3 Time_{ij})+e_{ij}$$  
 
@@ -497,16 +500,16 @@ $$S5(\beta_2) + S5 Time_{ij}(\beta_3) + e_{ij}$$
 
 After the model was constructed, we used the coefficients to find the mean trends for S4 and S5:  
 
-* S4: $exp((-2*0.24395790 + 0.26937508 + 2*0.00194581) + 0.2448519*time) = exp(-0.2146491 + 0.2448519*time)$
-* S5: $exp(0.26937508 + 0.00194581*time)$  
+* S4: Binding = $exp((-2*0.24395790 + 0.26937508 + 2*0.00194581) + 0.2448519*time)-1 = exp(-0.2146491 + 0.2448519*time)-1$
+* S5: Binding = $exp(0.26937508 + 0.00194581*time)-1$  
 
 As shown in Figure \@ref(fig:piecewise2), there is a linear line between Time_Point 0 and 2 and one between Time_Point 2 and 3. The two lines are continuous at Time_Point 2. A comparison of AIC And BIC of these two models, shown in Table \@ref(tab:AIC-tab1), indicates that the first model (`fit.gls2`) is still a better model.  
 
 ```{r}
 # when S4 = 1
-f4 <- function(x, y){y = exp(-0.2146491 + 0.2448519*x)}
+f4 <- function(x, y){y = exp(-0.2146491 + 0.2448519*x)-1}
 # when S5 = 1
-f5 <- function(x, y){y = exp(0.26937508 + 0.00194581*x)}
+f5 <- function(x, y){y = exp(0.26937508 + 0.00194581*x)-1}
 ```
 
 ```{r, piecewise2, fig.cap = "Piecewise Linear Function--two segments"}
@@ -578,7 +581,7 @@ L3 <- matrix(c(0, 0, 0, 1), byrow = TRUE, nrow = 1)
 test1 <- anova.lme(fit.a2, L = L1, adjustSigma = TRUE)
 test2 <- anova.lme(fit.a2, L = L2, adjustSigma = TRUE)
 test3 <- anova.lme(fit.a2, L = L3, adjustSigma = TRUE)
-kable(data.frame(rbind(test1, test2, test3)), caption = "Inference about S4 ad S5 slopes")
+kable(data.frame(rbind(test1, test2, test3)), caption = "Inference about S1, S2, ad S3 slopes")
 ```
 
 As shown in Table \@ref(tab:3slopes), all three slopes have very small p-values, which means the rates of change in all three segments are significant. As shown in Figure \@ref(fig:piecewise1), the slopes of S1 and S2 are positive, and the slope of S3 is negative. Combining the information of very small p-values and the signs of slopes, we concluded that the binding rates increased from time points 0 to 1 and from time points 1 to 2. The binding rates decreased from time points 2 to 3. We concluded that time point 2, when the monkeys had received two vaccines, had the highest binding rates, while the third vaccine injection at time point 3 failed to increase binding rates.  
