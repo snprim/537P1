@@ -1,25 +1,24 @@
-\contentsline {figure}{\numberline {1}{\ignorespaces Histograms of Antibodies}}{29}{figure.1}%
-\contentsline {figure}{\numberline {2}{\ignorespaces Histograms of Isotypes}}{30}{figure.2}%
-\contentsline {figure}{\numberline {3}{\ignorespaces Histogram of Response Variables}}{31}{figure.3}%
-\contentsline {figure}{\numberline {4}{\ignorespaces Mahalanobis distances and Z scores}}{32}{figure.4}%
-\contentsline {figure}{\numberline {5}{\ignorespaces Histogram H\_CDR3}}{33}{figure.5}%
-\contentsline {figure}{\numberline {6}{\ignorespaces Histograms of H\_CDR3 vs Treatment and Timepoint}}{34}{figure.6}%
-\contentsline {figure}{\numberline {7}{\ignorespaces Histogram L\_CDR3}}{35}{figure.7}%
-\contentsline {figure}{\numberline {8}{\ignorespaces Histograms of L\_CDR3 vs Treatment and Timepoint}}{36}{figure.8}%
-\contentsline {figure}{\numberline {9}{\ignorespaces Q-Q Plots of H\_CDR3 and L\_CDR3}}{37}{figure.9}%
-\contentsline {figure}{\numberline {10}{\ignorespaces Histogram HMuFreq}}{38}{figure.10}%
-\contentsline {figure}{\numberline {11}{\ignorespaces Histograms of HMuFreq vs Treatment and Timepoint}}{39}{figure.11}%
-\contentsline {figure}{\numberline {12}{\ignorespaces Histogram LMuFreq}}{40}{figure.12}%
-\contentsline {figure}{\numberline {13}{\ignorespaces Histograms of LMuFreq vs Treatment and Timepoint}}{41}{figure.13}%
-\contentsline {figure}{\numberline {14}{\ignorespaces Q-Q Plot of HMuFreq and LMuFreq}}{42}{figure.14}%
-\contentsline {figure}{\numberline {15}{\ignorespaces Histograms of Binding Strength vs Treatment and Timepoint}}{43}{figure.15}%
-\contentsline {figure}{\numberline {16}{\ignorespaces Q-Q plot of logBinding}}{44}{figure.16}%
-\contentsline {figure}{\numberline {17}{\ignorespaces Q-Q Plot of Binding}}{45}{figure.17}%
-\contentsline {figure}{\numberline {18}{\ignorespaces Plots of response variables}}{46}{figure.18}%
-\contentsline {figure}{\numberline {19}{\ignorespaces Means for Binding by monkey}}{47}{figure.19}%
-\contentsline {figure}{\numberline {20}{\ignorespaces Means for logBinding over time by monkey}}{48}{figure.20}%
-\contentsline {figure}{\numberline {21}{\ignorespaces Variances for Binding over time by monkey}}{49}{figure.21}%
-\contentsline {figure}{\numberline {22}{\ignorespaces Variances for logBinding over time by monkey}}{50}{figure.22}%
-\contentsline {figure}{\numberline {23}{\ignorespaces Piecewise Linear Function--three segments}}{51}{figure.23}%
-\contentsline {figure}{\numberline {24}{\ignorespaces Piecewise Linear Function--two segments}}{52}{figure.24}%
-\contentsline {figure}{\numberline {25}{\ignorespaces Q-Q plots of models: GLS, compound symmetry, AR1}}{53}{figure.25}%
+\contentsline {figure}{\numberline {1}{\ignorespaces Histograms of Antibodies}}{28}{figure.1}%
+\contentsline {figure}{\numberline {2}{\ignorespaces Scatterplot Matrix of Response Variables}}{29}{figure.2}%
+\contentsline {figure}{\numberline {3}{\ignorespaces Mahalanobis Distances and Z Scores}}{30}{figure.3}%
+\contentsline {figure}{\numberline {4}{\ignorespaces Histogram H\_CDR3 by Time Point}}{31}{figure.4}%
+\contentsline {figure}{\numberline {5}{\ignorespaces Histograms of H\_CDR3 by Drug and Time Point}}{32}{figure.5}%
+\contentsline {figure}{\numberline {6}{\ignorespaces Histogram L\_CDR3 by Time Point}}{33}{figure.6}%
+\contentsline {figure}{\numberline {7}{\ignorespaces Histograms of L\_CDR3 by Drug and Time Point}}{34}{figure.7}%
+\contentsline {figure}{\numberline {8}{\ignorespaces Q-Q Plots of H\_CDR3 and L\_CDR3}}{35}{figure.8}%
+\contentsline {figure}{\numberline {9}{\ignorespaces Histogram HMuFreq by Time Point}}{36}{figure.9}%
+\contentsline {figure}{\numberline {10}{\ignorespaces Histograms of HMuFreq by Drug and Time Point}}{37}{figure.10}%
+\contentsline {figure}{\numberline {11}{\ignorespaces Histogram LMuFreq by Time Point}}{38}{figure.11}%
+\contentsline {figure}{\numberline {12}{\ignorespaces Histograms of LMuFreq by Drug and Time Point}}{39}{figure.12}%
+\contentsline {figure}{\numberline {13}{\ignorespaces Q-Q Plot of HMuFreq and LMuFreq}}{40}{figure.13}%
+\contentsline {figure}{\numberline {14}{\ignorespaces Histograms of Binding Strength by Drug and Time Point}}{41}{figure.14}%
+\contentsline {figure}{\numberline {15}{\ignorespaces Q-Q Plot of Binding}}{42}{figure.15}%
+\contentsline {figure}{\numberline {16}{\ignorespaces Q-Q plot of logBinding}}{43}{figure.16}%
+\contentsline {figure}{\numberline {17}{\ignorespaces Scatterplot Matrix of Response Variables without Outlier}}{44}{figure.17}%
+\contentsline {figure}{\numberline {18}{\ignorespaces Mean Trends for Binding over Time by Macaque}}{45}{figure.18}%
+\contentsline {figure}{\numberline {19}{\ignorespaces Mean Trends for logBinding over Time by Macaque}}{46}{figure.19}%
+\contentsline {figure}{\numberline {20}{\ignorespaces Variance Trends for Binding over Time by Macaque}}{47}{figure.20}%
+\contentsline {figure}{\numberline {21}{\ignorespaces Variance Trends for logBinding over Time by Macaque}}{48}{figure.21}%
+\contentsline {figure}{\numberline {22}{\ignorespaces Piecewise Linear Function--Three Segments}}{49}{figure.22}%
+\contentsline {figure}{\numberline {23}{\ignorespaces Piecewise Linear Function--Two Segments}}{50}{figure.23}%
+\contentsline {figure}{\numberline {24}{\ignorespaces Q-Q Plots of Normalized Residuals}}{51}{figure.24}%

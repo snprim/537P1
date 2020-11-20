@@ -1,0 +1,166 @@
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-final_files/figure-latex/hist-antibodies-1.pdf}
+\caption{\label{fig:hist-antibodies}Histograms of Antibodies}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-final_files/figure-latex/outlier-review-1.pdf}
+\caption{\label{fig:outlier-review}Scatterplot Matrix of Response Variables}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-final_files/figure-latex/outlier-d2-1.pdf}
+\caption{\label{fig:outlier-d2}Mahalanobis Distances and Z Scores}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-final_files/figure-latex/hist-HCDR3T-1.pdf}
+\caption{\label{fig:hist-HCDR3T}Histogram H\_CDR3 by Time Point}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-final_files/figure-latex/hist-HCDR3-1.pdf}
+\caption{\label{fig:hist-HCDR3}Histograms of H\_CDR3 by Drug and Time Point}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-final_files/figure-latex/hist-LCDR3T-1.pdf}
+\caption{\label{fig:hist-LCDR3T}Histogram L\_CDR3 by Time Point}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-final_files/figure-latex/hist-LCDR3-1.pdf}
+\caption{\label{fig:hist-LCDR3}Histograms of L\_CDR3 by Drug and Time Point}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-final_files/figure-latex/QQ-1.pdf}
+\caption{\label{fig:QQ}Q-Q Plots of H\_CDR3 and L\_CDR3}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-final_files/figure-latex/murate1-1.pdf}
+\caption{\label{fig:murate1}Histogram HMuFreq by Time Point}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-final_files/figure-latex/murate2-1.pdf}
+\caption{\label{fig:murate2}Histograms of HMuFreq by Drug and Time Point}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-final_files/figure-latex/murate3-1.pdf}
+\caption{\label{fig:murate3}Histogram LMuFreq by Time Point}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-final_files/figure-latex/murate4-1.pdf}
+\caption{\label{fig:murate4}Histograms of LMuFreq by Drug and Time Point}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-final_files/figure-latex/QQ2-1.pdf}
+\caption{\label{fig:QQ2}Q-Q Plot of HMuFreq and LMuFreq}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-final_files/figure-latex/hist-binding-1.pdf}
+\caption{\label{fig:hist-binding}Histograms of Binding Strength by Drug and Time Point}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-final_files/figure-latex/QQ3-1.pdf}
+\caption{\label{fig:QQ3}Q-Q Plot of Binding}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-final_files/figure-latex/logQQ-1.pdf}
+\caption{\label{fig:logQQ}Q-Q plot of logBinding}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-final_files/figure-latex/QQbinding-1.pdf}
+\caption{\label{fig:QQbinding}Scatterplot Matrix of Response Variables without Outlier}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-final_files/figure-latex/meantrend-1.pdf}
+\caption{\label{fig:meantrend}Mean Trends for Binding over Time by Macaque}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-final_files/figure-latex/logmeantrend-1.pdf}
+\caption{\label{fig:logmeantrend}Mean Trends for logBinding over Time by Macaque}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-final_files/figure-latex/variance-1.pdf}
+\caption{\label{fig:variance}Variance Trends for Binding over Time by Macaque}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-final_files/figure-latex/logvariance-1.pdf}
+\caption{\label{fig:logvariance}Variance Trends for logBinding over Time by Macaque}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-final_files/figure-latex/piecewise1-1.pdf}
+\caption{\label{fig:piecewise1}Piecewise Linear Function--Three Segments}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-final_files/figure-latex/piecewise2-1.pdf}
+\caption{\label{fig:piecewise2}Piecewise Linear Function--Two Segments}
+\end{figure}
+\efloatseparator
+ 
+\begin{figure}
+\centering
+\includegraphics{ST537-Project-final_files/figure-latex/QQmodel-1.pdf}
+\caption{\label{fig:QQmodel}Q-Q Plots of Normalized Residuals}
+\end{figure}
