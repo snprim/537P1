@@ -78,13 +78,11 @@ The current report describes multivariate and longitudinal data analyses done on
 
 A dominant vaccine development strategy is to induce neutralizing antibodies by immunizing humans with the virus' glycoproteins. HIV vaccines that adopted this strategy mostly failed, because HIV is an RNA virus, which mutates rapidly to escape the inhibition of neutralizing antibodies. By the time the body generates neutralizing antibodies against the glycoproteins of some HIV strains, the RNA virus has already mutated. Thus, the existing antibody fails to recognize, bind with, and neutralize the HIV virus.  
 
-One possible solution is to increase the number of potential neutralizing antibodies that will cycle in the body by releasing a variety of them after glycoprotein immunization. Regulatory T (Treg) cells prevent autoimmune diseases and suppress allergic reactions by inhibiting adaptive antibody immune response in the germinal center. Theoretically, this adaptive response lowers the effectiveness of vaccines. Thus the researchers used T-cell suppression treatments to investigate whether the treatments improve the efficacy of immunization.   
+One possible solution is to increase the number of potential neutralizing antibodies that will cycle in the body by releasing a variety of them after glycoprotein immunization; suppressing regulatory T (Treg) cells might achieve this goal. Treg cells prevent autoimmune diseases and suppress allergic reactions by inhibiting adaptive antibody immune response in the germinal center. Theoretically, this adaptive response lowers the effectiveness of vaccines. Researchers hypothesize that suppresing Treg cells could improve the efficacy of immunization.   
 
 During the study, 20 rhesus macaques were given glycoprotein immunization and supplemental antibody doses, as well as one of three treatments (two experimental regulatory T-cell suppression treatments and one control). Blood samples were collected two weeks after vaccine dosing, and antibodies were isolated from those samples. Limited by assay yield, the number of antibodies collected from each blood sample varied. In short, each observation contained information about the antibody isolated post the glycoprotein immunization.  
 
-As one of the authors for four publications that used the dataset, Kan Luo provided the dataset, [which can be found here](https://github.com/luokan1227/537P1).  
-
-Now we turn to our research questions, after which the Methods section includes exploratory data analysis, multivariate data analysis, and longitudinal data analysis. The statistical results are included in the Methods section and summarized in the Results section. We discuss implications and limitations in the Discussions and some final thoughts in the Conclusions.  
+As one of the authors for four publications that used the dataset, Kan Luo provided the dataset, [which can be found here](https://github.com/luokan1227/537P1). Now we turn to our research questions, after which the Methods section includes exploratory data analysis, multivariate data analysis, and longitudinal data analysis. The statistical results are included in the Methods section and summarized in the Results section. We discuss implications and limitations in the Discussions and some final thoughts in the Conclusions.  
 
 ## Research questions  
 
@@ -234,7 +232,7 @@ qqnorm(Data3$HMuFreq, pch = 19, cex = 1, main = "Q-Q Plot of HMuFreq")
 qqnorm(Data3$LMuFreq, pch = 19, cex = 1, main = "Q-Q Plot of LMuFreq")
 ```
 
-Next, a histogram of `Binding` with respect to treatment at different time points and a Q-Q plot are shown in Figure \@ref(fig:hist-binding) and Figure \@ref(fig:QQ3), both of which reveal that `Binding` is not normally distributed. Since the dataset has a large sample size (n = `r nrow(Data3)`), we can use the Central Limit Theorem and assume normality. However, since many data points have the value 0 for `Binding`, linear models for longitudinal analyses might lead to negative values. To avoid this problem, we transformed `Binding` to $log(Binding + 1)$ and called it `logBinding`. The Q-Q plot of `logBinding` is shown in Figure \@ref(fig:logQQ). Lastly, Figure \@ref(fig:QQbinding) shows that none of the response variables are highly correlated.  
+Next, a histogram of `Binding` with respect to treatment at different time points and a Q-Q plot are shown in Figure \@ref(fig:hist-binding) and Figure \@ref(fig:QQ3), both of which reveal that `Binding` is not normally distributed. Since the dataset has a large sample size (n = `r nrow(Data3)`, smallest group = 54), we can use the Central Limit Theorem and assume normality. However, since many data points have the value 0 for `Binding`, linear models for longitudinal analyses might lead to negative values. To avoid this problem, we transformed `Binding` to $log(Binding + 1)$ and called it `logBinding`. The Q-Q plot of `logBinding` is shown in Figure \@ref(fig:logQQ). Lastly, Figure \@ref(fig:QQbinding) shows that none of the response variables are highly correlated.  
 
 ```{r, hist-binding, fig.cap = "Histograms of Binding Strength by Drug and Time Point"}
 ggplot(data = Data3, mapping = aes(x = Binding, color = as.factor(Drug))) + 
@@ -259,11 +257,11 @@ Data3 %>% select(LMuFreq, HMuFreq, L_CDR3, H_CDR3, Binding) %>% ggpairs()
 
 ## Multivariate Data Analysis  
 
-To answer **RQ1** (Did time points and drugs have effects on the mutation frequency (`HMuFreq` and `LMuFreq`) and the amino acid count in the third complementarity determining region (`H_CDR3` and `L_CDR3`)?), we tested whether predictors `Time_Point` and `Drug` had effects on four of our five response variables: `H_CDR3`, `HMuFreq`, `L_CDR3`, and `LMuFreq`. We excluded `Binding` from this section, because it has unequal variances across time points, which violated the equal variance assumption of MANOVA. We used the `manova` function in base R for the MANOVA test and the `emmeans` package for pairwise comparisons.$^{[7]}.$  
+To answer **RQ1** (Did time points and drugs have effects on the mutation frequency (`HMuFreq` and `LMuFreq`) and the amino acid count in the third complementarity determining region (`H_CDR3` and `L_CDR3`)?), we tested whether predictors `Time_Point` and `Drug` had effects on four of our five response variables: `H_CDR3`, `HMuFreq`, `L_CDR3`, and `LMuFreq`. We excluded `Binding` from this section, because it has unequal variances across time points, which violated the equal variance assumption of MANOVA. We had some concerns about the equal variance-covariance matrices assumption, which will be addressed in the Discussions. We used the `manova` function in base R for the MANOVA test and the `emmeans` package for pairwise comparisons.$^{[7]}.$  
 
 ### MANOVA
 
-Since we wanted to compare more than two populations, we used MANOVA to test for effects. We checked that the normality assumption was met due to large sample size (n = `r nrow(Data3)`). We assumed that antibodies were independent of each other. However, we had some concerns about the equal variance-covariance matrices assumption, which will be addressed in the Discussions. We performed a MANOVA test with the formula **(H_CDR3, HMuFreq, L_CDR3, LMuFreq)^T^ ~ Time_Point + Drug** and the null hypothesis that the means of the different populations (of `Time_Point` and `Drug`) were equal.  
+Since we wanted to compare more than two populations, we used MANOVA to test for effects. We checked that the normality assumption was met due to large sample size (n = `r nrow(Data3)`). We assumed that antibodies were independent of each other. We performed the test with the formula **(H_CDR3, HMuFreq, L_CDR3, LMuFreq)^T^ ~ Time_Point + Drug** and the null hypothesis that the means of the different populations (of `Time_Point` and `Drug`) were equal.  
 
 ```{r, manova1, eval = FALSE}
 tp <- as.factor(Data3$Time_Point)
@@ -272,7 +270,7 @@ fit.manova <- manova(cbind(Data3$H_CDR3, Data3$HMuFreq, Data3$L_CDR3, Data3$LMuF
 summary(fit.manova, test = "Wilks")
 ```
 
-The output in Section \@ref(app1) shows that both main effects of `Time_Point` and `Drug` have very small p-values. Thus we rejected the null hypothesis and concluded that both main effects were significant to the antibodies' four traits, `H_CDR3`, `HMuFreq`, `L_CDR3`, and `LMuFreq`. To further understand the main effects, we proceeded to do pairwise comparisons.  
+The output in Section \@ref(app1) shows that both main effects of `Time_Point` and `Drug` have very small p-values (<.001). Thus we rejected the null hypothesis and concluded that both main effects were significant to the antibodies' four traits, `H_CDR3`, `HMuFreq`, `L_CDR3`, and `LMuFreq`. To further understand the main effects, we proceeded to do pairwise comparisons.  
 
 ### Pairwise Comparison  
 
@@ -326,9 +324,9 @@ colnames(pairTab) <- c("Time_Point", "Drug")
 kable(pairTab, caption = "Significant Pairs by Time Point and Drug")
 ```
 
-Table \@ref(tab:pctab) summarizes the pairwise comparison results (see Sections \@ref(app2), \@ref(app3)). In general, we found heavy chain is more sensitive than light chain to the immunization and drug treatments. Heavy chain `H_CDR3` and `HMuFreq` variables developed significant differences on both `Time_Point` and `Drug` among groups, when light chain only observed `LMuFreq` variable different from group to group by time.  
-`H_CDR3` lenght on `Time_Point - 3` is significantly higher than that on `Time_Point - 1` and `Time_Point - 2`, but not `Time_Point - 0` which is base line. That is because majority base line antibodies are not HIV-envelope specific antibodies, which may circulate in blood for some other immunogens and cumulate longer `H_CDR3`. After rhesus received HIV envelope immunogen, HIV specific antibodies became dominant, and obtained longer and longer `H_CDR3` as time goes by. `Drug - 1` treatment obtained significant longer `H_CDR3` in group 1 than group 2, but this different not observed in any other group comparsion. Light chain is more conserve on the lenght change of `L_CDR3` for both `Drug` treatment and immunization `Time_Point`.  
-For `HMuFreq` variable, The higher average mutation rate on earlier time points can be explained similarly as above for both heavy and light chains. Both two kinds of `Drug` treatments increased heavy chain mutation frequency significantly than control group.  
+Table \@ref(tab:pctab) summarizes the pairwise comparison results (see Sections \@ref(app2), \@ref(app3)). In general, we found heavy chain is more sensitive than light chain to the immunization and drug treatments. Heavy chain `H_CDR3` and `HMuFreq` variables developed significant differences on both `Time_Point` and `Drug`, while light chain only had significant differences in `LMuFreq` over time.  
+
+As shown in Table \@ref(tab:pctab), `H_CDR3` at time point 3 is significantly higher than that at time points 1 and 2, but not time point 0, which is the baseline. Most baseline antibodies are not HIV-envelope specific antibodies but instead are present for other immunogens and accumulate longer `H_CDR3`. After the subject received HIV envelope immunogen, HIV specific antibodies became dominant and `H_CDR3` grew longer over time. Drug 1 had significantly longer `H_CDR3` in group 1 than group 2, but this difference is not observed in other pairwise comparisons. Light chains are more conservative on the length changes of `L_CDR3` for both `Drug` and `Time_Point`. For `HMuFreq`, The higher average mutation rates at earlier time points can be explained similarly as above for both heavy and light chains. Drugs 1 and 2 increased heavy chain mutation frequency significantly compared to the control group.  
 
 
 ## Longitudinal Analysis  
@@ -354,7 +352,7 @@ ggplot(Data3, aes(x = Time_Point, y = Binding, colour = as.factor(MonkeyID))) + 
 ggplot(Data3, aes(x = Time_Point, y = logBinding, colour = as.factor(MonkeyID))) + geom_point() + stat_summary(fun = var, geom = "line") + theme(legend.position = "none")
 ```
 
-As shown in Figure \@ref(fig:meantrend) and Figure \@ref(fig:logmeantrend), the mean trend by monkey is not linear across all time points. Figure \@ref(fig:variance) and Figure \@ref(fig:logvariance) show that the different time points have different variances. Thus we used piecewise linear models and set variances as unequal over time. We first considered a model with time point as the only covariate: $$Y_{ij}=\beta_0+\beta_1 Time_{ij}+e_{ij}$$  
+As shown in Figure \@ref(fig:meantrend) and Figure \@ref(fig:logmeantrend), the mean trend by test subject is not linear across all time points. Figure \@ref(fig:variance) and Figure \@ref(fig:logvariance) show that the different time points have different variances. Thus we used piecewise linear models and set variances as unequal over time. We first considered a model with time point as the only covariate: $$Y_{ij}=\beta_0+\beta_1 Time_{ij}+e_{ij}$$  
 
 We then turned the model into a piecewise linear model and designated different intercepts and slopes for the line segments. The model includes three indicator variables: $S1, S2, S3$, where 
 $$S1=
@@ -663,7 +661,7 @@ knitr::kable(data.frame(Fstat = Fstat_L6, p_value = p.value), caption = "H0: dru
 
 # Results  
 
-For multivariate analyses, we performed a MANOVA test on the main effects of `Time_Point` and `Drug` on the response variable vector (`H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq`)^T^. We found that both main factors had very small p-values, indicate significant effects. We also performed pairwise comparison to see where the effects were, as shown in Table \@ref(tab:pctab). `Time_Point` effect is significant among responses including `H_CDR3`, `HMuFreq` and `LMuFreq`, while `Drug` effects mostly on heavy chain.  
+For multivariate analyses, we performed a MANOVA test on the main effects of `Time_Point` and `Drug` on the response variable vector (`H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq`)^T^. We found that both main factors had very small p-values, indicating significant effects. We also performed pairwise comparison to see where the effects were, as shown in Table \@ref(tab:pctab). The main effect of `Time_Point` is significant among responses including `H_CDR3`, `HMuFreq` and `LMuFreq`, while the main effect of `Drug` is mostly on the heavy chain.  
 
 For longitudinal analyses, we found that the transformed variable `logBinding` was a better option and the linear mixed model `fit.a2` had the lowest BIC: $$Y_{ij} = \beta_0(S1 + 2S2 - S2 Time_{ij}) + \beta_1 (S1 Time_{ij} + 2S2 - S2 Time_{ij}) +$$ 
 $$\beta_4(-S2 + S2 Time_{ij} + S3) + \beta_5(-2S2 + 2S2 Time_{ij} + S3 Time_{ij}) + b_{0i} + b_{1i} Time_{ij} + e_{ij}$$ where $$\mathbf{b}_i \sim N \left( 0, \mathbf{D} = 
