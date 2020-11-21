@@ -57,28 +57,14 @@
 \begin{figure}
 \centering
 \includegraphics{ST537-Project-final_files/figure-latex/murate1-1.pdf}
-\caption{\label{fig:murate1}Histogram HMuFreq by Time Point}
+\caption{\label{fig:murate1}Histograms of HMuFreq by Drug and Time Point}
 \end{figure}
 \efloatseparator
  
 \begin{figure}
 \centering
 \includegraphics{ST537-Project-final_files/figure-latex/murate2-1.pdf}
-\caption{\label{fig:murate2}Histograms of HMuFreq by Drug and Time Point}
-\end{figure}
-\efloatseparator
- 
-\begin{figure}
-\centering
-\includegraphics{ST537-Project-final_files/figure-latex/murate3-1.pdf}
-\caption{\label{fig:murate3}Histogram LMuFreq by Time Point}
-\end{figure}
-\efloatseparator
- 
-\begin{figure}
-\centering
-\includegraphics{ST537-Project-final_files/figure-latex/murate4-1.pdf}
-\caption{\label{fig:murate4}Histograms of LMuFreq by Drug and Time Point}
+\caption{\label{fig:murate2}Histograms of LMuFreq by Drug and Time Point}
 \end{figure}
 \efloatseparator
  

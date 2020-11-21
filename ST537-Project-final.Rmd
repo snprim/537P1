@@ -65,19 +65,24 @@ Data$Reactivity <- ifelse(Data$Binding > 0.1, 1, 0)
 Data2 <- Data %>% select(MonkeyID, Drug, Treatment, Time_Point, Isotype, H_VBase, H_Substitutions, H_Insertions, H_Deletions, HMuFreq, H_CDR3, L_VBase, L_Substitutions, L_Insertions, L_Deletions, LMuFreq, L_CDR3, Binding, Reactivity)
 ```
 
+```{r}
+# add statistics and p values to results section 
+```
+
+
 # Introduction  
 
 The current report describes multivariate and longitudinal data analyses done on a dataset from an HIV study, in which researchers administered HIV vaccine injections and immuno-suppression treatments to 20 rhesus macaques and measured antibody characteristics. This project aimed to determine whether the vaccine's efficacy, reflected by the variable `Binding`, was increased by vaccine injections and immuno-suppression treatments.  
 
 ## About the Study  
 
-A dominant vaccine development strategy is to induce neutralizing antibodies by immunizing humans with the virus' glycoproteins. However, HIV vaccines that adopted this strategy mostly failed due to the fact that HIV is an RNA virus, which mutates rapidly to escape the inhibition of neutralizing antibodies. By the time the body generates neutralizing antibodies against the glycoproteins of some HIV strains, the RNA virus has already mutated. Thus, the existing neutralizing antibody fails to recognize, bind with, and neutralize the HIV virus. One possible solution is to increase the number of potential neutralizing antibodies that will cycle in the body by releasing a variety of antibodies after glycoprotein immunization. Regulatory T (Treg) cells prevent autoimmune diseases and suppress allergic reactions by inhibiting adaptive antibody immune response in the germinal center. Theoretically, this adaptive response lowers the effectiveness of vaccines. Thus the researchers used T-cell suppression treatments to investigate whether the treatments improve the efficacy of immunization.   
+A dominant vaccine development strategy is to induce neutralizing antibodies by immunizing humans with the virus' glycoproteins. HIV vaccines that adopted this strategy mostly failed, because HIV is an RNA virus, which mutates rapidly to escape the inhibition of neutralizing antibodies. By the time the body generates neutralizing antibodies against the glycoproteins of some HIV strains, the RNA virus has already mutated. Thus, the existing antibody fails to recognize, bind with, and neutralize the HIV virus.  
+
+One possible solution is to increase the number of potential neutralizing antibodies that will cycle in the body by releasing a variety of them after glycoprotein immunization. Regulatory T (Treg) cells prevent autoimmune diseases and suppress allergic reactions by inhibiting adaptive antibody immune response in the germinal center. Theoretically, this adaptive response lowers the effectiveness of vaccines. Thus the researchers used T-cell suppression treatments to investigate whether the treatments improve the efficacy of immunization.   
 
 During the study, 20 rhesus macaques were given glycoprotein immunization and supplemental antibody doses, as well as one of three treatments (two experimental regulatory T-cell suppression treatments and one control). Blood samples were collected two weeks after vaccine dosing, and antibodies were isolated from those samples. Limited by assay yield, the number of antibodies collected from each blood sample varied. In short, each observation contained information about the antibody isolated post the glycoprotein immunization.  
 
-A human antibody is formed heavy chains and light chains. A heavy chain has about 51 V-gene segments, 25 D-gene segments, and 6 J-gene segment. A light chain has about 71 V-gene segments and 9 J-gene segments[ref.5]. Any heavy chain V-D-J combination and light chain V-J combinations can randomly happen in germinal centers. Theoretically, there can be $51*25*6*71*9=$ `r 51*25*6*71*9` combinations of gene segments. Considering the frequent mutations and other factors, each individual can have over **10 billion** different antibodies. Thus, we followed the convention of vaccine studies and viewed each antibody as independent for multivariate data analysis. For longitudinal data analysis, since general linear and linear mixed models allow measurements from the same observational unit to correlate over time, we used different correlation structures to find a best model. This implies that the antibodies from the same macaque can be correlated.  
-
-Section \@ref(listvar) contains a list of variables with brief descriptions. Note that each antibody contains two sets of heavy chain and light chain, all of which form a Y-shape immunoglobulin. Thus many of the variables start with H or L, indicating the chain from which the information comes. Some variables have missing numbers. We chose to let R functions ignore missing values to keep as much data as possible. As one of the authors for four publications that used the dataset, Kan Luo provided the dataset, [which can be found here](https://github.com/luokan1227/537P1).  
+As one of the authors for four publications that used the dataset, Kan Luo provided the dataset, [which can be found here](https://github.com/luokan1227/537P1).  
 
 Now we turn to our research questions, after which the Methods section includes exploratory data analysis, multivariate data analysis, and longitudinal data analysis. The statistical results are included in the Methods section and summarized in the Results section. We discuss implications and limitations in the Discussions and some final thoughts in the Conclusions.  
 
@@ -96,6 +101,10 @@ This section first provides an overview and summaries of the dataset and then us
 ## Data Summaries  
 
 ### An Overview of Antibodies by Time Points, Drug Types, and Isotypes  
+
+Section \@ref(listvar) contains a list of variables with brief descriptions. Note that each antibody contains two sets of heavy chain and light chain, all of which form a Y-shape immunoglobulin. Thus many of the variables start with H or L, indicating the chain from which the information comes. Some variables have missing numbers. We chose to let R functions ignore missing values to keep as much data as possible.  
+
+A human antibody is formed heavy chains and light chains. A heavy chain has about 51 V-gene segments, 25 D-gene segments, and 6 J-gene segment. A light chain has about 71 V-gene segments and 9 J-gene segments[ref.5]. Any heavy chain V-D-J combination and light chain V-J combinations can randomly happen in germinal centers. Theoretically, there can be $51*25*6*71*9=$ `r 51*25*6*71*9` combinations of gene segments. Considering the frequent mutations and other factors, each individual can have over **10 billion** different antibodies. Thus, we followed the convention of vaccine studies and viewed each antibody as independent for multivariate data analysis. For longitudinal data analysis, since general linear and linear mixed models allow measurements from the same observational unit to correlate over time, we used different correlation structures to find a best model. This implies that the antibodies from the same macaque can be correlated.  
 
 A total of `r nrow(Data2)` antibodies, from 20 rhesus macaques, were collected at four different time points (0, 1, 2, 3) and each macaque was given one of three drugs (1 and 2 are immuno-suppressing drugs and 3 is a mock control). Figure \@ref(fig:hist-antibodies) shows the histograms of antibody counts, and Table \@ref(tab:ft-drug-timepoint) shows the antibody counts in different combinations of  drugs and time points.  
 
@@ -203,48 +212,17 @@ qqnorm(Data3$H_CDR3, pch = 19, cex = 1, main = "Normal Q-Q Plot of H_CDR3")
 qqnorm(Data3$L_CDR3, pch = 19, cex = 1, main = "Normal Q-Q Plot of L_CDR3")
 ```
 
-`HMuFreq` and `LMuFreq` were calculated by dividing `H_Substitution` by `H_VBase` for heavy chains and `L_Substitution` by `L_VBase` light chains. These two variables represent the degree to which the antibodies mutate. A higher mutation rate usually indicates better virus neutralization. Figure \@ref(fig:murate1), Figure \@ref(fig:murate2), Figure \@ref(fig:murate3), and Figure \@ref(fig:murate4) show that `HMuFreq` and `LMuFreq` are both approximately normal, each with a long right tail. The Q-Q plots in Figure \@ref(fig:QQ2) confirm the approximate normality of `HMuFreq` and `LMuFreq`.  
+`HMuFreq` and `LMuFreq` were calculated by dividing `H_Substitution` by `H_VBase` for heavy chains and `L_Substitution` by `L_VBase` light chains. These two variables represent the degree to which the antibodies mutate. A higher mutation rate usually indicates better virus neutralization. Figure \@ref(fig:murate1) and Figure \@ref(fig:murate2) show that `HMuFreq` and `LMuFreq` are both approximately normal, each with a long right tail. The Q-Q plots in Figure \@ref(fig:QQ2) confirm the approximate normality of `HMuFreq` and `LMuFreq`.  
 
-```{r, murate1, fig.cap = "Histogram HMuFreq by Time Point"}
-#par(mfrow = c(1,2))
-g7 <- ggplot(Data3, aes(HMuFreq))
-  g7 + geom_bar(stat = "count", width = 0.7, fill = "#012169") +
-    facet_grid(Time_Point~., labeller = label_both) + #by subgroups
-    xlab("HMuFreq Length (aa)") + ylab("Number of antibodies") +# X axis and y axis title
-    
-    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),  #remove background grid
-          panel.background = element_blank(),  #remove background color
-          axis.text.x = element_text(size = 10), # x axis 
-          axis.text.y = element_text(size = 10), # y axis 
-          axis.title.x = element_text(size = 15), # x title 
-          axis.title.y = element_text(size = 15), # y title
-          plot.title = element_text(hjust = 0.5, size = 18) #Title
-          )
-```
 
-```{r, murate2, fig.cap = "Histograms of HMuFreq by Drug and Time Point"}
+```{r, murate1, fig.cap = "Histograms of HMuFreq by Drug and Time Point"}
 ggplot(data = Data3, mapping = aes(x = HMuFreq, color = as.factor(Drug))) + 
   geom_histogram(bins = 10, fill = 'white' ) + facet_grid(Drug~Time_Point, labeller = label_both) + 
   labs(xlab = 'HMuFreq', ylab = 'n Monkeys')
 ```
 
-```{r, murate3, fig.cap = "Histogram LMuFreq by Time Point"}
-g9 <- ggplot(Data3, aes(LMuFreq))
-  g9 + geom_bar(stat = "count", width = 0.7, fill = "#012169") +
-    facet_grid(Time_Point~., labeller = label_both) + #by subgroups
-    xlab("LMuFreq Length (aa)") + ylab("Number of antibodies") +# X axis and y axis title
-    
-    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),  #remove background grid
-          panel.background = element_blank(),  #remove background color
-          axis.text.x = element_text(size = 10), # x axis 
-          axis.text.y = element_text(size = 10), # y axis 
-          axis.title.x = element_text(size = 15), # x title 
-          axis.title.y = element_text(size = 15), # y title
-          plot.title = element_text(hjust = 0.5, size = 18) #Title
-          )
-```
 
-```{r, murate4, fig.cap = "Histograms of LMuFreq by Drug and Time Point"}
+```{r, murate2, fig.cap = "Histograms of LMuFreq by Drug and Time Point"}
 ggplot(data = Data3, mapping = aes(x = LMuFreq, color = as.factor(Drug))) + 
   geom_histogram(bins = 10, fill = 'white' ) + facet_grid(Drug~Time_Point, labeller = label_both) + 
   labs(xlab = 'LMuFreq', ylab = 'n Monkeys')
@@ -348,7 +326,10 @@ colnames(pairTab) <- c("Time_Point", "Drug")
 kable(pairTab, caption = "Significant Pairs by Time Point and Drug")
 ```
 
-Table \@ref(tab:pctab) summarizes the pairwise comparison results (see Sections \@ref(app2), \@ref(app3)). `Time_Point` have significant pairs for `H_CDR3`, `HMuFreq`, and `LMuFreq`, and time points 0 and 1 appear to have significant differences from time points 2 and 3. `Drug` has significant pairs in `H_CDR3` and `HMuFreq`. For `H_CDR3`, drug 1 has a higher mean than drug 2. For `HMuFreq`, drug 2 has a higher mean than drug 1, which has a higher mean than drug 3 (control group). [Kan, please add/revise the interpretations here.]  
+Table \@ref(tab:pctab) summarizes the pairwise comparison results (see Sections \@ref(app2), \@ref(app3)). In general, we found heavy chain is more sensitive than light chain to the immunization and drug treatments. Heavy chain `H_CDR3` and `HMuFreq` variables developed significant differences on both `Time_Point` and `Drug` among groups, when light chain only observed `LMuFreq` variable different from group to group by time.  
+`H_CDR3` lenght on `Time_Point - 3` is significantly higher than that on `Time_Point - 1` and `Time_Point - 2`, but not `Time_Point - 0` which is base line. That is because majority base line antibodies are not HIV-envelope specific antibodies, which may circulate in blood for some other immunogens and cumulate longer `H_CDR3`. After rhesus received HIV envelope immunogen, HIV specific antibodies became dominant, and obtained longer and longer `H_CDR3` as time goes by. `Drug - 1` treatment obtained significant longer `H_CDR3` in group 1 than group 2, but this different not observed in any other group comparsion. Light chain is more conserve on the lenght change of `L_CDR3` for both `Drug` treatment and immunization `Time_Point`.  
+For `HMuFreq` variable, The higher average mutation rate on earlier time points can be explained similarly as above for both heavy and light chains. Both two kinds of `Drug` treatments increased heavy chain mutation frequency significantly than control group.  
+
 
 ## Longitudinal Analysis  
 
@@ -437,9 +418,9 @@ ggplot(Data3, aes(x = Time_Point, y = Binding, colour = as.factor(MonkeyID))) +
 
 We ran the model and plugged in coefficients to find the intercepts and slopes for all three segments of the mean trend:  
 
-* S1: Binding = $exp(-0.0921720+0.1090234*time) - 1$
-* S2: Binding = $exp((2*-0.0921720+2*0.1090234-0.3573358-2*-0.1070750)+(0.0921720-0.1090234+0.3573358+2*-0.1070750)*time) - 1 = exp(-0.109483 + 0.1263344*time) - 1$
-* S3: Binding = $exp(0.3573358-0.1070750*time) - 1$  
+* S1 = 1: Binding = $exp(-0.0921720+0.1090234*time) - 1$
+* S2 = 1: Binding = $exp((2*-0.0921720+2*0.1090234-0.3573358-2*-0.1070750)+(0.0921720-0.1090234+0.3573358+2*-0.1070750)*time) - 1 = exp(-0.109483 + 0.1263344*time) - 1$
+* S3 = 1: Binding = $exp(0.3573358-0.1070750*time) - 1$  
 
 Figure \@ref(fig:piecewise1) shows the two segments S1 and S2 have very similar slopes. So we could refit the model with only two line segments between time points 0 and 2 and between time points 2 and 3. We called them S4 and S5. The next model is therefore $$Y_{ij}=S4(\beta_0+\beta_1 Time_{ij})+S5(\beta_2+\beta_3 Time_{ij})+e_{ij}$$ where
 
@@ -473,8 +454,8 @@ $$S5(\beta_2) + S5 Time_{ij}(\beta_3) + e_{ij}$$
 
 After the model was constructed, we used the coefficients to find the mean trends for S4 and S5:  
 
-* S4: Binding = $exp((-2*0.24395790 + 0.26937508 + 2*0.00194581) + 0.2448519*time)-1 = exp(-0.2146491 + 0.2448519*time)-1$
-* S5: Binding = $exp(0.26937508 + 0.00194581*time)-1$  
+* S4 = 1: Binding = $exp((-2*0.24395790 + 0.26937508 + 2*0.00194581) + 0.2448519*time)-1 = exp(-0.2146491 + 0.2448519*time)-1$
+* S5 = 1: Binding = $exp(0.26937508 + 0.00194581*time)-1$  
 
 As shown in Figure \@ref(fig:piecewise2), one linear line connects Time_Point 0 and 2 and another connects Time_Point 2 and 3. The two lines are continuous at Time_Point 2. A comparison of AIC And BIC of these two models, shown in Table \@ref(tab:AIC-tab1), indicates that the first model (`fit.gls2`) is a better model.  
 
@@ -514,6 +495,7 @@ fit.a1 <- lme(fixed = meanform2, random = ~ time | id, data = dataLDA1, weights 
 # random intercept and slope, AR1, unequal variances
 fit.a2 <- lme(fixed = meanform2, random = ~ time | id, data = dataLDA1, weights = varIdent(form = ~ 1 | time), correlation = corAR1(form = ~ 1 | id), method = "ML")
 ```
+
 
 ```{r, AIC-tab2}
 kable(data.frame(AIC(fit.gls2, fit.a1, fit.a2), BIC(fit.gls2, fit.a1, fit.a2)), caption = "AIC and BIC Comparison among GLS and LME Models")
@@ -620,7 +602,7 @@ Table \@ref(tab:AIC-tab3) shows that the model with drug as the second covariate
 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0  
 \end{bmatrix}$$ and $\boldsymbol{\beta}=(\beta_0, \beta_1, \beta_2, \beta_3, \beta_4, \beta_5, \beta_6, \beta_7, \beta_8, \beta_9, \beta_{10}, \beta_{11})^T$  
 
-To see whether Drug 1 and Drug 3 had different effects, we performed a hypothesis test on $H_0: \beta_8 = \beta_9 = \beta_10 = \beta_11 = 0$ by testing $$\mathbf{L_5} \boldsymbol{\beta}=0$$ where $$\mathbf{L_5}=
+To see whether Drug 1 and Drug 3 had different effects, we performed a hypothesis test on $H_0: \beta_8 = \beta_9 = \beta_{10} = \beta_{11} = 0$ by testing $$\mathbf{L_5} \boldsymbol{\beta}=0$$ where $$\mathbf{L_5}=
 \setcounter{MaxMatrixCols}{12}
 \begin{bmatrix}
 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 \\
@@ -681,7 +663,7 @@ knitr::kable(data.frame(Fstat = Fstat_L6, p_value = p.value), caption = "H0: dru
 
 # Results  
 
-For multivariate analyses, we performed a MANOVA test on the main effects of `Time_Point` and `Drug` on the response variable vector (`H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq`)^T^. We found that both main effects had very small p-values. We also performed pairwise comparison to see where the effects were, as shown in Table \@ref(tab:pctab). [Kan, do you have anything to add?]  
+For multivariate analyses, we performed a MANOVA test on the main effects of `Time_Point` and `Drug` on the response variable vector (`H_CDR3`, `HMuFreq`, `L_CDR3`, `LMuFreq`)^T^. We found that both main factors had very small p-values, indicate significant effects. We also performed pairwise comparison to see where the effects were, as shown in Table \@ref(tab:pctab). `Time_Point` effect is significant among responses including `H_CDR3`, `HMuFreq` and `LMuFreq`, while `Drug` effects mostly on heavy chain.  
 
 For longitudinal analyses, we found that the transformed variable `logBinding` was a better option and the linear mixed model `fit.a2` had the lowest BIC: $$Y_{ij} = \beta_0(S1 + 2S2 - S2 Time_{ij}) + \beta_1 (S1 Time_{ij} + 2S2 - S2 Time_{ij}) +$$ 
 $$\beta_4(-S2 + S2 Time_{ij} + S3) + \beta_5(-2S2 + 2S2 Time_{ij} + S3 Time_{ij}) + b_{0i} + b_{1i} Time_{ij} + e_{ij}$$ where $$\mathbf{b}_i \sim N \left( 0, \mathbf{D} = 
@@ -747,7 +729,7 @@ For longitudinal data analyses, we did not try out more combinations of models. 
 
 In our project, we performed multivariate data analyses and longitudinal data analyses to understand whether time points and drugs had effects on characteristics of antibodies and enhanced the efficacy of HIV vaccines. Our statistical analyses provided answers to our two research questions.  
 
-We performed a MANOVA test to answer our first research question, "Did time points and drugs have effects on the mutation frequency (`HMuFreq` and `LMuFreq`) and the amino acid count in the third complementarity determining region (`H_CDR3` and `L_CDR3`)?" and found significant main effects for time points and drugs. [Kan: anything to add here?]
+We performed a MANOVA test to answer our first research question, "Did time points and drugs have effects on the mutation frequency (`HMuFreq` and `LMuFreq`) and the amino acid count in the third complementarity determining region (`H_CDR3` and `L_CDR3`)?" and found significant main effects for time points and drugs. Antibody light chain trend to be more conserved and less response to vaccine immunization and drug treatment. Drug 1 treated group has average longer `H_CDR3` than Drug 2 treated group, and opposite on `HMuFreq`.  
   
 To answer our second research question, "How did the binding strength of the antibodies (`Binding` or `logBinding`) develop in response to the number of vaccine dosages (`Time_Point`) and immuno-suppression treatments (`Drug`)?", we constructed longitudinal models. We found the model with the transformed response variable `logBinding`, three line segments, random effects of intercept and slope of time point, AR1 correlation structure, and unequal variances over time performed best. F-tests for inference about $\boldsymbol{\beta}$ revealed that time point 2 had the highest `logBinding` value, suggesting that two vaccine injections induced the most antibody response. We also found that adding drug as a covariate did not greatly improve the model and drug 2 appeared to have different effects from drug 1 and the mock control.  
 
