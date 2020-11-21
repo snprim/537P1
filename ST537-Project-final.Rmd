@@ -490,16 +490,15 @@ fit.a1 <- lme(fixed = meanform2, random = ~ time | id, data = dataLDA1, weights 
 ```
 
 ```{r}
-# random intercept and slope, AR1, unequal variances
-fit.a2 <- lme(fixed = meanform2, random = ~ time | id, data = dataLDA1, weights = varIdent(form = ~ 1 | time), correlation = corAR1(form = ~ 1 | id), method = "ML")
+# random intercept and slope, exponential, unequal variances
+fit.a2 <- lme(fixed = meanform2, random = ~ time | id, data = dataLDA1, weights = varIdent(form = ~ 1 | time), correlation = corExp(form = ~ 1 | id), method = "ML")
 ```
-
 
 ```{r, AIC-tab2}
 kable(data.frame(AIC(fit.gls2, fit.a1, fit.a2), BIC(fit.gls2, fit.a1, fit.a2)), caption = "AIC and BIC Comparison among GLS and LME Models")
 ```
 
-We fit two models with random effects: `fit.a1` assumes random intercept and slope for time point, compound symmetric correlation structure, and unequal variances over time; and `fit.a2` assumes random intercept and slope for time point, AR1 correlation structure, and unequal variances over time. As shown in Table \@ref(tab:AIC-tab2), the model `fit.a2` has the lowest AIC and BIC, so it is the best model. We checked residuals for three models: `fit.gls2`, `fit.a1`, `fit.a2`, as shown in Figure \@ref(fig:QQmodel). All three Q-Q plots show approximate normality.  
+We fit two models with random effects: `fit.a1` assumes random intercept and slope for time point, compound symmetric correlation structure, and unequal variances over time; and `fit.a2` assumes random intercept and slope for time point, exponential correlation structure, and unequal variances over time. As shown in Table \@ref(tab:AIC-tab2), the model `fit.a2` has the lowest AIC and BIC, so it is the best model. We checked residuals for three models: `fit.gls2`, `fit.a1`, `fit.a2`, as shown in Figure \@ref(fig:QQmodel). All three Q-Q plots show approximate normality.  
 
 ```{r, QQmodel, fig.cap = "Q-Q Plots of Normalized Residuals"}
 par(mfrow = c(1,3))
@@ -584,7 +583,7 @@ v12 <- dataLDA1$S2 * -2 * dataLDA1$D3 + 2 * dataLDA1$S2 * dataLDA1$time * dataLD
 
 meanform4 <- logbinding ~ -1 + v1 + v2 + v3 + v4 + v5 + v6 + v7 + v8 + v9 + v10 + v11 + v12
 
-fit.a3 <- lme(fixed = meanform4, random = ~ time | id, data = dataLDA1, weights = varIdent(form = ~ 1 | time), correlation = corAR1(form = ~1 | id), method = "ML")
+fit.a3 <- lme(fixed = meanform4, random = ~ time | id, data = dataLDA1, weights = varIdent(form = ~ 1 | time), correlation = corExp(form = ~1 | id), method = "ML")
 # summary(fit.a3)
 ```
 ```{r, AIC-tab3}
@@ -721,7 +720,7 @@ kable(mat1, caption = "Variance-covariance Matrices Comparison of Drug 2 and 3")
 
 ### Longitudinal Models  
 
-For longitudinal data analyses, we did not try out more combinations of models. For example, we only tried two correlation structures (compound symmetry and AR1); other structures might have achieved better results. When we added drug as another covariate, we did not go back to test which correlation structure performed better and whether the piecewise model should include two or three line segments. Further, we did not assume different random effects for different line segments. These additional steps could lead to better models.  
+For longitudinal data analyses, we did not try out more combinations of models. For example, we only tried two correlation structures (compound symmetry and exponential); other structures might have achieved better results. When we added drug as another covariate, we did not go back to test which correlation structure performed better and whether the piecewise model should include two or three line segments. Further, we did not assume different random effects for different line segments. These additional steps could lead to better models.  
 
 # Conclusions  
 
@@ -729,7 +728,7 @@ In our project, we performed multivariate data analyses and longitudinal data an
 
 We performed a MANOVA test to answer our first research question, "Did time points and drugs have effects on the mutation frequency (`HMuFreq` and `LMuFreq`) and the amino acid count in the third complementarity determining region (`H_CDR3` and `L_CDR3`)?" and found significant main effects for time points and drugs. Antibody light chain trend to be more conserved and less response to vaccine immunization and drug treatment. Drug 1 treated group has average longer `H_CDR3` than Drug 2 treated group, and opposite on `HMuFreq`.  
   
-To answer our second research question, "How did the binding strength of the antibodies (`Binding` or `logBinding`) develop in response to the number of vaccine dosages (`Time_Point`) and immuno-suppression treatments (`Drug`)?", we constructed longitudinal models. We found the model with the transformed response variable `logBinding`, three line segments, random effects of intercept and slope of time point, AR1 correlation structure, and unequal variances over time performed best. F-tests for inference about $\boldsymbol{\beta}$ revealed that time point 2 had the highest `logBinding` value, suggesting that two vaccine injections induced the most antibody response. We also found that adding drug as a covariate did not greatly improve the model and drug 2 appeared to have different effects from drug 1 and the mock control.  
+To answer our second research question, "How did the binding strength of the antibodies (`Binding` or `logBinding`) develop in response to the number of vaccine dosages (`Time_Point`) and immuno-suppression treatments (`Drug`)?", we constructed longitudinal models. We found the model with the transformed response variable `logBinding`, three line segments, random effects of intercept and slope of time point, exponential correlation structure, and unequal variances over time performed best. F-tests for inference about $\boldsymbol{\beta}$ revealed that time point 2 had the highest `logBinding` value, suggesting that two vaccine injections induced the most antibody response. We also found that adding drug as a covariate did not greatly improve the model and drug 2 appeared to have different effects from drug 1 and the mock control.  
 
 To date, no HIV vaccines have been found effective in creating immunity against the HIV virus. Our analyses showed that the vaccine injections did increase binding rates, but perhaps the change was not enough. The second type of Treg inhibitor treatments might be worth further examination. We hope that, even if the result did not reveal a solution, more analyses could find promising directions for future research.  
 
